@@ -10,7 +10,7 @@ POST /game/new
 	Response:
 		gameID (unsigned int) - generated game ID
 
-GET /game/check/{gameID}
+GET /game/{gameID}
 	Description:
 		Gets most recent data from database
 	Request:
@@ -19,7 +19,7 @@ GET /game/check/{gameID}
 		score (unsigned int) - score for user
 		nearby (array) - nearby users in same user group
 
-POST /game/update/{gameID}
+PUT /game/{gameID}
 	Description:
 		Updates data in database
 	Request:
@@ -33,7 +33,7 @@ POST /game/update/{gameID}
 			errors (unsigned int) - number of errors
 			messages (array) - error messages
 
-GET /game/leaderboard/{gameID}
+GET /game/{gameID}/leaderboard
 	Description:
 		Gets leaderboard for specified game
 	Request:
@@ -41,7 +41,7 @@ GET /game/leaderboard/{gameID}
 	Response:
 		users (array) - users in game with score
 
-GET /game/users/{gameID}
+GET /game/{gameID}/users
 	Description:
 		Gets users currently in specified game
 	Request:
@@ -68,6 +68,28 @@ GET /user/{username}
 		hider (unsigned int) - number of games as hider
 		seeker (unsigned int) - number of games as seeker
 
+PUT /user/{username}
+	Description:
+		Updates user information
+	Request:
+		session (string) - id for user session
+		password (string) - hashed password of user
+	Response:
+		Fail:
+			errors (unsigned int) - number of errors
+			messages (array) - error messages
+
+POST /user/{username}
+	Description:
+		Creates new user
+	Request:
+		password (string) - hashed password of user
+		group (unsigned int) - desired group type
+		location (tbd) - user location
+	Response:
+		score (unsigned int) - score for user
+		session (string) - id for user session
+
 GET /users
 	Description:
 		Gets list of all users with scores and locations
@@ -76,23 +98,10 @@ GET /users
 	Response:
 		users (array) - all users with score and location
 
-POST /auth/new
-	Description:
-		Creates new user
-	Request:
-		username (string) - username of user
-		password (string) - hashed password of user
-		group (unsigned int) - desired group type
-		location (tbd) - user location
-	Response:
-		score (unsigned int) - score for user
-		session (string) - id for user session
-
-POST /auth/enter
+POST /user/{username}/auth
 	Description:
 		Authenticates user
 	Request:
-		username (string) - username of user
 		password (string) - hashed password of user
 		location (tbd) - user location
 	Response:
