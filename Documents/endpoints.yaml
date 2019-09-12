@@ -1,0 +1,100 @@
+POST /game/new
+	Description:
+		Creates new game
+	Request:
+		radius (unsigned int) - maximum distance from start of game allowed
+		players (unsigned int) - maximum number of players allowed in game
+		duration (unsigned int) - maximum number of seconds game lasts
+		mode (unsigned int) - game mode
+		gperiod (unsigned int) - number of seconds after game start when seekers can find hiders
+	Response:
+		gameID (unsigned int) - generated game ID
+
+GET /game/check/{gameID}
+	Description:
+		Gets most recent data from database
+	Request:
+		session (string) - id for user session
+	Response:
+		score (unsigned int) - score for user
+		nearby (array) - nearby users in same user group
+
+POST /game/update/{gameID}
+	Description:
+		Updates data in database
+	Request:
+		session (string) - id for user session
+		location (tbd) - user location
+	Response:
+		Success:
+			score (unsigned int) - score for user
+			nearby (array) - nearby users in same user group
+		Fail:
+			errors (unsigned int) - number of errors
+			messages (array) - error messages
+
+GET /game/leaderboard/{gameID}
+	Description:
+		Gets leaderboard for specified game
+	Request:
+		(none)
+	Response:
+		users (array) - users in game with score
+
+GET /game/users/{gameID}
+	Description:
+		Gets users currently in specified game
+	Request:
+		(none)
+	Response:
+		users (array) - users in game
+
+GET /leaderboard
+	Description:
+		Gets global leaderboard
+	Request:
+		(none)
+	Response:
+		users (array) - users with score
+
+GET /user/{username}
+	Description:
+		Gets user profile information
+	Request:
+		(none)
+	Response:
+		score (unsigned int) - score for user
+		games (unsigned int) - number of games played by user
+		hider (unsigned int) - number of games as hider
+		seeker (unsigned int) - number of games as seeker
+
+GET /users
+	Description:
+		Gets list of all users with scores and locations
+	Request:
+		session (string) - id for user session
+	Response:
+		users (array) - all users with score and location
+
+POST /auth/new
+	Description:
+		Creates new user
+	Request:
+		username (string) - username of user
+		password (string) - hashed password of user
+		group (unsigned int) - desired group type
+		location (tbd) - user location
+	Response:
+		score (unsigned int) - score for user
+		session (string) - id for user session
+
+POST /auth/enter
+	Description:
+		Authenticates user
+	Request:
+		username (string) - username of user
+		password (string) - hashed password of user
+		location (tbd) - user location
+	Response:
+		score (unsigned int) - score for user
+		session (string) - id for user session
