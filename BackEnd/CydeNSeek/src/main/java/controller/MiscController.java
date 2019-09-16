@@ -16,6 +16,24 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MiscController {
 
+	@RequestMapping("/")
+	public ResponseEntity<Map<String, Object>> index() {
+		return new ResponseEntity<>(new HashMap<String, Object>() {{
+			put("about", "This is the index page. If you are seeing this, then it means the server is running and the endpoints are live.");
+		}}, HttpStatus.OK);
+	}
+
+	@RequestMapping("/test")
+	public ResponseEntity<Map<String, Object>> test() {
+		return new ResponseEntity<>(new HashMap<String, Object>() {{
+			put("key", "value");
+			put("arr", new ArrayList<Object>());
+			put("obj", new HashMap<String, Object>() {{
+				put("key", "value");
+			}});
+		}}, HttpStatus.OK);
+	}
+
 	@RequestMapping(
 		value = "/leaderboard",
 		method = RequestMethod.GET,
