@@ -20,15 +20,23 @@ public class MiscController {
 
 	private static final Log LOG = LogFactory.getLog(MiscController.class);
 
-	@RequestMapping("/")
+	@RequestMapping(
+		value = "/",
+		produces = APPLICATION_JSON_VALUE
+	)
 	public ResponseEntity<Map<String, Object>> index() {
+		LOG.info("Index page was visited.");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("about", "This is the index page. If you are seeing this, then it means the server is running and the endpoints are live.");
 		}}, HttpStatus.OK);
 	}
 
-	@RequestMapping("/test")
+	@RequestMapping(
+		value = "/test",
+		produces = APPLICATION_JSON_VALUE
+	)
 	public ResponseEntity<Map<String, Object>> test() {
+		LOG.info("Test mapping was utilized.");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("key", "value");
 			put("arr", new ArrayList<Object>());
