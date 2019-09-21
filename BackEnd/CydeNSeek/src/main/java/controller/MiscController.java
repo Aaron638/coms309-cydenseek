@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class MiscController {
+
+	private static final Log LOG = LogFactory.getLog(MiscController.class);
 
 	@RequestMapping("/")
 	public ResponseEntity<Map<String, Object>> index() {

@@ -5,6 +5,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +22,8 @@ import model.GameUser;
 @RestController
 @RequestMapping("/game")
 public class GameController {
+
+	private static final Log LOG = LogFactory.getLog(GameController.class);
 
 	@RequestMapping(
 		value = "/new",
