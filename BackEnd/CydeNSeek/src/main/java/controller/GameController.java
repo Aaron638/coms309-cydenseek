@@ -42,50 +42,50 @@ public class GameController {
 	}
 
 	@RequestMapping(
-		value = "/{gameID}",
+		value = "/{gameId}",
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> checkGame(@PathVariable("gameID") String gameID, @RequestParam("session") String session) {
+	public ResponseEntity<Map<String, Object>> checkGame(@PathVariable("gameId") int gameId, @RequestParam("session") String session) {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("gameID", gameID);
+			put("gameId", gameId);
 			put("session", session);
 		}}, HttpStatus.OK);
 	}
 
 	@RequestMapping(
-		value = "/{gameID}",
+		value = "/{gameId}",
 		method = RequestMethod.PUT,
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameID") String gameID, @RequestBody GameUser user) {
+	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameId") int gameId, @RequestBody GameUser user) {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("gameID", gameID);
+			put("gameId", gameId);
 			put("session", user.getSession());
 			put("location", user.getLocation());
 		}}, HttpStatus.OK);
 	}
 
 	@RequestMapping(
-		value = "/{gameID}/leaderboard",
+		value = "/{gameId}/leaderboard",
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> leaderboard(@PathVariable("gameID") String gameID) {
+	public ResponseEntity<Map<String, Object>> leaderboard(@PathVariable("gameId") int gameId) {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("gameID", gameID);
+			put("gameId", gameId);
 		}}, HttpStatus.OK);
 	}
 
 	@RequestMapping(
-		value = "/{gameID}/users",
+		value = "/{gameId}/users",
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> users(@PathVariable("gameID") String gameID) {
+	public ResponseEntity<Map<String, Object>> users(@PathVariable("gameId") int gameId) {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("gameID", gameID);
+			put("gameId", gameId);
 		}}, HttpStatus.OK);
 	}
 }
