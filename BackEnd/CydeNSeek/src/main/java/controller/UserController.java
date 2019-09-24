@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,15 +15,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import db.UserDB;
 import model.AuthUser;
 import model.DeleteUser;
 import model.GameUser;
-import model.User;
+import model.UserConfig;
 
 @RequestMapping("/user")
 public class UserController {
 
 	private static final Log LOG = LogFactory.getLog(UserController.class);
+
+	@Autowired
+	private UserDB db;
 
 	@RequestMapping(
 		value = "/{username}",
@@ -41,7 +46,7 @@ public class UserController {
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> updateUser(@PathVariable("username") String username, @RequestBody User user) {
+	public ResponseEntity<Map<String, Object>> updateUser(@PathVariable("username") String username, @RequestBody UserConfig user) {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("session", user.getSession());
 			put("password", user.getPassword());

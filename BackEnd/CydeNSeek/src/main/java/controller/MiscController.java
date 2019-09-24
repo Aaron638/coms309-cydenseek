@@ -6,19 +6,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import db.UserDB;
+
 @RestController
 public class MiscController {
 
 	private static final Log LOG = LogFactory.getLog(MiscController.class);
+
+	@Autowired
+	private UserDB userDB;
 
 	@RequestMapping(
 		value = "/",
@@ -52,9 +59,8 @@ public class MiscController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> leaderboard() {
-		List<Map<String, Object>> users = new ArrayList<>();
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", users);
+			put("users", userDB.findAll().stream().sorted((x,y) -> x.getScore() - y.getScore()).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
 	}
 
@@ -64,9 +70,8 @@ public class MiscController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> users() {
-		List<Map<String, Object>> users = new ArrayList<>();
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", users);
+			put("users", userDB.findAll());
 		}}, HttpStatus.OK);
 	}
 }
