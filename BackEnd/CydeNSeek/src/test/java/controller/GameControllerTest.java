@@ -46,25 +46,6 @@ public class GameControllerTest {
 
 	@Ignore
 	@Test
-	public void checkGame() throws Exception {
-		this.mockMvc.perform(get("/game/" + GAMEID + "?session=abc"))
-			.andExpect(status().isOk())
-			.andExpect(content().string(""));
-	}
-
-	@Ignore
-	@Test
-	public void updateGame() throws Exception {
-		this.mockMvc.perform(put("/game/" + GAMEID)
-			.contentType(APPLICATION_JSON_VALUE)
-			.content("{}")
-		)
-			.andExpect(status().isOk())
-			.andExpect(content().string(""));
-	}
-
-	@Ignore
-	@Test
 	public void leaderboard() throws Exception {
 		this.mockMvc.perform(get("/game/" + GAMEID + "/leaderboard"))
 			.andExpect(status().isOk())

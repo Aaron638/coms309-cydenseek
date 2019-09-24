@@ -1,12 +1,18 @@
 package model;
 
+import java.time.LocalTime;
+
 public class GameConfig {
 
 	private int radius;
 
 	private int players;
 
+	private LocalTime startTime;
+
 	private int duration;
+
+	private LocalTime endTime;
 
 	private int mode;
 
@@ -50,5 +56,21 @@ public class GameConfig {
 
 	public void setGperiod(int gperiod) {
 		this.gperiod = gperiod;
+	}
+
+	public LocalTime getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(LocalTime startTime) {
+		this.startTime = startTime;
+	}
+
+	public LocalTime getEndTime() {
+		return endTime;
+	}
+
+	public void setEndTime(LocalTime endTime) {
+		this.endTime = endTime;
 	}
 }

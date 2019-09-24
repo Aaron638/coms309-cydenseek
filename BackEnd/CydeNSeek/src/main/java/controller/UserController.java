@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import model.AuthUser;
-import model.NewUser;
+import model.DeleteUser;
+import model.GameUser;
 import model.User;
 
 @RequestMapping("/user")
@@ -35,7 +36,7 @@ public class UserController {
 	}
 
 	@RequestMapping(
-		value = "/{username}",
+		value = "/{username}/settings",
 		method = RequestMethod.PUT,
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
@@ -49,28 +50,42 @@ public class UserController {
 
 	@RequestMapping(
 		value = "/{username}",
-		method = RequestMethod.POST,
+		method = RequestMethod.PUT,
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> newUser(@PathVariable("username") String username, @RequestBody NewUser user) {
+	public ResponseEntity<Map<String, Object>> updateLocation(@PathVariable("username") String username, @RequestBody GameUser user) {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("password", user.getPassword());
-			put("group", user.getGroup());
+			put("session", user.getSession());
 			put("location", user.getLocation());
 		}}, HttpStatus.OK);
 	}
 
 	@RequestMapping(
-		value = "/{username}/auth",
+		value = "/{username}",
 		method = RequestMethod.POST,
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> auth(@PathVariable("username") String username, @RequestBody AuthUser user) {
+	public ResponseEntity<Map<String, Object>> login(@PathVariable("username") String username, @RequestBody AuthUser user) {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
+			put("username", username);
 			put("password", user.getPassword());
 			put("location", user.getLocation());
+		}}, HttpStatus.OK);
+	}
+
+	@RequestMapping(
+		value = "/{username}",
+		method = RequestMethod.DELETE,
+		consumes = APPLICATION_JSON_VALUE,
+		produces = APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("username") String username, @RequestBody DeleteUser user) {
+		return new ResponseEntity<>(new HashMap<String, Object>() {{
+			put("username", username);
+			put("password", user.getPassword());
+			put("session", user.getSession());
 		}}, HttpStatus.OK);
 	}
 }

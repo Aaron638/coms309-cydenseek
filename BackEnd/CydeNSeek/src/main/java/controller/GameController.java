@@ -35,35 +35,11 @@ public class GameController {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("radius", game.getRadius());
 			put("players", game.getPlayers());
+			put("startTime", game.getStartTime());
 			put("duration", game.getDuration());
+			put("endTime", game.getEndTime());
 			put("mode", game.getMode());
 			put("gperiod", game.getGperiod());
-		}}, HttpStatus.OK);
-	}
-
-	@RequestMapping(
-		value = "/{gameId}",
-		method = RequestMethod.GET,
-		produces = APPLICATION_JSON_VALUE
-	)
-	public ResponseEntity<Map<String, Object>> checkGame(@PathVariable("gameId") int gameId, @RequestParam("session") String session) {
-		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("gameId", gameId);
-			put("session", session);
-		}}, HttpStatus.OK);
-	}
-
-	@RequestMapping(
-		value = "/{gameId}",
-		method = RequestMethod.PUT,
-		consumes = APPLICATION_JSON_VALUE,
-		produces = APPLICATION_JSON_VALUE
-	)
-	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameId") int gameId, @RequestBody GameUser user) {
-		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("gameId", gameId);
-			put("session", user.getSession());
-			put("location", user.getLocation());
 		}}, HttpStatus.OK);
 	}
 

@@ -1,6 +1,7 @@
 package controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -44,6 +45,17 @@ public class UserControllerTest {
 	@Ignore
 	@Test
 	public void updateUser() throws Exception {
+		this.mockMvc.perform(put("/user/" + USERNAME + "/settings")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{}")
+		)
+			.andExpect(status().isOk())
+			.andExpect(content().string(""));
+	}
+
+	@Ignore
+	@Test
+	public void updateLocation() throws Exception {
 		this.mockMvc.perform(put("/user/" + USERNAME)
 			.contentType(APPLICATION_JSON_VALUE)
 			.content("{}")
@@ -54,7 +66,7 @@ public class UserControllerTest {
 
 	@Ignore
 	@Test
-	public void newUser() throws Exception {
+	public void login() throws Exception {
 		this.mockMvc.perform(post("/user/" + USERNAME)
 			.contentType(APPLICATION_JSON_VALUE)
 			.content("{}")
@@ -65,8 +77,8 @@ public class UserControllerTest {
 
 	@Ignore
 	@Test
-	public void auth() throws Exception {
-		this.mockMvc.perform(post("/user/" + USERNAME + "/auth")
+	public void deleteUser() throws Exception {
+		this.mockMvc.perform(delete("/user/" + USERNAME)
 			.contentType(APPLICATION_JSON_VALUE)
 			.content("{}")
 		)
