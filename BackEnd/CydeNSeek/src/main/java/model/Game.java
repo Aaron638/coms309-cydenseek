@@ -2,7 +2,17 @@ package model;
 
 import java.time.LocalTime;
 
-public class GameConfig {
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class Game {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
 	private int radius;
 
@@ -17,6 +27,10 @@ public class GameConfig {
 	private int mode;
 
 	private int gperiod;
+
+	public Integer getId() {
+		return id;
+	}
 
 	public int getRadius() {
 		return radius;

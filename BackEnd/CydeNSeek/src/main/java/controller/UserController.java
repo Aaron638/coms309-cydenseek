@@ -15,11 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import db.GameDB;
 import db.UserDB;
-import model.AuthUser;
-import model.DeleteUser;
-import model.GameUser;
-import model.UserConfig;
+import model.User;
 
 @RequestMapping("/user")
 public class UserController {
@@ -27,7 +25,10 @@ public class UserController {
 	private static final Log LOG = LogFactory.getLog(UserController.class);
 
 	@Autowired
-	private UserDB db;
+	private UserDB userDB;
+
+	@Autowired
+	private GameDB gameDB;
 
 	@RequestMapping(
 		value = "/{username}",
@@ -35,21 +36,11 @@ public class UserController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> getUser(@PathVariable("username") String username) {
+		User user = userDB.findUserByUsername(username);
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("username", username);
-		}}, HttpStatus.OK);
-	}
-
-	@RequestMapping(
-		value = "/{username}/settings",
-		method = RequestMethod.PUT,
-		consumes = APPLICATION_JSON_VALUE,
-		produces = APPLICATION_JSON_VALUE
-	)
-	public ResponseEntity<Map<String, Object>> updateUser(@PathVariable("username") String username, @RequestBody UserConfig user) {
-		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("session", user.getSession());
 			put("password", user.getPassword());
+			put("session", user.getSession());
 		}}, HttpStatus.OK);
 	}
 
@@ -59,7 +50,21 @@ public class UserController {
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> updateLocation(@PathVariable("username") String username, @RequestBody GameUser user) {
+	public ResponseEntity<Map<String, Object>> updateUser(@PathVariable("username") String username, @RequestBody User user) {
+		User foundUser = userDB.findUserByUsername(username);
+		return new ResponseEntity<>(new HashMap<String, Object>() {{
+			put("session", user.getSession());
+			put("password", user.getPassword());
+		}}, HttpStatus.OK);
+	}
+
+	@RequestMapping(
+		value = "/{username}/location",
+		method = RequestMethod.PUT,
+		consumes = APPLICATION_JSON_VALUE,
+		produces = APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<Map<String, Object>> updateUserLocation(@PathVariable("username") String username, @RequestBody User user) {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("session", user.getSession());
 			put("location", user.getLocation());
@@ -72,7 +77,8 @@ public class UserController {
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> login(@PathVariable("username") String username, @RequestBody AuthUser user) {
+	public ResponseEntity<Map<String, Object>> authenticate(@PathVariable("username") String username, @RequestBody User user) {
+		LOG.info("Authenticated user \"" + username + "\".");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("username", username);
 			put("password", user.getPassword());
@@ -86,7 +92,8 @@ public class UserController {
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("username") String username, @RequestBody DeleteUser user) {
+	public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("username") String username, @RequestBody User user) {
+		LOG.info("Deleted user \"" + username + "\".");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("username", username);
 			put("password", user.getPassword());

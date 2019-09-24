@@ -4,9 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import db.GameDB;
 import db.UserDB;
 
 @RestController
@@ -26,6 +25,9 @@ public class MiscController {
 
 	@Autowired
 	private UserDB userDB;
+
+	@Autowired
+	private GameDB gameDB;
 
 	@RequestMapping(
 		value = "/",
@@ -60,7 +62,7 @@ public class MiscController {
 	)
 	public ResponseEntity<Map<String, Object>> leaderboard() {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", userDB.findAll().stream().sorted((x,y) -> x.getScore() - y.getScore()).collect(Collectors.toList()));
+			put("users", userDB.findAllUsersSorted((x,y) -> (x.getGwhider() + x.getGwseeker()) / (x.getGphider() + x.getGpseeker()) - (y.getGwhider() + y.getGwseeker()) / (y.getGphider() + y.getGpseeker())));
 		}}, HttpStatus.OK);
 	}
 
@@ -71,7 +73,18 @@ public class MiscController {
 	)
 	public ResponseEntity<Map<String, Object>> users() {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", userDB.findAll());
+			put("users", userDB.findAllUsersSorted((x,y) -> x.getUsername().compareTo(y.getUsername())));
+		}}, HttpStatus.OK);
+	}
+
+	@RequestMapping(
+		value = "/games",
+		method = RequestMethod.GET,
+		produces = APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<Map<String, Object>> games() {
+		return new ResponseEntity<>(new HashMap<String, Object>() {{
+			put("games", gameDB.findAll());
 		}}, HttpStatus.OK);
 	}
 }
