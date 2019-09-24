@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.logging.Log;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import application.db.GameDB;
 import application.db.UserDB;
+import application.model.Game;
 import application.model.User;
 
 @RestController
@@ -47,9 +49,10 @@ public class UserController {
 			}}, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("username", username);
-			put("password", user.getPassword());
-			put("session", user.getSession());
+			put("gwhider", user.getGwhider());
+			put("gwseeker", user.getGwseeker());
+			put("gphider", user.getGphider());
+			put("gpseeker", user.getGpseeker());
 		}}, HttpStatus.OK);
 	}
 
@@ -67,40 +70,52 @@ public class UserController {
 				put("message", "User not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-		if(foundUser.getSession().equals(user.getSession())) {
-			user.setPassword(foundUser.getPassword());
-			userDB.saveAndFlush(user);
-		}
-		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("error", true);
-			put("message", "Session token was incorrect.");
-		}}, HttpStatus.BAD_REQUEST);
-	}
-
-	@RequestMapping(
-		value = "/{username}/location",
-		method = RequestMethod.PUT,
-		consumes = APPLICATION_JSON_VALUE,
-		produces = APPLICATION_JSON_VALUE
-	)
-	public ResponseEntity<Map<String, Object>> updateUserLocation(@PathVariable("username") String username, @RequestBody User user) {
-		User foundUser = userDB.findUserByUsername(username);
-		if(foundUser == null) {
+		if(!foundUser.getSession().equals(user.getSession())) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
-				put("message", "User not found.");
-			}}, HttpStatus.NOT_FOUND);
+				put("message", "Session token was incorrect.");
+			}}, HttpStatus.BAD_REQUEST);
 		}
-		if(foundUser.getSession().equals(user.getSession())) {
-			foundUser.setLocation(user.getLocation());
-			userDB.saveAndFlush(foundUser);
-			LOG.info("Updated user \"" + username + "\" location.");
-			return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
+		if(user.getGameId() == null) {
+			user.setGameId(foundUser.getGameId());
+		} else if(user.getGameId() != foundUser.getGameId()) {
+			if(foundUser.getGameId() != 0) {
+				Optional<Game> old = gameDB.findById(foundUser.getGameId());
+				if(old.isPresent()) {
+					Game oldGame = old.get();
+					oldGame.setPlayers(oldGame.getPlayers() - 1);
+					gameDB.saveAndFlush(oldGame);
+				}
+			}
+			if(user.getGameId() != 0) {
+				Optional<Game> newG = gameDB.findById(user.getGameId());
+				if(!newG.isPresent()) {
+					return new ResponseEntity<>(new HashMap<String, Object>() {{
+						put("error", true);
+						put("message", "Could not find game.");
+					}}, HttpStatus.BAD_REQUEST);
+				}
+				Game newGame = newG.get();
+				if(newGame.getPlayers() == newGame.getMaxplayers()) {
+					return new ResponseEntity<>(new HashMap<String, Object>() {{
+						put("error", true);
+						put("message", "Game is already full.");
+					}}, HttpStatus.BAD_REQUEST);
+				}
+				newGame.setPlayers(newGame.getPlayers() + 1);
+				gameDB.saveAndFlush(newGame);
+			}
 		}
-		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("error", true);
-			put("message", "Session token was incorrect.");
-		}}, HttpStatus.BAD_REQUEST);
+		user.setId(foundUser.getId());
+		user.setUsername(username);
+		if(user.getLocation() == null) user.setLocation(foundUser.getLocation());
+		user.setGphider(foundUser.getGphider());
+		user.setGpseeker(foundUser.getGpseeker());
+		user.setGwhider(foundUser.getGwhider());
+		user.setGwseeker(foundUser.getGwseeker());
+		user.setPassword(foundUser.getPassword());
+		userDB.saveAndFlush(user);
+		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
 
 	@RequestMapping(
@@ -110,6 +125,12 @@ public class UserController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> authenticate(@PathVariable("username") String username, @RequestBody User user) {
+		if(user.getPassword() == null) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Must provide password when authenticating user.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
 		User foundUser = userDB.findUserByUsername(username);
 		if(foundUser == null) {
 			user.setUsername(username);
@@ -126,20 +147,20 @@ public class UserController {
 				put("session", session);
 			}}, HttpStatus.OK);
 		}
-		if(foundUser.getPassword().equals(user.getPassword())) {
-			String session = UUID.randomUUID().toString();
-			foundUser.setSession(session);
-			foundUser.setLocation(user.getLocation());
-			userDB.saveAndFlush(foundUser);
-			LOG.info("Authenticated user \"" + username + "\".");
+		if(!foundUser.getPassword().equals(user.getPassword())) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("session", session);
-			}}, HttpStatus.OK);
+				put("error", true);
+				put("message", "The password was incorrect.");
+			}}, HttpStatus.BAD_REQUEST);
 		}
+		String session = UUID.randomUUID().toString();
+		foundUser.setSession(session);
+		foundUser.setLocation(user.getLocation());
+		userDB.saveAndFlush(foundUser);
+		LOG.info("Authenticated user \"" + username + "\".");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("error", true);
-			put("message", "The password was incorrect.");
-		}}, HttpStatus.BAD_REQUEST);
+			put("session", session);
+		}}, HttpStatus.OK);
 	}
 
 	@RequestMapping(
@@ -155,13 +176,15 @@ public class UserController {
 				put("error", true);
 				put("message", "User not found.");
 			}}, HttpStatus.NOT_FOUND);
-		} else if(foundUser.getSession().equals(user.getSession()) && foundUser.getPassword().equals(user.getPassword())) {
-			userDB.delete(user);
-			LOG.info("Deleted user \"" + username + "\".");
 		}
-		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("error", true);
-			put("message", "The password or session token was incorrect.");
-		}}, HttpStatus.BAD_REQUEST);
+		if(!foundUser.getSession().equals(user.getSession()) || !foundUser.getPassword().equals(user.getPassword())) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "The password or session token was incorrect.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
+		userDB.delete(foundUser);
+		LOG.info("Deleted user \"" + username + "\".");
+		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
 }

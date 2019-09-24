@@ -2,6 +2,7 @@ package application.model;
 
 import java.time.LocalTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,22 +15,36 @@ public class Game {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	private int radius;
+	@Column
+	private Integer radius;
 
-	private int players;
+	@Column
+	private Integer players;
 
+	@Column
+	private Integer maxplayers;
+
+	@Column
 	private LocalTime startTime;
 
-	private int duration;
+	@Column
+	private Integer duration;
 
+	@Column
 	private LocalTime endTime;
 
-	private int mode;
+	@Column
+	private Integer mode;
 
-	private int gperiod;
+	@Column
+	private Integer gperiod;
 
 	public Integer getId() {
 		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public int getRadius() {
@@ -86,5 +101,13 @@ public class Game {
 
 	public void setEndTime(LocalTime endTime) {
 		this.endTime = endTime;
+	}
+
+	public Integer getMaxplayers() {
+		return maxplayers;
+	}
+
+	public void setMaxplayers(Integer maxplayers) {
+		this.maxplayers = maxplayers;
 	}
 }

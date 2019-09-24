@@ -45,17 +45,6 @@ public class UserControllerTest {
 	@Ignore
 	@Test
 	public void updateUser() throws Exception {
-		this.mockMvc.perform(put("/user/" + USERNAME + "/settings")
-			.contentType(APPLICATION_JSON_VALUE)
-			.content("{}")
-		)
-			.andExpect(status().isOk())
-			.andExpect(content().string(""));
-	}
-
-	@Ignore
-	@Test
-	public void updateLocation() throws Exception {
 		this.mockMvc.perform(put("/user/" + USERNAME)
 			.contentType(APPLICATION_JSON_VALUE)
 			.content("{}")
@@ -66,7 +55,7 @@ public class UserControllerTest {
 
 	@Ignore
 	@Test
-	public void login() throws Exception {
+	public void authenticate() throws Exception {
 		this.mockMvc.perform(post("/user/" + USERNAME)
 			.contentType(APPLICATION_JSON_VALUE)
 			.content("{}")
