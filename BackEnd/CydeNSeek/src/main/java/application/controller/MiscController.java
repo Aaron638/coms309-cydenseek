@@ -1,4 +1,4 @@
-package controller;
+package application.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import db.GameDB;
-import db.UserDB;
+import application.db.GameDB;
+import application.db.UserDB;
 
 @RestController
 public class MiscController {

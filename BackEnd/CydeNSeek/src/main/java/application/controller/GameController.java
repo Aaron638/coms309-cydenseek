@@ -1,4 +1,4 @@
-package controller;
+package application.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import db.GameDB;
-import db.UserDB;
-import model.Game;
+import application.db.GameDB;
+import application.db.UserDB;
+import application.model.Game;
 
 @RestController
 @RequestMapping("/game")
@@ -39,6 +39,7 @@ public class GameController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> newGame(@RequestBody Game game) {
+		gameDB.save(game);
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("radius", game.getRadius());
 			put("players", game.getPlayers());
@@ -57,7 +58,6 @@ public class GameController {
 	)
 	public ResponseEntity<Map<String, Object>> leaderboard(@PathVariable("gameId") int gameId) {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("gameId", gameId);
 			put("users", userDB.findUsersByGame(gameId, (x,y) -> (x.getGwhider() + x.getGwseeker()) / (x.getGphider() + x.getGpseeker()) - (y.getGwhider() + y.getGwseeker()) / (y.getGphider() + y.getGpseeker())));
 		}}, HttpStatus.OK);
 	}
@@ -69,7 +69,6 @@ public class GameController {
 	)
 	public ResponseEntity<Map<String, Object>> users(@PathVariable("gameId") int gameId) {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("gameId", gameId);
 			put("users", userDB.findUsersByGame(gameId, (x,y) -> x.getUsername().compareTo(y.getUsername())));
 		}}, HttpStatus.OK);
 	}
