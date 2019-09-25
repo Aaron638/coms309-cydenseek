@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,7 +63,17 @@ public class MiscController {
 	)
 	public ResponseEntity<Map<String, Object>> leaderboard() {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", userDB.findAllUsersSorted((x,y) -> (x.getGwhider() + x.getGwseeker()) / (x.getGphider() + x.getGpseeker()) - (y.getGwhider() + y.getGwseeker()) / (y.getGphider() + y.getGpseeker())));
+			put("users", userDB
+				.findAllUsersSorted((x,y) -> (x.getGwhider() + x.getGwseeker()) / (x.getGphider() + x.getGpseeker()) - (y.getGwhider() + y.getGwseeker()) / (y.getGphider() + y.getGpseeker()))
+				.stream().map(x -> new HashMap<String, Object>() {{
+					put("username", x.getUsername());
+					put("gwhider", x.getGwhider());
+					put("gwseeker", x.getGwseeker());
+					put("gphider", x.getGphider());
+					put("gpseeker", x.getGpseeker());
+					put("totdistance", x.getTotdistance());
+					put("tottime", x.getTottime());
+				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
 	}
 
@@ -73,7 +84,12 @@ public class MiscController {
 	)
 	public ResponseEntity<Map<String, Object>> users() {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", userDB.findAllUsersSorted((x,y) -> x.getUsername().compareTo(y.getUsername())));
+			put("users", userDB
+				.findAllUsersSorted((x,y) -> x.getUsername().compareTo(y.getUsername()))
+				.stream().map(x -> new HashMap<String, Object>() {{
+					put("username", x.getUsername());
+					put("location", x.getLocation());
+				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
 	}
 

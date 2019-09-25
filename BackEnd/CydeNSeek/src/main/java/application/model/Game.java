@@ -39,6 +39,9 @@ public class Game {
 	@Column
 	private Integer gperiod;
 
+	@Column
+	private String creator;
+
 	public Integer getId() {
 		return id;
 	}
@@ -109,5 +112,13 @@ public class Game {
 
 	public void setMaxplayers(Integer maxplayers) {
 		this.maxplayers = maxplayers;
+	}
+
+	public String getCreator() {
+		return creator;
+	}
+
+	public void setCreator(String creator) {
+		this.creator = creator;
 	}
 }

@@ -40,6 +40,12 @@ public class User {
 	@Column
 	private Integer gpseeker;
 
+	@Column
+	private Integer totdistance;
+
+	@Column
+	private Integer tottime;
+
 	public Integer getId() {
 		return id;
 	}
@@ -118,5 +124,21 @@ public class User {
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public Integer getTotdistance() {
+		return totdistance;
+	}
+
+	public void setTotdistance(Integer totdistance) {
+		this.totdistance = totdistance;
+	}
+
+	public Integer getTottime() {
+		return tottime;
+	}
+
+	public void setTottime(Integer totime) {
+		this.tottime = totime;
 	}
 }

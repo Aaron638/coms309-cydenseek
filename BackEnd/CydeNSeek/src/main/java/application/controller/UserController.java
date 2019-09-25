@@ -53,6 +53,8 @@ public class UserController {
 			put("gwseeker", user.getGwseeker());
 			put("gphider", user.getGphider());
 			put("gpseeker", user.getGpseeker());
+			put("totdistance", user.getTotdistance());
+			put("tottime", user.getTottime());
 		}}, HttpStatus.OK);
 	}
 
@@ -63,6 +65,12 @@ public class UserController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> updateUser(@PathVariable("username") String username, @RequestBody User user) {
+		if(user.getSession() == null) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Session token not present.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
 		User foundUser = userDB.findUserByUsername(username);
 		if(foundUser == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -76,9 +84,7 @@ public class UserController {
 				put("message", "Session token was incorrect.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		if(user.getGameId() == null) {
-			user.setGameId(foundUser.getGameId());
-		} else if(user.getGameId() != foundUser.getGameId()) {
+		if(user.getGameId() != null && !foundUser.getGameId().equals(user.getGameId())) {
 			if(foundUser.getGameId() != 0) {
 				Optional<Game> old = gameDB.findById(foundUser.getGameId());
 				if(old.isPresent()) {
@@ -106,15 +112,8 @@ public class UserController {
 				gameDB.saveAndFlush(newGame);
 			}
 		}
-		user.setId(foundUser.getId());
-		user.setUsername(username);
-		if(user.getLocation() == null) user.setLocation(foundUser.getLocation());
-		user.setGphider(foundUser.getGphider());
-		user.setGpseeker(foundUser.getGpseeker());
-		user.setGwhider(foundUser.getGwhider());
-		user.setGwseeker(foundUser.getGwseeker());
-		user.setPassword(foundUser.getPassword());
-		userDB.saveAndFlush(user);
+		if(user.getLocation() != null) foundUser.setLocation(user.getLocation());
+		userDB.saveAndFlush(foundUser);
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
 
@@ -170,8 +169,14 @@ public class UserController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("username") String username, @RequestBody User user) {
+		if(user.getSession() == null) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Session token not present.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
 		User foundUser = userDB.findUserByUsername(username);
-		if(user == null) {
+		if(foundUser == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "User not found.");
