@@ -130,6 +130,12 @@ public class UserController {
 				put("message", "Must provide password when authenticating user.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
+		if(user.getLocation() == null) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Must provide location when authenticating user.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
 		User foundUser = userDB.findUserByUsername(username);
 		if(foundUser == null) {
 			user.setUsername(username);
