@@ -23,6 +23,7 @@ import application.db.GameDB;
 import application.db.UserDB;
 import application.model.Game;
 import application.model.GameBody;
+import application.model.User;
 
 @RestController
 @RequestMapping("/game")
@@ -49,25 +50,60 @@ public class GameController {
 				put("message", "Session token not present.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		if(!userDB.findUserByUsername(game.getUsername()).getSession().equals(game.getSession())) {
+		if(game.getRadius() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
-				put("message", "Invalid session token for specified user.");
+				put("message", "Radius is missing.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
+		if(game.getMaxplayers() == null) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Maxplayers is missing.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
+		if(game.getDuration() == null) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Duration is missing.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
+		if(game.getMode() == null) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Mode is missing.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
+		if(game.getGperiod() == null) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Grace period is missing.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
+		Optional<User> foundUser = userDB.findAll().stream().filter(x -> x.getSession().equals(game.getSession())).findFirst();
+		if(!foundUser.isPresent()) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Invalid session token.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
+		User user = foundUser.get();
 		Game newGame = new Game();
-		newGame.setPlayers(0);
-		newGame.setCreator(game.getUsername());
+		newGame.setPlayers(1);
+		newGame.setCreator(user.getUsername());
 		newGame.setRadius(game.getRadius());
 		newGame.setMaxplayers(game.getMaxplayers());
 		newGame.setStartTime(LocalTime.now());
 		newGame.setDuration(game.getDuration());
-		newGame.setEndTime(newGame.getStartTime().plusSeconds(newGame.getDuration()));
+		newGame.setEndTime(newGame.getStartTime().plusMinutes(newGame.getDuration()));
 		newGame.setMode(game.getMode());
 		newGame.setGperiod(game.getGperiod());
-		gameDB.save(newGame);
+		gameDB.saveAndFlush(newGame);
+		user.setGameId(gameDB.findAll().stream().filter(x -> x.getCreator().equals(user.getUsername())).findFirst().get().getId());
+		userDB.saveAndFlush(user);
+		LOG.info(user.getUsername() + " created a new game.");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("game", game);
+			put("game", newGame);
 		}}, HttpStatus.OK);
 	}
 
@@ -102,11 +138,11 @@ public class GameController {
 		if(game.getMaxplayers() != null) foundGame.setMaxplayers(game.getMaxplayers());
 		if(game.getDuration() != null) {
 			foundGame.setDuration(game.getDuration());
-			foundGame.setEndTime(foundGame.getStartTime().plusSeconds(game.getDuration()));
+			foundGame.setEndTime(foundGame.getStartTime().plusMinutes(game.getDuration()));
 		}
 		if(game.getMode() != null) foundGame.setMode(game.getMode());
 		if(game.getGperiod() != null) foundGame.setGperiod(game.getGperiod());
-		gameDB.save(foundGame);
+		gameDB.saveAndFlush(foundGame);
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
 
