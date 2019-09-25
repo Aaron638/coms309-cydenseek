@@ -146,6 +146,7 @@ public class UserController {
 			user.setGpseeker(0);
 			user.setGwhider(0);
 			user.setGwseeker(0);
+			user.setFound(false);
 			userDB.saveAndFlush(user);
 			LOG.info("Created new user \"" + username + "\".");
 			return new ResponseEntity<>(new HashMap<String, Object>() {{

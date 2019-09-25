@@ -29,6 +29,9 @@ public class User {
 	private String location;
 
 	@Column
+	private Boolean found;
+
+	@Column
 	private Integer gwhider;
 
 	@Column
@@ -140,5 +143,13 @@ public class User {
 
 	public void setTottime(Integer totime) {
 		this.tottime = totime;
+	}
+
+	public Boolean getFound() {
+		return found;
+	}
+
+	public void setFound(Boolean found) {
+		this.found = found;
 	}
 }

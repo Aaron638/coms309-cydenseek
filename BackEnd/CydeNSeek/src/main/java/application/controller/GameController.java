@@ -100,6 +100,7 @@ public class GameController {
 		newGame.setGperiod(game.getGperiod());
 		gameDB.saveAndFlush(newGame);
 		user.setGameId(gameDB.findAll().stream().filter(x -> x.getCreator().equals(user.getUsername())).findFirst().get().getId());
+		user.setFound(false);
 		userDB.saveAndFlush(user);
 		LOG.info(user.getUsername() + " created a new game.");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -170,6 +171,7 @@ public class GameController {
 					put("gpseeker", x.getGpseeker());
 					put("totdistance", x.getTotdistance());
 					put("tottime", x.getTottime());
+					put("found", x.getFound());
 				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
 	}
@@ -192,6 +194,7 @@ public class GameController {
 				.findUsersByGame(gameId, (x,y) -> x.getUsername().compareTo(y.getUsername()))
 				.stream().map(x -> new HashMap<String, Object>() {{
 					put("username", x.getUsername());
+					put("found", x.getFound());
 				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
 	}
