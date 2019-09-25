@@ -29,6 +29,9 @@ public class User {
 	private String location;
 
 	@Column
+	private Boolean hider;
+
+	@Column
 	private Boolean found;
 
 	@Column
@@ -151,5 +154,13 @@ public class User {
 
 	public void setFound(Boolean found) {
 		this.found = found;
+	}
+
+	public Boolean getHider() {
+		return hider;
+	}
+
+	public void setHider(Boolean hider) {
+		this.hider = hider;
 	}
 }

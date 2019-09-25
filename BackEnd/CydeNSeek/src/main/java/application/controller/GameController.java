@@ -80,6 +80,12 @@ public class GameController {
 				put("message", "Grace period is missing.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
+		if(game.getHider() == null) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Must specify if hider or not.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
 		Optional<User> foundUser = userDB.findAll().stream().filter(x -> x.getSession().equals(game.getSession())).findFirst();
 		if(!foundUser.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -89,7 +95,13 @@ public class GameController {
 		}
 		User user = foundUser.get();
 		Game newGame = new Game();
-		newGame.setPlayers(1);
+		if(game.getHider()) {
+			newGame.setHiders(1);
+			newGame.setSeekers(0);
+		} else {
+			newGame.setHiders(0);
+			newGame.setSeekers(1);
+		}
 		newGame.setCreator(user.getUsername());
 		newGame.setRadius(game.getRadius());
 		newGame.setMaxplayers(game.getMaxplayers());
@@ -165,6 +177,7 @@ public class GameController {
 				.findUsersByGame(gameId, (x,y) -> (x.getGwhider() + x.getGwseeker()) / (x.getGphider() + x.getGpseeker()) - (y.getGwhider() + y.getGwseeker()) / (y.getGphider() + y.getGpseeker()))
 				.stream().map(x -> new HashMap<String, Object>() {{
 					put("username", x.getUsername());
+					put("hider", x.getHider());
 					put("gwhider", x.getGwhider());
 					put("gwseeker", x.getGwseeker());
 					put("gphider", x.getGphider());
@@ -194,6 +207,7 @@ public class GameController {
 				.findUsersByGame(gameId, (x,y) -> x.getUsername().compareTo(y.getUsername()))
 				.stream().map(x -> new HashMap<String, Object>() {{
 					put("username", x.getUsername());
+					put("hider", x.getHider());
 					put("found", x.getFound());
 				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);

@@ -19,7 +19,10 @@ public class Game {
 	private Integer radius;
 
 	@Column
-	private Integer players;
+	private Integer hiders;
+
+	@Column
+	private Integer seekers;
 
 	@Column
 	private Integer maxplayers;
@@ -56,14 +59,6 @@ public class Game {
 
 	public void setRadius(int radius) {
 		this.radius = radius;
-	}
-
-	public int getPlayers() {
-		return players;
-	}
-
-	public void setPlayers(int players) {
-		this.players = players;
 	}
 
 	public int getDuration() {
@@ -120,5 +115,21 @@ public class Game {
 
 	public void setCreator(String creator) {
 		this.creator = creator;
+	}
+
+	public Integer getHiders() {
+		return hiders;
+	}
+
+	public void setHiders(Integer hiders) {
+		this.hiders = hiders;
+	}
+
+	public Integer getSeekers() {
+		return seekers;
+	}
+
+	public void setSeekers(Integer seekers) {
+		this.seekers = seekers;
 	}
 }

@@ -89,7 +89,8 @@ public class UserController {
 				Optional<Game> old = gameDB.findById(foundUser.getGameId());
 				if(old.isPresent()) {
 					Game oldGame = old.get();
-					oldGame.setPlayers(oldGame.getPlayers() - 1);
+					if(user.getHider()) oldGame.setHiders(oldGame.getHiders() - 1);
+					else oldGame.setSeekers(oldGame.getSeekers() - 1);
 					gameDB.saveAndFlush(oldGame);
 				}
 			}
@@ -102,13 +103,14 @@ public class UserController {
 					}}, HttpStatus.BAD_REQUEST);
 				}
 				Game newGame = newG.get();
-				if(newGame.getPlayers() == newGame.getMaxplayers()) {
+				if(newGame.getHiders() + newGame.getSeekers() >= newGame.getMaxplayers()) {
 					return new ResponseEntity<>(new HashMap<String, Object>() {{
 						put("error", true);
 						put("message", "Game is already full.");
 					}}, HttpStatus.BAD_REQUEST);
 				}
-				newGame.setPlayers(newGame.getPlayers() + 1);
+				if(user.getHider()) newGame.setHiders(newGame.getHiders() + 1);
+				else newGame.setSeekers(newGame.getSeekers() + 1);
 				gameDB.saveAndFlush(newGame);
 			}
 		}
