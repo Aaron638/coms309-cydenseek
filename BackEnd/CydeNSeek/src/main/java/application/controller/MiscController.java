@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -14,10 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import application.db.GameDB;
 import application.db.UserDB;
+import application.model.User;
 
 @RestController
 public class MiscController {
@@ -82,14 +85,22 @@ public class MiscController {
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> users() {
+	public ResponseEntity<Map<String, Object>> users(@RequestParam("session") String session) {
+		Optional<User> user = userDB.findAll().stream().filter(x -> x.getSession().equals(session)).findFirst();
+		if(!user.isPresent()) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Invalid session token.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
+		if(!user.get().getDeveloper()) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Only developers can get the list of users.");
+			}}, HttpStatus.UNAUTHORIZED);
+		}
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", userDB
-				.findAllUsersSorted((x,y) -> x.getUsername().compareTo(y.getUsername()))
-				.stream().map(x -> new HashMap<String, Object>() {{
-					put("username", x.getUsername());
-					put("location", x.getLocation());
-				}}).collect(Collectors.toList()));
+			put("users", userDB.findAllUsersSorted((x,y) -> x.getUsername().compareTo(y.getUsername())));
 		}}, HttpStatus.OK);
 	}
 

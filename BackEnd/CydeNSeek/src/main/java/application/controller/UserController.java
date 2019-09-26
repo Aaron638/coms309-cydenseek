@@ -144,6 +144,7 @@ public class UserController {
 			String session = UUID.randomUUID().toString();
 			user.setSession(session);
 			user.setGameId(0);
+			user.setDeveloper(false);
 			user.setGphider(0);
 			user.setGpseeker(0);
 			user.setGwhider(0);
