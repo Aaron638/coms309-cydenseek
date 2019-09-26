@@ -14,9 +14,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<RelativeLayout
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -24,21 +25,32 @@
         android:id="@+id/transition_square"
         android:layout_width="@dimen/square_size_normal"
         android:layout_height="@dimen/square_size_normal"
-        android:background="#990000"
-        android:gravity="center"/>
+        android:background="#990000" />
 
     <ImageView
         android:id="@+id/transition_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/transition_square"
-        android:src="@drawable/ic_launcher"/>
+        android:src="@drawable/ic_launcher" />
 
     <ImageView
         android:id="@+id/transition_oval"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:layout_below="@id/transition_image"
-        android:src="@drawable/oval"/>
+        android:src="@drawable/oval" />
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="251dp"
+        android:layout_height="377dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="354dp"
+        android:layout_marginEnd="160dp"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:itemCount="4"
+        tools:listitem="@layout/recycler_view_item" />
 
 </RelativeLayout>
