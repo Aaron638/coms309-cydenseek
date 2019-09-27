@@ -30,5 +30,5 @@ autoDeploy:
         - cd BackEnd/CydeNSeek
         - mvn package
         - sudo mv target/*.jar /target/CydeNSeek.jar
-        - sudo systemctl stop system-cydenseek
-        - sudo systemctl start system-cydenseek
+        - sudo systemctl stop systemd-cydenseek
+        - sudo systemctl start systemd-cydenseek
