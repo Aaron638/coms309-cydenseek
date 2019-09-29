@@ -43,10 +43,7 @@ public class UserController {
 	public ResponseEntity<Map<String, Object>> getUser(@PathVariable("username") String username) {
 		User user = userDB.findUserByUsername(username);
 		if(user == null) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "User not found.");
-			}}, HttpStatus.NOT_FOUND);
+			createErrResEnt("User not found", HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("gwhider", user.getGwhider());
@@ -66,23 +63,14 @@ public class UserController {
 	)
 	public ResponseEntity<Map<String, Object>> updateUser(@PathVariable("username") String username, @RequestBody User user) {
 		if(user.getSession() == null) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "Session token not present.");
-			}}, HttpStatus.BAD_REQUEST);
+			createErrResEnt("Session token not present", HttpStatus.BAD_REQUEST);
 		}
 		User foundUser = userDB.findUserByUsername(username);
 		if(foundUser == null) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "User not found.");
-			}}, HttpStatus.NOT_FOUND);
+			createErrResEnt("User not found", HttpStatus.NOT_FOUND);
 		}
 		if(!foundUser.getSession().equals(user.getSession())) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "Session token was incorrect.");
-			}}, HttpStatus.BAD_REQUEST);
+			createErrResEnt("Session token not found", HttpStatus.BAD_REQUEST);
 		}
 		if(user.getGameId() != null && !foundUser.getGameId().equals(user.getGameId())) {
 			if(foundUser.getGameId() != 0) {
@@ -97,17 +85,11 @@ public class UserController {
 			if(user.getGameId() != 0) {
 				Optional<Game> newG = gameDB.findById(user.getGameId());
 				if(!newG.isPresent()) {
-					return new ResponseEntity<>(new HashMap<String, Object>() {{
-						put("error", true);
-						put("message", "Could not find game.");
-					}}, HttpStatus.BAD_REQUEST);
+					createErrResEnt("Could not find game", HttpStatus.BAD_REQUEST);
 				}
 				Game newGame = newG.get();
 				if(newGame.getHiders() + newGame.getSeekers() >= newGame.getMaxplayers()) {
-					return new ResponseEntity<>(new HashMap<String, Object>() {{
-						put("error", true);
-						put("message", "Game is already full.");
-					}}, HttpStatus.BAD_REQUEST);
+					createErrResEnt("Game is already full", HttpStatus.BAD_REQUEST);
 				}
 				if(user.getHider()) newGame.setHiders(newGame.getHiders() + 1);
 				else newGame.setSeekers(newGame.getSeekers() + 1);
@@ -130,22 +112,13 @@ public class UserController {
 	)
 	public ResponseEntity<Map<String, Object>> authenticate(@PathVariable("username") String username, @RequestBody User user) {
 		if(user.getPassword() == null) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "Must provide password when authenticating user.");
-			}}, HttpStatus.BAD_REQUEST);
+			createErrResEnt("Must provide password when authenticating user", HttpStatus.BAD_REQUEST);
 		}
 		if(user.getLatitude() == null) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "Must provide latitude when authenticating user.");
-			}}, HttpStatus.BAD_REQUEST);
+			createErrResEnt("Must provide latitude when authenticating user", HttpStatus.BAD_REQUEST);
 		}
 		if(user.getLongitude() == null) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "Must provide longitude when authenticating user.");
-			}}, HttpStatus.BAD_REQUEST);
+			createErrResEnt("Must provide longitude when authenticating user", HttpStatus.BAD_REQUEST);
 		}
 		User foundUser = userDB.findUserByUsername(username);
 		if(foundUser == null) {
@@ -166,10 +139,7 @@ public class UserController {
 			}}, HttpStatus.OK);
 		}
 		if(!foundUser.getPassword().equals(user.getPassword())) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "The password was incorrect.");
-			}}, HttpStatus.BAD_REQUEST);
+			createErrResEnt("The password was incorrect", HttpStatus.BAD_REQUEST);
 		}
 		String session = UUID.randomUUID().toString();
 		foundUser.setSession(session);
@@ -190,26 +160,25 @@ public class UserController {
 	)
 	public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("username") String username, @RequestBody User user) {
 		if(user.getSession() == null) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "Session token not present.");
-			}}, HttpStatus.BAD_REQUEST);
+			createErrResEnt("Session token not found", HttpStatus.BAD_REQUEST);
 		}
 		User foundUser = userDB.findUserByUsername(username);
 		if(foundUser == null) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "User not found.");
-			}}, HttpStatus.NOT_FOUND);
+			createErrResEnt("User not found", HttpStatus.BAD_REQUEST);
 		}
 		if(!foundUser.getSession().equals(user.getSession()) || !foundUser.getPassword().equals(user.getPassword())) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "The password or session token was incorrect.");
-			}}, HttpStatus.BAD_REQUEST);
+			createErrResEnt("The password or session token was incorrect", HttpStatus.BAD_REQUEST);
 		}
 		userDB.delete(foundUser);
 		LOG.info("Deleted user \"" + username + "\".");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
+	}
+	
+	public ResponseEntity<Map<String, Object>> createErrResEnt(String errorMessage, HttpStatus h)
+	{
+		return new ResponseEntity<>(new HashMap<String, Object>() {{
+			put("error", true);
+			put("message", errorMessage);
+		}}, h);
 	}
 }
