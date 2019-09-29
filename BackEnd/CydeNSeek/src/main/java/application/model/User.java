@@ -26,7 +26,7 @@ public class User {
 	private Integer gameId;
 
 	@Column
-	private String location;
+	private  location;
 
 	@Column
 	private Boolean developer;
