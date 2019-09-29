@@ -114,7 +114,10 @@ public class UserController {
 				gameDB.saveAndFlush(newGame);
 			}
 		}
-		if(user.getLocation() != null) foundUser.setLocation(user.getLocation());
+		if(user.getLatitude() != null && user.getLongitude() != null) {
+			foundUser.setLatitude(user.getLatitude());
+			foundUser.setLongitude(user.getLongitude());
+		}
 		userDB.saveAndFlush(foundUser);
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
@@ -132,10 +135,16 @@ public class UserController {
 				put("message", "Must provide password when authenticating user.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		if(user.getLocation() == null) {
+		if(user.getLatitude() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
-				put("message", "Must provide location when authenticating user.");
+				put("message", "Must provide latitude when authenticating user.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
+		if(user.getLongitude() == null) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Must provide longitude when authenticating user.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
 		User foundUser = userDB.findUserByUsername(username);
@@ -164,7 +173,8 @@ public class UserController {
 		}
 		String session = UUID.randomUUID().toString();
 		foundUser.setSession(session);
-		foundUser.setLocation(user.getLocation());
+		foundUser.setLatitude(user.getLatitude());
+		foundUser.setLongitude(user.getLongitude());
 		userDB.saveAndFlush(foundUser);
 		LOG.info("Authenticated user \"" + username + "\".");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
