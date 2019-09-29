@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Currentplace</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="sign_in">Sign In</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+</resources>

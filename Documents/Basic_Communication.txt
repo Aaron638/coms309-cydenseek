@@ -1,0 +1,35 @@
+Sign in/up:
+POST /user/<username>
+{
+	"password": "",
+	"location": ""
+}
+
+Response:
+200
+{
+	"session": ""
+}
+400
+{
+	"error": true,
+	"message": ""
+}
+
+Update location:
+PUT /user/<username>
+{
+	"session": "",
+	"location": ""
+}
+
+Response:
+200
+{
+	
+}
+400
+{
+	"error": true,
+	"message": ""
+}
