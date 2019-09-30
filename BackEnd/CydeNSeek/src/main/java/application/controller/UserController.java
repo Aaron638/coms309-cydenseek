@@ -159,7 +159,6 @@ public class UserController {
 		if(user.getPassword() == null) {
 			createErrResEnt("Must provide password when authenticating user", HttpStatus.BAD_REQUEST);
 		}
-<<<<<<< HEAD
 		if(user.getLatitude() == null) {
 			createErrResEnt("Must provide latitude when authenticating user", HttpStatus.BAD_REQUEST);
 		}
