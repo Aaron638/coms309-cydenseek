@@ -46,29 +46,51 @@ public class PlayerListFragment extends Fragment {
 
         return inflater.inflate(R.layout.fragment_player_list, container, false);
 
-        private void jsonParse(){
-            String url = "http://coms-309-vb-1.misc.iastate.edu:8080/users";
-            //maybe pass json array in the future?
-            JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        JSONArray jsonArray = response.getJSONArray("users");
-                        //iterates through all users in the json array
-                        for (int i =0; i < jsonArray.length(); i++){
-                            JSONObject user = jsonArray.getJSONObject(i);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                }
-            });
-        }
+    }
 
+    private void jsonParse(){
+        String url = "http://coms-309-vb-1.misc.iastate.edu:8080/users";
+        //maybe pass json array in the future?
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray jsonArray = response.getJSONArray("users");
+                    //iterates through all users in the json array
+                    for (int i =0; i < jsonArray.length(); i++){
+                        JSONObject user = jsonArray.getJSONObject(i);
+
+                        //we get all user attributes here
+                        int id = user.getInt("id");
+                        String username = user.getString("username");
+                        String password = user.getString("password");
+                        String session = user.getString("session");
+                        int gameid = user.getInt("gameId");
+                        double latitude = user.getDouble("latitude");
+                        double longitude = user.getDouble("longitude");
+                        boolean dev = user.getBoolean("developer");
+                        boolean hider = user.getBoolean("hider");
+                        boolean found = user.getBoolean("found");
+                        int gwhider = user.getInt("gwhider");
+                        int gwseeker = user.getInt("gwseeker");
+                        int gphider = user.getInt("gphider");
+                        int gpseeker = user.getInt("gpseeker");
+                        int totdistance = user.getInt("totdistance");
+                        int tottime = user.getInt("tottime");
+
+                        mTextViewResult.append("User:"+ username + "\nTime Played:"+ tottime+ "\n\n");
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+        mQueue.add(request);
     }
 }
