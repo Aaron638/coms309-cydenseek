@@ -35,7 +35,7 @@ public class PlayerListFragment extends Fragment {
         mTextViewResult = (TextView) getView().findViewById(R.id.text_view_result);
         Button buttonParse = (Button) getView().findViewById(R.id.button_parse);
 
-        mQueue = Volley.newRequestQueue(this);
+        mQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
 
         buttonParse.setOnClickListener(new View.OnClickListener() {
             @Override
