@@ -51,7 +51,7 @@ public class UserController {
 		 * Checks if user not exists
 		 */
 		if(user == null) {
-			createErrResEnt("User not found", HttpStatus.NOT_FOUND);
+			return createErrResEnt("User not found", HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("gwhider", user.getGwhider());
@@ -86,20 +86,20 @@ public class UserController {
 		 * Checks if session not present
 		 */
 		if(user.getSession() == null) {
-			createErrResEnt("Session token not present", HttpStatus.BAD_REQUEST);
+			return createErrResEnt("Session token not present", HttpStatus.BAD_REQUEST);
 		}
 		User foundUser = userDB.findUserByUsername(username);
 		/*
 		 * Checks if user not exists
 		 */
 		if(foundUser == null) {
-			createErrResEnt("User not found", HttpStatus.NOT_FOUND);
+			return createErrResEnt("User not found", HttpStatus.NOT_FOUND);
 		}
 		/*
 		 * Checks if session invalid
 		 */
 		if(!foundUser.getSession().equals(user.getSession())) {
-			createErrResEnt("Session token not found", HttpStatus.BAD_REQUEST);
+			return createErrResEnt("Session token not found", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Updates specified user properties
@@ -118,11 +118,11 @@ public class UserController {
 			if(user.getGameId() != 0) {
 				Optional<Game> newG = gameDB.findById(user.getGameId());
 				if(!newG.isPresent()) {
-					createErrResEnt("Could not find game", HttpStatus.BAD_REQUEST);
+					return createErrResEnt("Could not find game", HttpStatus.BAD_REQUEST);
 				}
 				Game newGame = newG.get();
 				if(newGame.getHiders() + newGame.getSeekers() >= newGame.getMaxplayers()) {
-					createErrResEnt("Game is already full", HttpStatus.BAD_REQUEST);
+					return createErrResEnt("Game is already full", HttpStatus.BAD_REQUEST);
 				}
 				if(user.getHider()) newGame.setHiders(newGame.getHiders() + 1);
 				else newGame.setSeekers(newGame.getSeekers() + 1);
@@ -157,13 +157,13 @@ public class UserController {
 		 * Checks if password not present
 		 */
 		if(user.getPassword() == null) {
-			createErrResEnt("Must provide password when authenticating user", HttpStatus.BAD_REQUEST);
+			return createErrResEnt("Must provide password when authenticating user", HttpStatus.BAD_REQUEST);
 		}
 		if(user.getLatitude() == null) {
-			createErrResEnt("Must provide latitude when authenticating user", HttpStatus.BAD_REQUEST);
+			return createErrResEnt("Must provide latitude when authenticating user", HttpStatus.BAD_REQUEST);
 		}
 		if(user.getLongitude() == null) {
-			createErrResEnt("Must provide longitude when authenticating user", HttpStatus.BAD_REQUEST);
+			return createErrResEnt("Must provide longitude when authenticating user", HttpStatus.BAD_REQUEST);
 		}
 		User foundUser = userDB.findUserByUsername(username);
 		/*
@@ -190,7 +190,7 @@ public class UserController {
 		 * Checks if password not match
 		 */
 		if(!foundUser.getPassword().equals(user.getPassword())) {
-			createErrResEnt("The password was incorrect", HttpStatus.BAD_REQUEST);
+			return createErrResEnt("The password was incorrect", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Generates session token
@@ -226,7 +226,7 @@ public class UserController {
 		 * Checks is session not present
 		 */
 		if(user.getSession() == null) {
-			createErrResEnt("Session token not found", HttpStatus.BAD_REQUEST);
+			return createErrResEnt("Session token not found", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Checks if password not present
@@ -242,13 +242,13 @@ public class UserController {
 		 * Checks if user not exists
 		 */
 		if(foundUser == null) {
-			createErrResEnt("User not found", HttpStatus.BAD_REQUEST);
+			return createErrResEnt("User not found", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Checks if session or password invalid
 		 */
 		if(!foundUser.getSession().equals(user.getSession()) || !foundUser.getPassword().equals(user.getPassword())) {
-			createErrResEnt("The password or session token was incorrect", HttpStatus.BAD_REQUEST);
+			return createErrResEnt("The password or session token was incorrect", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Deletes user
