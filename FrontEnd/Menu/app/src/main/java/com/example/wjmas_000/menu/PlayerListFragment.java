@@ -32,10 +32,15 @@ public class PlayerListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        mTextViewResult = (TextView) getView().findViewById(R.id.text_view_result);
-        Button buttonParse = (Button) getView().findViewById(R.id.button_parse);
+        View rootView = inflater.inflate(R.layout.fragment_player_list, container, false);
 
-        mQueue = Volley.newRequestQueue(getActivity().getApplicationContext());
+        mTextViewResult = (TextView) rootView.findViewById(R.id.text_view_result);
+        //mTextViewResult.setText("HI");
+        //maybe use to set text
+        Button buttonParse = (Button) rootView.findViewById(R.id.button_parse);
+
+        //usually this is for this
+        mQueue = Volley.newRequestQueue(getActivity());
 
         buttonParse.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,8 +49,10 @@ public class PlayerListFragment extends Fragment {
             }
         });
 
-        return inflater.inflate(R.layout.fragment_player_list, container, false);
 
+        //return inflater.inflate(R.layout.fragment_player_list, container, false);
+        //trying this instead
+        return rootView;
     }
 
     private void jsonParse(){
@@ -66,8 +73,9 @@ public class PlayerListFragment extends Fragment {
                         String password = user.getString("password");
                         String session = user.getString("session");
                         int gameid = user.getInt("gameId");
-                        double latitude = user.getDouble("latitude");
-                        double longitude = user.getDouble("longitude");
+                        //implement when latt and long arent null
+                        //double latitude = user.getDouble("latitude");
+                        //double longitude = user.getDouble("longitude");
                         boolean dev = user.getBoolean("developer");
                         boolean hider = user.getBoolean("hider");
                         boolean found = user.getBoolean("found");
