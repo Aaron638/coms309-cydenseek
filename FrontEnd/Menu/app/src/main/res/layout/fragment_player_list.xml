@@ -22,7 +22,7 @@
         android:layout_above="@+id/button_parse"
         android:layout_alignEnd="@+id/button_parse"
         android:layout_marginEnd="0dp"
-        android:layout_marginBottom="474dp"
+        android:layout_marginBottom="476dp"
         android:textColor="@android:color/black"
         android:textSize="20sp" />
 
