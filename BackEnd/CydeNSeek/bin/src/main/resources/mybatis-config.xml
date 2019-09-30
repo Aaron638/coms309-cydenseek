@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<dataSource type="POOLED">
-	<properties>
-		<property name="username" value="default"/>
-	</properties>
-</dataSource>
