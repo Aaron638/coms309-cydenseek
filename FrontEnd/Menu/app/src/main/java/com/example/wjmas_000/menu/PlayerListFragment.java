@@ -4,6 +4,7 @@ import android.app.DownloadManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.android.volley.VolleyLog.TAG;
+
 
 public class PlayerListFragment extends Fragment {
 
@@ -35,16 +38,17 @@ public class PlayerListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_player_list, container, false);
 
         mTextViewResult = (TextView) rootView.findViewById(R.id.text_view_result);
-        //mTextViewResult.setText("HI");
-        //maybe use to set text
+        mTextViewResult.setText("Loading...\n");
+
         Button buttonParse = (Button) rootView.findViewById(R.id.button_parse);
 
-        //usually this is for this
+        //usually use "this"
         mQueue = Volley.newRequestQueue(getActivity());
 
         buttonParse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mTextViewResult.setText("");
                 jsonParse();
             }
         });
@@ -61,6 +65,7 @@ public class PlayerListFragment extends Fragment {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                Log.d(TAG, response.toString());
                 try {
                     JSONArray jsonArray = response.getJSONArray("users");
                     //iterates through all users in the json array
@@ -73,9 +78,9 @@ public class PlayerListFragment extends Fragment {
                         String password = user.getString("password");
                         String session = user.getString("session");
                         int gameid = user.getInt("gameId");
-                        //implement when latt and long arent null
-                        //double latitude = user.getDouble("latitude");
-                        //double longitude = user.getDouble("longitude");
+                        //TODO switch to double eventually
+                        String latitude = user.getString("latitude");
+                        String longitude = user.getString("longitude");
                         boolean dev = user.getBoolean("developer");
                         boolean hider = user.getBoolean("hider");
                         boolean found = user.getBoolean("found");
@@ -86,7 +91,12 @@ public class PlayerListFragment extends Fragment {
                         int totdistance = user.getInt("totdistance");
                         int tottime = user.getInt("tottime");
 
-                        mTextViewResult.append("User:"+ username + "\nTime Played:"+ tottime+ "\n\n");
+
+                        String result = "ID:"+ id +
+                                        "\nUsername:"+ username +
+                                        "\nTime Played:"+ tottime +
+                                        "\n\n";
+                        mTextViewResult.append(result);
 
                     }
                 } catch (JSONException e) {
@@ -96,6 +106,7 @@ public class PlayerListFragment extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "onErrorResponse: error");
                 error.printStackTrace();
             }
         });
