@@ -4,6 +4,7 @@ import android.app.DownloadManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,7 +39,8 @@ public class PlayerListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_player_list, container, false);
 
         mTextViewResult = (TextView) rootView.findViewById(R.id.text_view_result);
-        mTextViewResult.setText("Loading...\n");
+        mTextViewResult.setText("Refresh");
+        mTextViewResult.setMovementMethod(new ScrollingMovementMethod());
 
         Button buttonParse = (Button) rootView.findViewById(R.id.button_parse);
 
