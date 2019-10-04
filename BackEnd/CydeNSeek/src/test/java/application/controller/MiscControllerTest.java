@@ -4,7 +4,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,12 +20,7 @@ public class MiscControllerTest {
 	@InjectMocks
 	private MiscController miscController = new MiscController();
 
-	private MockMvc mockMvc;
-
-	@Before
-	public void setup() {
-		this.mockMvc = MockMvcBuilders.standaloneSetup(miscController).build();
-	}
+	private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(miscController).build();
 
 	@Ignore
 	@Test

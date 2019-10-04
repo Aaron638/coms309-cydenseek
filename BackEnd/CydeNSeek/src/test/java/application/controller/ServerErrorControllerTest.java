@@ -4,7 +4,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,12 +15,7 @@ public class ServerErrorControllerTest {
 
 	private ServerErrorController serverErrorController = new ServerErrorController();
 
-	private MockMvc mockMvc;
-
-	@Before
-	public void setup() {
-		this.mockMvc = MockMvcBuilders.standaloneSetup(serverErrorController).build();
-	}
+	private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(serverErrorController).build();
 
 	@Ignore
 	@Test
