@@ -75,15 +75,45 @@ public class ServerWebSocketHandler {
 			send(session, "{\"error\":true,\"message\":\"Longitude not present.\"}");
 			return;
 		}
+		if(!(msg.get("latitude") instanceof Double)) {
+			send(session, "{\"error\":true,\"message\":\"Latitude must be double.\"}");
+			return;
+		}
+		if(!(msg.get("longitude") instanceof Double)) {
+			send(session, "{\"error\":true,\"message\":\"Longitude must be double.\"}");
+			return;
+		}
 		User user = userDB.findUserByUsername(username);
-		user.setLatitude(msg.getString("latitude"));
-		user.setLongitude(msg.getString("longitude"));
+		user.setLatitude(msg.getDouble("latitude"));
+		user.setLongitude(msg.getDouble("longitude"));
 		userDB.saveAndFlush(user);
+		userDB.findUsersByGame(user.getGameId(), (x,y) -> 0).stream().forEach(x -> {
+			if(user.getHider().booleanValue() == x.getHider().booleanValue()) return;
+			if(Math.abs(user.getLatitude().doubleValue() - x.getLatitude().doubleValue()) < 1.5 && Math.abs(user.getLongitude().doubleValue() - x.getLongitude().doubleValue()) < 1.5) {
+				if(user.getHider().booleanValue()) {
+					user.setFound(true);
+					send(sessions.get(username), "{\"found\":true}");
+					userDB.saveAndFlush(user);
+				} else {
+					x.setFound(true);
+					send(sessions.get(x.getUsername()), "{\"found\":true}");
+					userDB.saveAndFlush(x);
+				}
+			}
+		});
+		long playersleft = userDB.findUsersByGame(user.getGameId(), (x,y) -> 0).stream().filter(x -> x.getHider().booleanValue() && !x.getFound().booleanValue()).count();
+		if(playersleft <= 1) {
+			if(playersleft == 0) broadcast("{\"winner\":false}");
+			else broadcast("{\"winner\":\"" + userDB.findUsersByGame(user.getGameId(), (x,y) -> 0).stream().filter(x -> x.getHider().booleanValue() && !x.getFound().booleanValue()).findFirst().get().getUsername() + "\"}");
+			sessions.clear();
+			usernames.clear();
+			return;
+		}
 		LOG.info(username + " has been updated.");
 		JSONObject out = new JSONObject();
 		out.put("username", username);
-		out.put("latitude", msg.getString("latitude"));
-		out.put("longitude", msg.getString("longitude"));
+		out.put("latitude", msg.getDouble("latitude"));
+		out.put("longitude", msg.getDouble("longitude"));
 		broadcast(out.toString());
 	}
 
