@@ -51,7 +51,7 @@ public class UserController {
 		 * Checks if user not exists
 		 */
 		if(user == null) {
-			createErrResEnt("User not found", HttpStatus.NOT_FOUND);
+			return error("User not found", HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("gwhider", user.getGwhider());
@@ -71,7 +71,6 @@ public class UserController {
 	 * 		"password": "mynewsecurepassword",
 	 * 		"session": "abc-123-xyz",
 	 * 		"gameId": 12345,
-	 * 		"location": "",
 	 * 		"hider": true
 	 * }
 	 */
@@ -86,20 +85,20 @@ public class UserController {
 		 * Checks if session not present
 		 */
 		if(user.getSession() == null) {
-			createErrResEnt("Session token not present", HttpStatus.BAD_REQUEST);
+			return error("Session token not present", HttpStatus.BAD_REQUEST);
 		}
 		User foundUser = userDB.findUserByUsername(username);
 		/*
 		 * Checks if user not exists
 		 */
 		if(foundUser == null) {
-			createErrResEnt("User not found", HttpStatus.NOT_FOUND);
+			return error("User not found", HttpStatus.NOT_FOUND);
 		}
 		/*
 		 * Checks if session invalid
 		 */
 		if(!foundUser.getSession().equals(user.getSession())) {
-			createErrResEnt("Session token not found", HttpStatus.BAD_REQUEST);
+			return error("Session token not found", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Updates specified user properties
@@ -118,20 +117,16 @@ public class UserController {
 			if(user.getGameId() != 0) {
 				Optional<Game> newG = gameDB.findById(user.getGameId());
 				if(!newG.isPresent()) {
-					createErrResEnt("Could not find game", HttpStatus.BAD_REQUEST);
+					return error("Could not find game", HttpStatus.BAD_REQUEST);
 				}
 				Game newGame = newG.get();
 				if(newGame.getHiders() + newGame.getSeekers() >= newGame.getMaxplayers()) {
-					createErrResEnt("Game is already full", HttpStatus.BAD_REQUEST);
+					return error("Game is already full", HttpStatus.BAD_REQUEST);
 				}
 				if(user.getHider()) newGame.setHiders(newGame.getHiders() + 1);
 				else newGame.setSeekers(newGame.getSeekers() + 1);
 				gameDB.saveAndFlush(newGame);
 			}
-		}
-		if(user.getLatitude() != null && user.getLongitude() != null) {
-			foundUser.setLatitude(user.getLatitude());
-			foundUser.setLongitude(user.getLongitude());
 		}
 		userDB.saveAndFlush(foundUser);
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
@@ -142,8 +137,7 @@ public class UserController {
 	 * 
 	 * Mapping for authenticating user
 	 * {
-	 * 		"password": "mysecurepassword",
-	 * 		"location": ""
+	 * 		"password": "mysecurepassword"
 	 * }
 	 */
 	@RequestMapping(
@@ -157,13 +151,7 @@ public class UserController {
 		 * Checks if password not present
 		 */
 		if(user.getPassword() == null) {
-			createErrResEnt("Must provide password when authenticating user", HttpStatus.BAD_REQUEST);
-		}
-		if(user.getLatitude() == null) {
-			createErrResEnt("Must provide latitude when authenticating user", HttpStatus.BAD_REQUEST);
-		}
-		if(user.getLongitude() == null) {
-			createErrResEnt("Must provide longitude when authenticating user", HttpStatus.BAD_REQUEST);
+			return error("Must provide password when authenticating user", HttpStatus.BAD_REQUEST);
 		}
 		User foundUser = userDB.findUserByUsername(username);
 		/*
@@ -190,15 +178,13 @@ public class UserController {
 		 * Checks if password not match
 		 */
 		if(!foundUser.getPassword().equals(user.getPassword())) {
-			createErrResEnt("The password was incorrect", HttpStatus.BAD_REQUEST);
+			return error("The password was incorrect", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Generates session token
 		 */
 		String session = UUID.randomUUID().toString();
 		foundUser.setSession(session);
-		foundUser.setLatitude(user.getLatitude());
-		foundUser.setLongitude(user.getLongitude());
 		userDB.saveAndFlush(foundUser);
 		LOG.info("Authenticated user \"" + username + "\".");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -226,7 +212,7 @@ public class UserController {
 		 * Checks is session not present
 		 */
 		if(user.getSession() == null) {
-			createErrResEnt("Session token not found", HttpStatus.BAD_REQUEST);
+			return error("Session token not found", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Checks if password not present
@@ -242,13 +228,13 @@ public class UserController {
 		 * Checks if user not exists
 		 */
 		if(foundUser == null) {
-			createErrResEnt("User not found", HttpStatus.BAD_REQUEST);
+			return error("User not found", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Checks if session or password invalid
 		 */
 		if(!foundUser.getSession().equals(user.getSession()) || !foundUser.getPassword().equals(user.getPassword())) {
-			createErrResEnt("The password or session token was incorrect", HttpStatus.BAD_REQUEST);
+			return error("The password or session token was incorrect", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Deletes user
@@ -258,7 +244,7 @@ public class UserController {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
 	
-	public ResponseEntity<Map<String, Object>> createErrResEnt(String errorMessage, HttpStatus h)
+	public ResponseEntity<Map<String, Object>> error(String errorMessage, HttpStatus h)
 	{
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("error", true);

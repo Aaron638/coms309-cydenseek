@@ -134,8 +134,8 @@ public class User {
 		return latitude;
 	}
 
-	public void setLatitude(String location) {
-		this.latitude = location;
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
 	}
 	
 	public String getLongitude() {
