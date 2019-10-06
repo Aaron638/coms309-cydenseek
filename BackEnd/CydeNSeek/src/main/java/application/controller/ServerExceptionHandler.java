@@ -15,6 +15,9 @@ public class ServerExceptionHandler {
 
 	private static final Log LOG = LogFactory.getLog(ServerExceptionHandler.class);
 
+	/*
+	 * Handles exceptions by logging them and returning a bad request error
+	 */
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Map<String, Object>> error(Exception e) {
 		LOG.error(e);

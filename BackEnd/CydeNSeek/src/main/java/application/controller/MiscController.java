@@ -33,6 +33,11 @@ public class MiscController {
 	@Autowired
 	private GameDB gameDB;
 
+	/*
+	 * GET /
+	 * 
+	 * Mapping for index page
+	 */
 	@RequestMapping(
 		value = "/",
 		produces = APPLICATION_JSON_VALUE
@@ -44,6 +49,11 @@ public class MiscController {
 		}}, HttpStatus.OK);
 	}
 
+	/*
+	 * GET /test
+	 * 
+	 * Mapping for test page
+	 */
 	@RequestMapping(
 		value = "/test",
 		produces = APPLICATION_JSON_VALUE
@@ -59,6 +69,11 @@ public class MiscController {
 		}}, HttpStatus.OK);
 	}
 
+	/*
+	 * GET /leaderboard
+	 * 
+	 * Mapping for getting global leaderboard
+	 */
 	@RequestMapping(
 		value = "/leaderboard",
 		method = RequestMethod.GET,
@@ -80,30 +95,48 @@ public class MiscController {
 		}}, HttpStatus.OK);
 	}
 
+	/*
+	 * GET /users
+	 * 
+	 * Mapping for getting global users
+	 */
 	@RequestMapping(
 		value = "/users",
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> users(@RequestParam("session") String session) {
+	public ResponseEntity<Map<String, Object>> users(/*@RequestParam("session") String session*/) {
+		/*
 		Optional<User> user = userDB.findAll().stream().filter(x -> x.getSession().equals(session)).findFirst();
+		/*
+		 * Checks if session token valid
+		 * /
 		if(!user.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Invalid session token.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
+		/*
+		 * Checks if user is developer
+		 * /
 		if(!user.get().getDeveloper()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Only developers can get the list of users.");
 			}}, HttpStatus.UNAUTHORIZED);
 		}
+		*/
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("users", userDB.findAllUsersSorted((x,y) -> x.getUsername().compareTo(y.getUsername())));
 		}}, HttpStatus.OK);
 	}
 
+	/*
+	 * GET /games
+	 * 
+	 * Mapping for getting games
+	 */
 	@RequestMapping(
 		value = "/games",
 		method = RequestMethod.GET,

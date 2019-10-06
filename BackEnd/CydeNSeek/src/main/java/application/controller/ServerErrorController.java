@@ -16,6 +16,9 @@ public class ServerErrorController implements ErrorController {
 
 	private static final Log LOG = LogFactory.getLog(ServerErrorController.class);
 
+	/*
+	 * Handles errors
+	 */
 	@RequestMapping("/error")
 	public ResponseEntity<Map<String, Object>> error() {
 		LOG.error("Error mapping utilized.");
