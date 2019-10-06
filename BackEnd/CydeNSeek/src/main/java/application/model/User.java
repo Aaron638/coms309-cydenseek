@@ -26,7 +26,10 @@ public class User {
 	private Integer gameId;
 
 	@Column
-	private String location;
+	private String latitude;
+	
+	@Column
+	private String longitude;
 
 	@Column
 	private Boolean developer;
@@ -127,12 +130,20 @@ public class User {
 		this.gpseeker = gpseeker;
 	}
 
-	public String getLocation() {
-		return location;
+	public String getLatitude() {
+		return latitude;
 	}
 
-	public void setLocation(String location) {
-		this.location = location;
+	public void setLatitude(String location) {
+		this.latitude = location;
+	}
+	
+	public String getLongitude() {
+		return longitude;
+	}
+	
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
 	}
 
 	public Integer getTotdistance() {
