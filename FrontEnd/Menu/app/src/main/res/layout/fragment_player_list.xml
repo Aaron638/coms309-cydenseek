@@ -46,7 +46,7 @@
             <TextView
                 android:gravity="right"
                 android:padding="3dip"
-                android:text="@string/table_layout_4_save_shortcut" />
+                android:text="Table test" />
         </TableRow>
     </TableLayout>
 
