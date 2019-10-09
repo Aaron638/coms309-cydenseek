@@ -31,6 +31,7 @@ public class ServerWebSocketHandler {
 	private UserDB userDB;
 
 	private static Map<String, Session> sessions = new HashMap<>();
+	private static Map<String, Integer> games = new HashMap<>();
 	private static Map<Session, String> usernames = new HashMap<>();
 
 	@OnOpen
@@ -41,6 +42,7 @@ public class ServerWebSocketHandler {
 		}
 		LOG.info(username + " has connected.");
 		sessions.put(username, session);
+		games.put(username, userDB.findUserByUsername(username).getGameId());
 		usernames.put(session, username);
 	}
 
@@ -103,8 +105,8 @@ public class ServerWebSocketHandler {
 		});
 		long playersleft = userDB.findUsersByGame(user.getGameId(), (x,y) -> 0).stream().filter(x -> x.getHider().booleanValue() && !x.getFound().booleanValue()).count();
 		if(playersleft <= 1) {
-			if(playersleft == 0) broadcast("{\"winner\":false}");
-			else broadcast("{\"winner\":\"" + userDB.findUsersByGame(user.getGameId(), (x,y) -> 0).stream().filter(x -> x.getHider().booleanValue() && !x.getFound().booleanValue()).findFirst().get().getUsername() + "\"}");
+			if(playersleft == 0) broadcast("{\"winner\":false}", user.getGameId());
+			else broadcast("{\"winner\":\"" + userDB.findUsersByGame(user.getGameId(), (x,y) -> 0).stream().filter(x -> x.getHider().booleanValue() && !x.getFound().booleanValue()).findFirst().get().getUsername() + "\"}", user.getGameId());
 			sessions.clear();
 			usernames.clear();
 			return;
@@ -114,7 +116,7 @@ public class ServerWebSocketHandler {
 		out.put("username", username);
 		out.put("latitude", msg.getDouble("latitude"));
 		out.put("longitude", msg.getDouble("longitude"));
-		broadcast(out.toString());
+		broadcast(out.toString(), user.getGameId());
 	}
 
 	@OnClose
@@ -124,7 +126,8 @@ public class ServerWebSocketHandler {
 		sessions.remove(username);
 		LOG.info(username + " has closed connection.");
 		usernames.remove(session);
-		broadcast("{\"username\":\"" + username + "\"}");
+		broadcast("{\"username\":\"" + username + "\"}", games.get(username));
+		games.remove(username);
 	}
 
 	@OnError
@@ -140,9 +143,9 @@ public class ServerWebSocketHandler {
 		}
 	}
 
-	private static void broadcast(String message) {
+	private static void broadcast(String message, Integer gameId) {
 		sessions.forEach((username, session) -> {
-			synchronized(session) {
+			if(games.get(username).equals(gameId)) synchronized(session) {
 				send(session, message);
 			}
 		});
