@@ -1,42 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_red_light"
+    android:background="@android:color/white">
 
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="482dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="0dp">
 
+    </TableLayout>
 
-
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:padding="16dp"
-    tools:context="com.codinginflow.jsonparsingexample.MainActivity">
-
-    <TextView
-        android:id="@+id/text_view_result"
+    <EditText
+        android:id="@+id/editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        android:textSize="20sp" />
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="22dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="LeaderBoard" />
+
+    <TextView
+        android:id="@+id/textView_result"
+        android:layout_width="343dp"
+        android:layout_height="408dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="74dp" />
 
     <Button
-        android:id="@+id/button_parse"
+        android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="29dp"
-        android:text="parse" />
-
-
-
-   /*   Testing with text
-    TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="This is the Leaderboard"
-        android:textSize="30sp" /
-    */
+        android:layout_marginBottom="16dp"
+        android:text="Lookup" />
 
 </RelativeLayout>
