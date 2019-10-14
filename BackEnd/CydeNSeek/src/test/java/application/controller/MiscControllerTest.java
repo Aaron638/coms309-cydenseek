@@ -80,7 +80,7 @@ public class MiscControllerTest {
 			.andExpect(content().string(containsString("abc")));
 	}
 
-	@Ignore
+	
 	@Test
 	public void users() throws Exception {
 		when(udb.findAllUsersSorted(any(Comparator.class))).thenReturn(users);
