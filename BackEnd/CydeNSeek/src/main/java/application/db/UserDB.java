@@ -23,7 +23,7 @@ public interface UserDB extends JpaRepository<User, Integer> {
 		return findAll().stream().sorted(comparator).collect(Collectors.toList());
 	}
 
-	public default List<User> findUsersByGame(int gameId, Comparator<? super User> comparator) {
+	/*public default List<User> findUsersByGame(int gameId, Comparator<? super User> comparator) {
 		return findAll().stream().filter(x -> x.getGameId().equals(gameId)).sorted(comparator).collect(Collectors.toList());
-	}
+	}*/
 }
