@@ -40,29 +40,7 @@ public class UserController {
 	 * 
 	 * Mapping for getting user information
 	 */
-	@RequestMapping(
-		value = "/{username}",
-		method = RequestMethod.GET,
-		produces = APPLICATION_JSON_VALUE
-	)
-	public ResponseEntity<Map<String, Object>> getUser(@PathVariable("username") String username) {
-		User user = userDB.findUserByUsername(username);
-		/*
-		 * Checks if user not exists
-		 */
-		if(user == null) {
-			return createErrResEnt("User not found", HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("gwhider", user.getGwhider());
-			put("gwseeker", user.getGwseeker());
-			put("gphider", user.getGphider());
-			put("gpseeker", user.getGpseeker());
-			put("totdistance", user.getTotdistance());
-			put("tottime", user.getTottime());
-		}}, HttpStatus.OK);
-	}
-
+	
 	/*
 	 * PUT /user/<username>
 	 * 
@@ -105,34 +83,7 @@ public class UserController {
 		 * Updates specified user properties
 		 */
 		if(user.getPassword() != null) foundUser.setPassword(user.getPassword());
-		if(user.getGameId() != null && !foundUser.getGameId().equals(user.getGameId())) {
-			if(foundUser.getGameId() != 0) {
-				Optional<Game> old = gameDB.findById(foundUser.getGameId());
-				if(old.isPresent()) {
-					Game oldGame = old.get();
-					if(user.getHider()) oldGame.setHiders(oldGame.getHiders() - 1);
-					else oldGame.setSeekers(oldGame.getSeekers() - 1);
-					gameDB.saveAndFlush(oldGame);
-				}
-			}
-			if(user.getGameId() != 0) {
-				Optional<Game> newG = gameDB.findById(user.getGameId());
-				if(!newG.isPresent()) {
-					return createErrResEnt("Could not find game", HttpStatus.BAD_REQUEST);
-				}
-				Game newGame = newG.get();
-				if(newGame.getHiders() + newGame.getSeekers() >= newGame.getMaxplayers()) {
-					return createErrResEnt("Game is already full", HttpStatus.BAD_REQUEST);
-				}
-				if(user.getHider()) newGame.setHiders(newGame.getHiders() + 1);
-				else newGame.setSeekers(newGame.getSeekers() + 1);
-				gameDB.saveAndFlush(newGame);
-			}
-		}
-		if(user.getLatitude() != null && user.getLongitude() != null) {
-			foundUser.setLatitude(user.getLatitude());
-			foundUser.setLongitude(user.getLongitude());
-		}
+		
 		userDB.saveAndFlush(foundUser);
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
@@ -159,12 +110,6 @@ public class UserController {
 		if(user.getPassword() == null) {
 			return createErrResEnt("Must provide password when authenticating user", HttpStatus.BAD_REQUEST);
 		}
-		if(user.getLatitude() == null) {
-			return createErrResEnt("Must provide latitude when authenticating user", HttpStatus.BAD_REQUEST);
-		}
-		if(user.getLongitude() == null) {
-			return createErrResEnt("Must provide longitude when authenticating user", HttpStatus.BAD_REQUEST);
-		}
 		User foundUser = userDB.findUserByUsername(username);
 		/*
 		 * Checks if user not exists
@@ -173,13 +118,7 @@ public class UserController {
 			user.setUsername(username);
 			String session = UUID.randomUUID().toString();
 			user.setSession(session);
-			user.setGameId(0);
 			user.setDeveloper(false);
-			user.setGphider(0);
-			user.setGpseeker(0);
-			user.setGwhider(0);
-			user.setGwseeker(0);
-			user.setFound(false);
 			userDB.saveAndFlush(user);
 			LOG.info("Created new user \"" + username + "\".");
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -197,8 +136,6 @@ public class UserController {
 		 */
 		String session = UUID.randomUUID().toString();
 		foundUser.setSession(session);
-		foundUser.setLatitude(user.getLatitude());
-		foundUser.setLongitude(user.getLongitude());
 		userDB.saveAndFlush(foundUser);
 		LOG.info("Authenticated user \"" + username + "\".");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
