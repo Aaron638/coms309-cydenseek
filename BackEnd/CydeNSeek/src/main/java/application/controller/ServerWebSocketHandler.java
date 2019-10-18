@@ -21,7 +21,7 @@ import application.config.CustomConfigurator;
 import application.db.UserDB;
 import application.model.User;
 
-@ServerEndpoint(value = "/location/{username}", configurator = CustomConfigurator.class)
+@ServerEndpoint(value = "/user/{username}/location", configurator = CustomConfigurator.class)
 @Component
 public class ServerWebSocketHandler {
 
