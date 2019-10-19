@@ -33,7 +33,6 @@ public class GameController {
 
 	@Autowired
 	private GameDB gameDB;
-
 	@Autowired
 	private UserDB userDB;
 

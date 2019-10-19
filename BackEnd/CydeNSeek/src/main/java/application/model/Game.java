@@ -69,7 +69,7 @@ public class Game {
 	}
 
 	public Integer getMaxplayers() {
-		return maxplayers;
+		return maxplayers;dsfoiafsal;hf
 	}
 
 	public void setMaxplayers(Integer maxplayers) {
