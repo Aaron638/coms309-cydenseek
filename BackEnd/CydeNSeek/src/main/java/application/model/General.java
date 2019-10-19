@@ -12,6 +12,7 @@ public class General {
 
 	@Id
 	@Column
+	@OneToOne(cascade)
 	private Integer userFK;
 	
 	@Column
