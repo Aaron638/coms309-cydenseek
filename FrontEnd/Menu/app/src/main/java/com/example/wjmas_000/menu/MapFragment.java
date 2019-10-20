@@ -44,11 +44,12 @@ public class MapFragment extends Fragment {
             public void onMapReady(GoogleMap googleMap){
                 map = googleMap;
 
-                LatLng latlong = new LatLng(42.0261684881417,93.6484479904175);
+                LatLng latlong = new LatLng(42.0261684881417,-93.6484479904175);
                 MarkerOptions option = new MarkerOptions();
                 option.position(latlong).title("Iowa State University");
                 map.addMarker(option);
                 map.moveCamera(CameraUpdateFactory.newLatLng(latlong));
+                //map.moveCamera(CameraUpdateFactory.zoomIn());
             }
         });
 
