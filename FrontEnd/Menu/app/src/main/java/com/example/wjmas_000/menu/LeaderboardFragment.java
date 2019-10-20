@@ -28,8 +28,6 @@ import static com.android.volley.VolleyLog.TAG;
 
 public class LeaderboardFragment extends Fragment {
 
-
-
     private TextView mTextViewResult;
     private RequestQueue mQueue;
 
@@ -39,11 +37,11 @@ public class LeaderboardFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_leaderboard, container, false);
 
-        mTextViewResult = (TextView) rootView.findViewById(R.id.text_view_result);
+        mTextViewResult = (TextView) rootView.findViewById(R.id.tvResult);
         mTextViewResult.setText("Refresh");
         mTextViewResult.setMovementMethod(new ScrollingMovementMethod());
 
-        Button buttonParse = (Button) rootView.findViewById(R.id.button_parse);
+        Button buttonParse = (Button) rootView.findViewById(R.id.btnLookup);
 
         //usually use "this"
         mQueue = Volley.newRequestQueue(getActivity());
@@ -72,6 +70,64 @@ public class LeaderboardFragment extends Fragment {
     private void jsonParse(){
         String url = "http://coms-309-vb-1.misc.iastate.edu:8080/leaderboard";
         //maybe pass json array in the future?
+
+
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(TAG, response.toString());
+                try {
+                    JSONArray jsonArray = response.getJSONArray("users");
+                    //iterates through all users in the json array
+                    for (int i =0; i < jsonArray.length(); i++){
+                        JSONObject user = jsonArray.getJSONObject(i);
+
+                        //we get all user attributes here
+                        int id = user.getInt("id");
+                        String username = user.getString("username");
+                        String password = user.getString("password");
+                        String session = user.getString("session");
+                        int gameid = user.getInt("gameId");
+                        //TODO switch to double eventually
+                        String latitude = user.getString("latitude");
+                        String longitude = user.getString("longitude");
+                        boolean dev = user.getBoolean("developer");
+                        boolean hider = user.getBoolean("hider");
+                        boolean found = user.getBoolean("found");
+                        int gwhider = user.getInt("gwhider");
+                        int gwseeker = user.getInt("gwseeker");
+                        int gphider = user.getInt("gphider");
+                        int gpseeker = user.getInt("gpseeker");
+                        int totdistance = user.getInt("totdistance");
+                        int tottime = user.getInt("tottime");
+
+
+                        String result = "ID:"+ id +
+                                "\nUsername:"+ username +
+                                "\nTime Played:"+ tottime +
+                                "\n\n";
+                        mTextViewResult.append(result);
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "onErrorResponse: error");
+                error.printStackTrace();
+            }
+        });
+        mQueue.add(request);
+    }
+
+
+
+
+        /*
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -90,27 +146,6 @@ public class LeaderboardFragment extends Fragment {
                         int gwseeker = user.getInt("gwseeker");         //Games won as seeker
 
 
-                        /*
-                        //we get all user attributes here
-                        int id = user.getInt("id");
-                        String username = user.getString("username");
-                        String password = user.getString("password");
-                        String session = user.getString("session");
-                        int gameid = user.getInt("gameId");
-
-                        //TODO switch to double eventually
-                        String latitude = user.getString("latitude");
-                        String longitude = user.getString("longitude");
-                        boolean dev = user.getBoolean("developer");
-                        boolean hider = user.getBoolean("hider");
-                        boolean found = user.getBoolean("found");
-                        int gwhider = user.getInt("gwhider");
-                        int gwseeker = user.getInt("gwseeker");
-                        int gphider = user.getInt("gphider");
-                        int gpseeker = user.getInt("gpseeker");
-                        int totdistance = user.getInt("totdistance");
-                        int tottime = user.getInt("tottime");
-                        */
 
                         String result = "User:"+ username +
                                 "\nTotal Time Played:"+ tottime +
@@ -132,11 +167,13 @@ public class LeaderboardFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "onErrorResponse: error");
                 error.printStackTrace();
+                mTextViewResult.setText("Error: No data found");
             }
+
         });
         mQueue.add(request);
     }
-
+    */
 
 
 }

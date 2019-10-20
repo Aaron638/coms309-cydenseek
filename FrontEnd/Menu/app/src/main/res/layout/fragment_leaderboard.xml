@@ -26,7 +26,7 @@
         android:text="LeaderBoard" />
 
     <TextView
-        android:id="@+id/textView_result"
+        android:id="@+id/tvResult"
         android:layout_width="343dp"
         android:layout_height="408dp"
         android:layout_alignParentBottom="true"
@@ -34,7 +34,7 @@
         android:layout_marginBottom="74dp" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnLookup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
