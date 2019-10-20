@@ -84,28 +84,23 @@ public class LeaderboardFragment extends Fragment {
                         JSONObject user = jsonArray.getJSONObject(i);
 
                         //we get all user attributes here
-                        int id = user.getInt("id");
-                        String username = user.getString("username");
-                        String password = user.getString("password");
-                        String session = user.getString("session");
-                        int gameid = user.getInt("gameId");
-                        //TODO switch to double eventually
-                        String latitude = user.getString("latitude");
-                        String longitude = user.getString("longitude");
-                        boolean dev = user.getBoolean("developer");
-                        boolean hider = user.getBoolean("hider");
-                        boolean found = user.getBoolean("found");
-                        int gwhider = user.getInt("gwhider");
-                        int gwseeker = user.getInt("gwseeker");
+                        int gpseeker = user.getInt("gpseeker");         //Games played as seeker
+                        int totdistance = user.getInt("totdistance");   //Total distance walked
+                        int tottime = user.getInt("tottime");           //Total time played
                         int gphider = user.getInt("gphider");
-                        int gpseeker = user.getInt("gpseeker");
-                        int totdistance = user.getInt("totdistance");
-                        int tottime = user.getInt("tottime");
+                        int gwhider = user.getInt("gwhider");
+                        String username = user.getString("username");   //Username
+                        int gwseeker = user.getInt("gwseeker");         //Games won as seeker
 
 
-                        String result = "ID:"+ id +
-                                "\nUsername:"+ username +
-                                "\nTime Played:"+ tottime +
+
+                        String result = "User:"+ username +
+                                "\nTotal Time Played:"+ tottime +
+                                "\nTotal distance walked:"+ totdistance +
+                                "\nGames played as seeker:"+ gpseeker +
+                                "\nGames won as seeker:"+ gwseeker +
+                                "\nGames played as hider:"+ gphider +
+                                "\nGames won as hider:"+ gwhider +
                                 "\n\n";
                         mTextViewResult.append(result);
 
@@ -119,6 +114,8 @@ public class LeaderboardFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "onErrorResponse: error");
                 error.printStackTrace();
+                mTextViewResult.setText("Error");
+
             }
         });
         mQueue.add(request);

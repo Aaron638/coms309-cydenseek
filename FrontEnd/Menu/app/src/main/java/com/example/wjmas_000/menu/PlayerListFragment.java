@@ -110,6 +110,7 @@ public class PlayerListFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "onErrorResponse: error");
                 error.printStackTrace();
+                mTextViewResult.setText("Error");
             }
         });
         mQueue.add(request);
