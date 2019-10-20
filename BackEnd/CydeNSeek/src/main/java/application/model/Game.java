@@ -4,9 +4,12 @@ import java.time.LocalTime;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Game {
@@ -35,6 +38,10 @@ public class Game {
 
 	@Column
 	private String creator;
+	
+	@Column
+	@OneToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "game")
 
 	public Integer getId() {
 		return id;
@@ -69,7 +76,7 @@ public class Game {
 	}
 
 	public Integer getMaxplayers() {
-		return maxplayers;dsfoiafsal;hf
+		return maxplayers;
 	}
 
 	public void setMaxplayers(Integer maxplayers) {

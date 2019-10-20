@@ -2,9 +2,14 @@ package application.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+
 
 @Entity
 public class User {
@@ -24,7 +29,12 @@ public class User {
 
 	@Column
 	private Boolean developer;
+	
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "user", nullable = false)
 
+	private General general;
+	
 	public Integer getId() {
 		return id;
 	}
