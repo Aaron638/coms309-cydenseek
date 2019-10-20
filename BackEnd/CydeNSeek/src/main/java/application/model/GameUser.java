@@ -2,19 +2,29 @@ package application.model;
 
 import java.time.LocalTime;
 import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 @Entity
 public class GameUser {
-
-	@Id
 	
 	@Column
-	private Integer gameFK;
+	@ManyToOne
+	@JoinColumn(name = "gameuser")
+	private General general;
+	
+	@Column
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "game")
+	private Game game;
 	
 	@Column
 	private Boolean found;
@@ -27,16 +37,6 @@ public class GameUser {
 	
 	@Column
 	private Double longitude;
-	
-	public Integer getGameFK()
-	{
-		return gameFK;
-	}
-	
-	public void setGameFK(Integer gameFK)
-	{
-		this.gameFK=gameFK;
-	}
 	
 	public Boolean getFound()
 	{

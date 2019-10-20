@@ -29,7 +29,6 @@ public class MiscController {
 
 	@Autowired
 	private UserDB userDB;
-rdfdfasfsdfasdfsdffdf
 
 	@Autowired
 	private GameDB gameDB;
