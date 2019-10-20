@@ -9,6 +9,10 @@
             android:icon="@drawable/ic_leaderboard"
             android:title="LeaderBoard" />
         <item
+            android:id="@+id/nav_map"
+            android:icon="@drawable/ic_map"
+            android:title="Map" />
+        <item
             android:id="@+id/nav_player_list"
             android:icon="@drawable/ic_player_list"
             android:title="Player List" />
