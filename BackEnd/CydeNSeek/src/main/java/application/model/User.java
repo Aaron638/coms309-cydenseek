@@ -31,11 +31,8 @@ public class User {
 	private Boolean developer;
 	
 	@Column
-	private Stats userStats;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user", nullable = false)
-
 	private General general;
 	
 	public Integer getId() {
@@ -78,13 +75,4 @@ public class User {
 		this.developer = developer;
 	}
 	
-	public Stats getUserStats()
-	{
-		return userStats;
-	}
-	
-	public void setUserStats(Stats userStats)
-	{
-		this.userStats = userStats;
-	}
 }

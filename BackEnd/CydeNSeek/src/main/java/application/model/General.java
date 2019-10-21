@@ -18,16 +18,16 @@ import javax.persistence.OneToOne;
 public class General {
 
 	@Column
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private List<User> userFK;
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	private User userFK;
 	
 	@Column
-	@OneToMany(mappedBy = "stats", cascade = CascadeType.ALL)
-	private List<Stats> statsFK;
+	@OneToOne(mappedBy = "stats", cascade = CascadeType.ALL)
+	private Stats statsFK;
 	
 	@Column
-	@OneToMany(mappedBy = "gameuser", cascade = CascadeType.ALL)
-	private List<GameUser> gameuserFK;
+	@OneToOne(mappedBy = "gameuser", cascade = CascadeType.ALL)
+	private GameUser gameuserFK;
 
 	@Column
 	private User user;
@@ -41,32 +41,32 @@ public class General {
 	@Column
 	private String session;
 	
-	public List<User> getUserFK()
+	public User getUserFK()
 	{
 		return userFK;
 	}
 	
-	public void setUserFK(List<User> userFK)
+	public void setUserFK(User userFK)
 	{
 		this.userFK = userFK;
 	}
 	
-	public List<Stats> getStatsFK()
+	public Stats getStatsFK()
 	{
 		return statsFK;
 	}
 	
-	public void setStatsFK(List<Stats> statsFK)
+	public void setStatsFK(Stats statsFK)
 	{
 		this.statsFK = statsFK;
 	}
 	
-	public List<GameUser> getGameUserFK()
+	public GameUser getGameUserFK()
 	{
 		return gameuserFK;
 	}
 	
-	public void setGameUserFK(List<GameUser> gameuserFK)
+	public void setGameUserFK(GameUser gameuserFK)
 	{
 		this.gameuserFK = gameuserFK;
 	}
