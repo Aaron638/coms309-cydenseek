@@ -48,7 +48,7 @@ android-build:
         - ./gradlew assemble
         artifacts:
             paths:
-            Android_test/app/build/outputs/
+            - Android_test/app/build/outputs/
 
 unitTests:
         image: javiersantos/android-ci:latest
