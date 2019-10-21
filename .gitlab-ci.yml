@@ -2,6 +2,8 @@ stages:
 - mavenbuild
 - maventest
 - autodeploy
+- androidbuild
+- androidtest
 
 maven-build:
         stage: mavenbuild
@@ -32,3 +34,30 @@ autoDeploy:
         - sudo mv target/*.jar /target/CydeNSeek.jar
         - sudo systemctl stop systemd-cydenseek
         - sudo systemctl start systemd-cydenseek
+        
+android-build:
+        image: javiersantos/android-ci:latest
+        stage: androidbuild
+        before_script:
+        - export GRADLE_USER_HOME='pwd'/.gradle
+        - chmod +x ./FrontEnd/Menu/gradlew
+        tags:
+        - docker
+        script:
+        - cd FrontEnd/Menu
+        - ./gradlew assemble
+        artifacts:
+            paths:
+            Android_test/app/build/outputs/
+
+unitTests:
+        image: javiersantos/android-ci:latest
+        stage: androidtest
+        before_script:
+            - export GRADLE_USER_HOME='pwd'/.gradle
+            - chmod +x ./FrontEnd/Menu/gradlew
+        tags:
+            - docker
+        script:
+            - cd FrontEnd/Menu
+            - ./gradlew test
