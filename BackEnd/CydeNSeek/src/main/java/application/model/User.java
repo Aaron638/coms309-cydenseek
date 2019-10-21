@@ -2,9 +2,14 @@ package application.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+
 
 @Entity
 public class User {
@@ -23,41 +28,13 @@ public class User {
 	private String session;
 
 	@Column
-	private Integer gameId;
-
-	@Column
-	private Double latitude;
+	private Boolean developer;
 	
 	@Column
-	private Double longitude;
-
-	@Column
-	private Boolean developer;
-
-	@Column
-	private Boolean hider;
-
-	@Column
-	private Boolean found;
-
-	@Column
-	private Integer gwhider;
-
-	@Column
-	private Integer gwseeker;
-
-	@Column
-	private Integer gphider;
-
-	@Column
-	private Integer gpseeker;
-
-	@Column
-	private Integer totdistance;
-
-	@Column
-	private Integer tottime;
-
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user", nullable = false)
+	private General general;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -90,94 +67,6 @@ public class User {
 		this.session = session;
 	}
 
-	public Integer getGameId() {
-		return gameId;
-	}
-
-	public void setGameId(Integer gameId) {
-		this.gameId = gameId;
-	}
-
-	public Integer getGwhider() {
-		return gwhider;
-	}
-
-	public void setGwhider(Integer gwhider) {
-		this.gwhider = gwhider;
-	}
-
-	public Integer getGwseeker() {
-		return gwseeker;
-	}
-
-	public void setGwseeker(Integer gwseeker) {
-		this.gwseeker = gwseeker;
-	}
-
-	public Integer getGphider() {
-		return gphider;
-	}
-
-	public void setGphider(Integer gphider) {
-		this.gphider = gphider;
-	}
-
-	public Integer getGpseeker() {
-		return gpseeker;
-	}
-
-	public void setGpseeker(Integer gpseeker) {
-		this.gpseeker = gpseeker;
-	}
-
-	public Double getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
-	}
-	
-	public Double getLongitude() {
-		return longitude;
-	}
-	
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
-
-	public Integer getTotdistance() {
-		return totdistance;
-	}
-
-	public void setTotdistance(Integer totdistance) {
-		this.totdistance = totdistance;
-	}
-
-	public Integer getTottime() {
-		return tottime;
-	}
-
-	public void setTottime(Integer totime) {
-		this.tottime = totime;
-	}
-
-	public Boolean getFound() {
-		return found;
-	}
-
-	public void setFound(Boolean found) {
-		this.found = found;
-	}
-
-	public Boolean getHider() {
-		return hider;
-	}
-
-	public void setHider(Boolean hider) {
-		this.hider = hider;
-	}
-
 	public Boolean getDeveloper() {
 		return developer;
 	}
@@ -185,4 +74,15 @@ public class User {
 	public void setDeveloper(Boolean developer) {
 		this.developer = developer;
 	}
+	
+	public General getGen()
+	{
+		return general;
+	}
+	
+	public void setGen(General general)
+	{
+		this.general = general;
+	}
+	
 }
