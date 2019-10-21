@@ -111,23 +111,4 @@ public class MiscControllerTest {
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
 	}
-	
-	@Ignore
-	@Test
-	public void postUsers() throws Exception{
-		User u = new User();
-		u.setUsername("Bob");
-		this.mockMvc.perform(post("/users")
-	            .contentType(MediaType.APPLICATION_JSON)
-	            .content(asJsonString(u)))
-	            .andExpect(status().isOk());
-	}
-
-	public static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-	}
 }

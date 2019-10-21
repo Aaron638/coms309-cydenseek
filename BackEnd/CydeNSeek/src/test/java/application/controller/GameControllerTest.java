@@ -1,5 +1,6 @@
 package application.controller;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,15 +36,16 @@ public class GameControllerTest {
 	@Ignore
 	@Test
 	public void newGame() throws Exception {
+		
 		this.mockMvc.perform(post("/game/new")
 			.contentType(APPLICATION_JSON_VALUE)
-			.content("{}")
+			.content("{\"session\" : \"abc-xyz-123\"}")
 		)
 			.andExpect(status().isOk())
-			.andExpect(content().string(""));
+			.andExpect(content().string(containsString("session : abc-xyz-123")));
 	}
 
-	@Ignore
+	
 	@Test
 	public void leaderboard() throws Exception {
 		this.mockMvc.perform(get("/game/" + GAMEID + "/leaderboard"))
@@ -51,7 +53,7 @@ public class GameControllerTest {
 			.andExpect(content().string(""));
 	}
 
-	@Ignore
+	
 	@Test
 	public void users() throws Exception {
 		this.mockMvc.perform(get("/game/" + GAMEID + "/users"))

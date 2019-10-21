@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Stats {
@@ -30,9 +31,10 @@ public class Stats {
 	private Integer tottime;
 	
 	@Column
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "stats")
 	private General general;
+	
 	
 	
 	public Integer getGPHider()
