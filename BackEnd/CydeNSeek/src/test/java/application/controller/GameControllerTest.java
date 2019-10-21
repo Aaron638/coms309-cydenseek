@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @SpringBootTest
 public class GameControllerTest {
 
-	private static final String GAMEfsafdsID = "12345";
+	private static final String GAMEID = "12345";
 
 	@InjectMocks
 	private GameController gameController = new GameController();

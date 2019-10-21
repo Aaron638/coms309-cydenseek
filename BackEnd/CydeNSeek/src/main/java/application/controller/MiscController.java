@@ -74,7 +74,17 @@ public class MiscController {
 	 * 
 	 * Mapping for getting global leaderboard
 	 */
-
+	
+	@RequestMapping(
+		value = "/leaderboard",
+		method = RequestMethod.GET,
+		produces = APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<Map<String,Object>> leaderboard(@RequestParam("session") String session){
+		return new ResponseEntity<>(new HashMap<String, Object>(){{
+			put();
+		}
+	}
 
 	/*
 	 * GET /users

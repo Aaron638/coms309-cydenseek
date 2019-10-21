@@ -30,7 +30,10 @@ public class User {
 	@Column
 	private Boolean developer;
 	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@Column
+	private Stats userStats;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user", nullable = false)
 
 	private General general;
@@ -73,5 +76,15 @@ public class User {
 
 	public void setDeveloper(Boolean developer) {
 		this.developer = developer;
+	}
+	
+	public Stats getUserStats()
+	{
+		return userStats;
+	}
+	
+	public void setUserStats(Stats userStats)
+	{
+		this.userStats = userStats;
 	}
 }

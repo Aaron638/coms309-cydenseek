@@ -41,7 +41,8 @@ public class Game {
 	
 	@Column
 	@OneToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "game")
+	@JoinColumn(name = "GU")
+	private GameUser GU;
 
 	public Integer getId() {
 		return id;

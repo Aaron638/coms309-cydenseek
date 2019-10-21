@@ -23,7 +23,7 @@ public class GameUser {
 	private General general;
 	
 	@Column
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "game")
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "GU")
 	private Game game;
 	
 	@Column
