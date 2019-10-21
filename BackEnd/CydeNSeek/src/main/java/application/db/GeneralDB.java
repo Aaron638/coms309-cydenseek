@@ -18,6 +18,6 @@ public interface GeneralDB extends JpaRepository<General, Integer> {
 	}
 
 	public default List<General> findUsersByGame(int gameId, Comparator<? super General> comparator) {
-		return findAll().stream().filter(x -> x.getGameUser().getGame().getId().equals(gameId)).sorted(comparator).collect(Collectors.toList());
+		return findAll().stream().filter(x -> x.getGameUser().getGame().getGameId().equals(gameId)).sorted(comparator).collect(Collectors.toList());
 	}
 }

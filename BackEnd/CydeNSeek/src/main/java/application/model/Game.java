@@ -16,7 +16,7 @@ public class Game {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Integer gameId;
 
 	@Column
 	private Integer hiders;
@@ -44,12 +44,12 @@ public class Game {
 	@JoinColumn(name = "GU")
 	private GameUser GU;
 
-	public Integer getId() {
-		return id;
+	public Integer getGameId() {
+		return gameId;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setGameId(Integer id) {
+		this.gameId = id;
 	}
 
 	public int getDuration() {
