@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import application.db.GameDB;
+import application.db.GeneralDB;
 import application.db.UserDB;
 import application.model.User;
 
@@ -32,6 +33,9 @@ public class MiscController {
 
 	@Autowired
 	private GameDB gameDB;
+
+	@Autowired
+	private GeneralDB generalDB;
 
 	/*
 	 * GET /
@@ -80,10 +84,22 @@ public class MiscController {
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String,Object>> leaderboard(@RequestParam("session") String session){
-		return new ResponseEntity<>(new HashMap<String, Object>(){{
-			put();
-		}
+	public ResponseEntity<Map<String, Object>> leaderboard() {
+		
+		return new ResponseEntity<>(new HashMap<String, Object>() {{
+			put("users", generalDB.findAll().stream()
+				.sorted((x,y) -> (x.getStats().getGWHider() + x.getStats().getGWSeeker()) / (x.getStats().getGPHider() + x.getStats().getGPSeeker()) - (y.getStats().getGWHider() + y.getStats().getGWSeeker()) / (y.getStats().getGPHider() + y.getStats().getGPSeeker()))
+				.map(x -> new HashMap<String, Object>() {{
+					put("username", x.getUser().getUsername());
+					put("gwhider", x.getStats().getGWHider());
+					put("gwseeker", x.getStats().getGWSeeker());
+					put("gphider", x.getStats().getGPHider());
+					put("gpseeker", x.getStats().getGPSeeker());
+					put("totdistance", x.getStats().getTotDistance());
+					put("tottime", x.getStats().getTotTime());
+				}})
+				.collect(Collectors.toList()));
+		}}, HttpStatus.OK);
 	}
 
 	/*
@@ -100,6 +116,12 @@ public class MiscController {
 		
 		Optional<User> user = userDB.findAll().stream().filter(x -> x.getSession().equals(session)).findFirst();
 		
+		if(!user.isPresent()) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "User not found.");
+			}}, HttpStatus.NOT_FOUND);
+		}
 		/*
 		 * Checks if user is developer
 		 */
