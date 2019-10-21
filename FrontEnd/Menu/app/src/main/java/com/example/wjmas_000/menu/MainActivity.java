@@ -24,6 +24,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONObject;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
     private WebSocketClient cc;
     private double longitude;
-    private double lattitude;
+    private double latitude;
 
 
     @Override
@@ -66,28 +67,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         */
 
         //This is for location
+
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 10);
         }
         Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         longitude = location.getLongitude();
-        lattitude = location.getLatitude();
-
-        //String ses = "session";
-        String lonStr = Double.toString(longitude);
-        String latStr = Double.toString(lattitude);
+        latitude = location.getLatitude();
 
         Draft[] drafts = {new Draft_6455()};
 
-        String w = "ws://coms-309-vb-1.misc.iastate.edu:8080/user/{username}/location/";
+        String w = "ws://coms-309-vb-1.misc.iastate.edu:8080/user/joe/location";
 
         try{
             Log.d("Socket:", "Trying socket");
@@ -112,25 +103,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onError(Exception e)
                 {
-                    Log.d("Exception:", e.toString());
+                    Log.d("Exception:", e.getMessage());
                 }
 
             };
         } catch (URISyntaxException e) {
-            Log.d("Exception:", e.getMessage().toString());
+            Log.d("Exception:", e.getMessage());
             e.printStackTrace();
         }
         cc.connect();
-
+        while(!cc.isOpen());
         try{
-            cc.send("{\n" +
-                    "    \"session\": \"abc-123-xyz\",\n" +
-                    "    \"latitude\":" + lonStr + " ,\n" +
-                    "    \"longitude\"" + latStr + " ,\n" +
-                    "}");
+            JSONObject obj = new JSONObject();
+            obj.put("session", "9ccea0b9-12a5-4baa-9a38-85bc66204190");
+            obj.put("latitude", latitude);
+            obj.put("longitude", longitude);
+            cc.send(obj.toString());
         } catch (Exception e)
         {
-            Log.d("ExceptionSendMessage:", e.getMessage().toString());
+            Log.d("ExceptionSendMessage:", e.toString());
+            e.printStackTrace();
         }
 
 
