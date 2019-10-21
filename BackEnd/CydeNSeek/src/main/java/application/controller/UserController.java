@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import application.db.GameDB;
 import application.db.UserDB;
-import application.model.Game;
 import application.model.User;
 
 @RestController
@@ -66,25 +65,26 @@ public class UserController {
 		if(user.getSession() == null) {
 			return createErrResEnt("Session token not present", HttpStatus.BAD_REQUEST);
 		}
-		User foundUser = userDB.findUserByUsername(username);
+		Optional<User> foundUser = userDB.findUserByUsername(username);
 		/*
 		 * Checks if user not exists
 		 */
-		if(foundUser == null) {
+		if(!foundUser.isPresent()) {
 			return createErrResEnt("User not found", HttpStatus.NOT_FOUND);
 		}
+		User u = foundUser.get();
 		/*
 		 * Checks if session invalid
 		 */
-		if(!foundUser.getSession().equals(user.getSession())) {
+		if(!u.getSession().equals(user.getSession())) {
 			return createErrResEnt("Session token not found", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Updates specified user properties
 		 */
-		if(user.getPassword() != null) foundUser.setPassword(user.getPassword());
+		if(user.getPassword() != null) u.setPassword(user.getPassword());
 		
-		userDB.saveAndFlush(foundUser);
+		userDB.saveAndFlush(u);
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
 
@@ -110,11 +110,11 @@ public class UserController {
 		if(user.getPassword() == null) {
 			return createErrResEnt("Must provide password when authenticating user", HttpStatus.BAD_REQUEST);
 		}
-		User foundUser = userDB.findUserByUsername(username);
+		Optional<User> foundUser = userDB.findUserByUsername(username);
 		/*
 		 * Checks if user not exists
 		 */
-		if(foundUser == null) {
+		if(!foundUser.isPresent()) {
 			user.setUsername(username);
 			String session = UUID.randomUUID().toString();
 			user.setSession(session);
@@ -125,18 +125,19 @@ public class UserController {
 				put("session", session);
 			}}, HttpStatus.OK);
 		}
+		User u = foundUser.get();
 		/*
 		 * Checks if password not match
 		 */
-		if(!foundUser.getPassword().equals(user.getPassword())) {
+		if(!u.getPassword().equals(user.getPassword())) {
 			return createErrResEnt("The password was incorrect", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Generates session token
 		 */
 		String session = UUID.randomUUID().toString();
-		foundUser.setSession(session);
-		userDB.saveAndFlush(foundUser);
+		u.setSession(session);
+		userDB.saveAndFlush(u);
 		LOG.info("Authenticated user \"" + username + "\".");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("session", session);
@@ -174,23 +175,24 @@ public class UserController {
 				put("message", "Password not present");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		User foundUser = userDB.findUserByUsername(username);
+		Optional<User> foundUser = userDB.findUserByUsername(username);
 		/*
 		 * Checks if user not exists
 		 */
-		if(foundUser == null) {
+		if(!foundUser.isPresent()) {
 			return createErrResEnt("User not found", HttpStatus.BAD_REQUEST);
 		}
+		User u = foundUser.get();
 		/*
 		 * Checks if session or password invalid
 		 */
-		if(!foundUser.getSession().equals(user.getSession()) || !foundUser.getPassword().equals(user.getPassword())) {
+		if(!u.getSession().equals(user.getSession()) || !u.getPassword().equals(user.getPassword())) {
 			return createErrResEnt("The password or session token was incorrect", HttpStatus.BAD_REQUEST);
 		}
 		/*
 		 * Deletes user
 		 */
-		userDB.delete(foundUser);
+		userDB.delete(u);
 		LOG.info("Deleted user \"" + username + "\".");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}

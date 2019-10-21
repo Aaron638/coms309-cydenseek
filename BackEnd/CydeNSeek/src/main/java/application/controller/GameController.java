@@ -206,7 +206,7 @@ public class GameController {
 		/*
 		 * Checks if user created (and owns) game
 		 */
-		if(!userDB.findUserByUsername(foundGame.getCreator()).getSession().equals(game.getSession())) {
+		if(!userDB.findUserByUsername(foundGame.getCreator()).get().getSession().equals(game.getSession())) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Cannot change game created by someone else.");

@@ -1,5 +1,6 @@
 package application.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -7,9 +8,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -26,10 +28,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import application.db.GameDB;
+import application.db.GeneralDB;
 import application.db.UserDB;
+import application.model.General;
 import application.model.Stats;
 import application.model.User;
-import static org.hamcrest.Matchers.containsString;
+
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 public class MiscControllerTest {
@@ -39,6 +43,9 @@ public class MiscControllerTest {
 	
 	@Mock
 	private UserDB udb;
+
+	@Mock
+	private GeneralDB gedb;
 	
 	private List<User> users;
 
@@ -50,53 +57,59 @@ public class MiscControllerTest {
 	@Before
 	public void setup()
 	{	
-		users = new ArrayList<User>();
 		User u = new User();
 		Stats s = new Stats();
 		u.setUsername("John");
-		u.setSession("abc");
-		//s.setGPHider(12);
-		//s.setGPSeeker(10);
-		//s.setGWHider(5);
-		//s.setGWSeeker(8);
-		users.add(u);
+		u.setSession("abc-123-xyz");
+		u.setDeveloper(true);
+		s.setGPHider(12);
+		s.setGPSeeker(10);
+		s.setGWHider(5);
+		s.setGWSeeker(8);
+		users = Stream.of(u).collect(Collectors.toList());
 	}
 	
-	@Ignore
 	@Test
 	public void index() throws Exception {
 		this.mockMvc.perform(get("/"))
 			.andExpect(status().isOk())
-			.andExpect(content().string(""));
+			.andExpect(content().string(containsString("")));
 	}
 
-	//@Ignore
 	@Test
 	public void test() throws Exception {
 		this.mockMvc.perform(get("/test"))
 			.andExpect(status().isOk())
-			.andExpect(content().string(""));
+			.andExpect(content().string(containsString("obj")));
 	}
 
-	//@Ignore
 	@Test
 	public void leaderboard() throws Exception {
-		when(udb.findAllUsersSorted(any(Comparator.class))).thenReturn(users);		
+		General g = new General();
+		User u = new User();
+		u.setUsername("Tom");
+		g.setUser(u);
+		Stats s = new Stats();
+		s.setGPHider(12);
+		s.setGPSeeker(10);
+		s.setGWHider(5);
+		s.setGWSeeker(8);
+		s.setTotDistance(500);
+		s.setTotTime(30);
+		g.setStats(s);
+		when(gedb.findAll()).thenReturn(Stream.of(g).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/leaderboard"))
 			.andExpect(status().isOk())
-			.andExpect(content().string(containsString("John")))
-			.andExpect(content().string(containsString("abc")));
-			//.andExpect(content().string(containsString("12")));
-		
+			.andExpect(content().string(containsString("users")));
 	}
 
-	//@Ignore
 	@Test
 	public void users() throws Exception {
+		when(udb.findAll()).thenReturn(users);
 		when(udb.findAllUsersSorted(any(Comparator.class))).thenReturn(users);
-		this.mockMvc.perform(get("/users"))
+		this.mockMvc.perform(get("/users?session=abc-123-xyz"))
 			.andExpect(status().isOk())
-			.andExpect(content().string(""));
+			.andExpect(content().string(containsString("John")));
 	}
 	
 	@Ignore
@@ -109,7 +122,7 @@ public class MiscControllerTest {
 	            .content(asJsonString(u)))
 	            .andExpect(status().isOk());
 	}
-	
+
 	public static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
