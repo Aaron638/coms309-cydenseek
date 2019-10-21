@@ -32,30 +32,33 @@ public class LoginFragment extends Fragment {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                validate();
+                String usernameTxt;
+                usernameTxt = username.getText().toString();
+                String passwordTxt;
+                passwordTxt = password.getText().toString();
+                validate(usernameTxt, passwordTxt);
             }
         });
 
         return rootView;
     }
 
-    private void validate(){
+    public int validate(String x, String y){
         //Retrieve stings from input
-        String usernameTxt;
-        usernameTxt = username.getText().toString();
-        String passwordTxt;
-        passwordTxt = password.getText().toString();
+
 
 
         String hold;
-        if((usernameTxt.equals("James")) && passwordTxt.equals("Bond")){
+        if((x.equals("James")) && y.equals("Bond")){
             hold = "Successful Login";
             result.setText(hold);
+            return 0;
         }
         else{
             hold = "Failed Login";
             result.setText(hold);
+            return -1;
         }
-        return;
+
     }
 }

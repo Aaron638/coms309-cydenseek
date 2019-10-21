@@ -30,6 +30,7 @@ public class LeaderboardFragment extends Fragment {
 
     private TextView mTextViewResult;
     private RequestQueue mQueue;
+    private int error = 0;      //Testing and error detection
 
     @Nullable
     @Override
@@ -50,7 +51,7 @@ public class LeaderboardFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 mTextViewResult.setText("");
-                jsonParse();
+                jsonParse1();
             }
         });
 
@@ -67,10 +68,11 @@ public class LeaderboardFragment extends Fragment {
     }
 
 
-    private void jsonParse(){
-        String url = "http://coms-309-vb-1.misc.iastate.edu:8080/leaderboard";
-        //maybe pass json array in the future?
+    //Returns 0 if successful, -1 if error occurs in connection
 
+    public int jsonParse1(){
+        String url = "https://api.myjson.com/bins/14tcp8";
+        //maybe pass json array in the future
 
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -103,10 +105,13 @@ public class LeaderboardFragment extends Fragment {
                                 "\nGames won as hider:"+ gwhider +
                                 "\n\n";
                         mTextViewResult.append(result);
+                        error = 0;
 
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    error = -1;
+
                 }
             }
         }, new Response.ErrorListener() {
@@ -115,10 +120,11 @@ public class LeaderboardFragment extends Fragment {
                 Log.d(TAG, "onErrorResponse: error");
                 error.printStackTrace();
                 mTextViewResult.setText("Error");
-
             }
         });
+
         mQueue.add(request);
+        return error;
     }
 
 
