@@ -3,7 +3,9 @@ package com.example.wjmas_000.menu;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.provider.Telephony;
 import android.support.annotation.NonNull;
@@ -33,11 +35,38 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout drawer;
     private WebSocketClient cc;
     private double longitude;
     private double latitude;
+    private LocationManager lm;
+
+    public LocationListener locListen = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.d("", "NonNull location");
+            lm.removeUpdates(this);
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
+            Toast.makeText(MainActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onStatusChanged(String s, int i, Bundle bundle) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String s) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String s) {
+
+        }
+    };
 
 
     @Override
@@ -68,13 +97,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //This is for location
 
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 10);
         }
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        longitude = location.getLongitude();
-        latitude = location.getLatitude();
+        Criteria criteria = new Criteria();
+        String bestProvider = String.valueOf(lm.getBestProvider(criteria, true)).toString();
+        Location location = lm.getLastKnownLocation(bestProvider);
+        if (location != null){
+            longitude = location.getLongitude();
+            latitude = location.getLatitude();
+            Toast.makeText(MainActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
+        } else {
+            lm.requestLocationUpdates(bestProvider, 1000, 0, locListen);
+        }
 
         Draft[] drafts = {new Draft_6455()};
 
