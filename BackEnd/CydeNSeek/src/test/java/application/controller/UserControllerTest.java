@@ -58,10 +58,10 @@ public class UserControllerTest {
 	public void authenticate() throws Exception {
 		this.mockMvc.perform(post("/user/" + USERNAME)
 			.contentType(APPLICATION_JSON_VALUE)
-			.content("{}")
+			.content("{john}")
 		)
 			.andExpect(status().isOk())
-			.andExpect(content().string(""));
+			.andExpect(content().string("john"));
 	}
 
 	@Ignore

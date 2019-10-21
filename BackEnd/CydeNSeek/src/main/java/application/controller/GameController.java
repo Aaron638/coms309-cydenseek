@@ -33,7 +33,6 @@ public class GameController {
 
 	@Autowired
 	private GameDB gameDB;
-
 	@Autowired
 	private UserDB userDB;
 
@@ -70,15 +69,7 @@ public class GameController {
 				put("message", "Session token not present.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		/*
-		 * Checks if radius not specified
-		 */
-		if(game.getRadius() == null) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "Radius is missing.");
-			}}, HttpStatus.BAD_REQUEST);
-		}
+		
 		/*
 		 * Checks if maxplayers not specified
 		 */
@@ -147,19 +138,20 @@ public class GameController {
 			newGame.setSeekers(1);
 		}
 		newGame.setCreator(user.getUsername());
-		newGame.setRadius(game.getRadius());
 		newGame.setMaxplayers(game.getMaxplayers());
 		newGame.setStartTime(LocalTime.now());
 		newGame.setDuration(game.getDuration());
-		newGame.setEndTime(newGame.getStartTime().plusMinutes(newGame.getDuration()));
-		newGame.setMode(game.getMode());
 		newGame.setGperiod(game.getGperiod());
 		gameDB.saveAndFlush(newGame);
 		/*
 		 * Updates user
 		 */
-		user.setGameId(gameDB.findAll().stream().filter(x -> x.getCreator().equals(user.getUsername())).findFirst().get().getId());
-		user.setFound(false);
+		
+		
+		/*user.setGameId(gameDB.findAll().stream().filter(x -> x.getCreator().equals(user.getUsername())).findFirst().get().getId());
+		user.setFound(false);*/
+		
+		
 		userDB.saveAndFlush(user);
 		LOG.info(user.getUsername() + " created a new game.");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -214,7 +206,7 @@ public class GameController {
 		/*
 		 * Checks if user created (and owns) game
 		 */
-		if(!userDB.findUserByUsername(foundGame.getCreator()).getSession().equals(game.getSession())) {
+		if(!userDB.findUserByUsername(foundGame.getCreator()).get().getSession().equals(game.getSession())) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Cannot change game created by someone else.");
@@ -223,13 +215,10 @@ public class GameController {
 		/*
 		 * Updates game with specified properties
 		 */
-		if(game.getRadius() != null) foundGame.setRadius(game.getRadius());
 		if(game.getMaxplayers() != null) foundGame.setMaxplayers(game.getMaxplayers());
 		if(game.getDuration() != null) {
 			foundGame.setDuration(game.getDuration());
-			foundGame.setEndTime(foundGame.getStartTime().plusMinutes(game.getDuration()));
 		}
-		if(game.getMode() != null) foundGame.setMode(game.getMode());
 		if(game.getGperiod() != null) foundGame.setGperiod(game.getGperiod());
 		gameDB.saveAndFlush(foundGame);
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
@@ -240,7 +229,7 @@ public class GameController {
 	 * 
 	 * Mapping for getting game leaderboard
 	 */
-	@RequestMapping(
+/*	@RequestMapping(
 		value = "/{gameId}/leaderboard",
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
@@ -249,7 +238,7 @@ public class GameController {
 		Optional<Game> game = gameDB.findById(gameId);
 		/*
 		 * Checks if game exists
-		 */
+		 
 		if(!game.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
@@ -271,14 +260,14 @@ public class GameController {
 					put("found", x.getFound());
 				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
-	}
+	}*/
 
 	/*
 	 * GET /game/<gameId>/users
 	 * 
 	 * Mapping for getting game users
 	 */
-	@RequestMapping(
+/*	@RequestMapping(
 		value = "/{gameId}/users",
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
@@ -288,7 +277,7 @@ public class GameController {
 		/*
 		 * Checks if game exists
 		 */
-		if(!game.isPresent()) {
+	/*	if(!game.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Game not found.");
@@ -296,12 +285,12 @@ public class GameController {
 		}
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("users", userDB
-				.findUsersByGame(gameId, (x,y) -> x.getUsername().compareTo(y.getUsername()))
+			.findUsersByGame(gameId, (x,y) -> x.getUsername().compareTo(y.getUsername()))
 				.stream().map(x -> new HashMap<String, Object>() {{
 					put("username", x.getUsername());
 					put("hider", x.getHider());
 					put("found", x.getFound());
 				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
-	}
+	}*/
 }
