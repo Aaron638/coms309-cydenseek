@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -14,18 +13,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import application.db.GameDB;
 import application.db.GeneralDB;
@@ -37,35 +32,36 @@ import application.model.User;
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 public class MiscControllerTest {
-	
-	@Mock
-	private GameDB gdb;
-	
-	@Mock
-	private UserDB udb;
 
 	@Mock
-	private GeneralDB gedb;
-	
+	private GeneralDB generalDB;
+
+	@Mock
+	private GameDB gameDB;
+
+	@Mock
+	private UserDB userDB;
+
 	private List<User> users;
 
 	@InjectMocks
 	private MiscController miscController = new MiscController();
 
 	private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(miscController).build();
-	
+
 	@Before
-	public void setup()
-	{	
+	public void setup() {
 		User u = new User();
 		Stats s = new Stats();
 		u.setUsername("John");
-		u.setSession("abc-123-xyz");
 		u.setDeveloper(true);
 		s.setGPHider(12);
 		s.setGPSeeker(10);
 		s.setGWHider(5);
 		s.setGWSeeker(8);
+		General row = new General();
+		row.setSession("abc-123-xyz");
+		u.setGeneral(row);
 		users = Stream.of(u).collect(Collectors.toList());
 	}
 	
@@ -97,7 +93,7 @@ public class MiscControllerTest {
 		s.setTotDistance(500);
 		s.setTotTime(30);
 		g.setStats(s);
-		when(gedb.findAll()).thenReturn(Stream.of(g).collect(Collectors.toList()));
+		when(generalDB.findAll()).thenReturn(Stream.of(g).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/leaderboard"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("users")));
@@ -105,8 +101,8 @@ public class MiscControllerTest {
 
 	@Test
 	public void users() throws Exception {
-		when(udb.findAll()).thenReturn(users);
-		when(udb.findAllUsersSorted(any(Comparator.class))).thenReturn(users);
+		when(userDB.findAll()).thenReturn(users);
+		when(userDB.findAllUsersSorted(any(Comparator.class))).thenReturn(users);
 		this.mockMvc.perform(get("/users?session=abc-123-xyz"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));

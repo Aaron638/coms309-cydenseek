@@ -1,16 +1,11 @@
 package application.model;
 
-import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -20,14 +15,19 @@ public class General {
 	@Column
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
 	private User userFK;
-	
+
 	@Column
 	@OneToOne(mappedBy = "stats", cascade = CascadeType.ALL)
 	private Stats statsFK;
-	
+
 	@Column
 	@OneToOne(mappedBy = "gameuser", cascade = CascadeType.ALL)
 	private GameUser gameuserFK;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column
+	private Integer id;
 
 	@Column
 	private User user;
@@ -40,34 +40,28 @@ public class General {
 
 	@Column
 	private String session;
-	
-	public User getUserFK()
-	{
+
+	public User getUserFK() {
 		return userFK;
 	}
-	
-	public void setUserFK(User userFK)
-	{
+
+	public void setUserFK(User userFK) {
 		this.userFK = userFK;
 	}
-	
-	public Stats getStatsFK()
-	{
+
+	public Stats getStatsFK() {
 		return statsFK;
 	}
-	
-	public void setStatsFK(Stats statsFK)
-	{
+
+	public void setStatsFK(Stats statsFK) {
 		this.statsFK = statsFK;
 	}
-	
-	public GameUser getGameUserFK()
-	{
+
+	public GameUser getGameUserFK() {
 		return gameuserFK;
 	}
-	
-	public void setGameUserFK(GameUser gameuserFK)
-	{
+
+	public void setGameUserFK(GameUser gameuserFK) {
 		this.gameuserFK = gameuserFK;
 	}
 

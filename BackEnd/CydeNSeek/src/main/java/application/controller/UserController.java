@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import application.db.GameDB;
+import application.db.GeneralDB;
 import application.db.UserDB;
+import application.model.General;
 import application.model.Stats;
 import application.model.User;
+import application.model.UserBody;
 
 @RestController
 @RequestMapping("/user")
@@ -30,17 +32,16 @@ public class UserController {
 	private static final Log LOG = LogFactory.getLog(UserController.class);
 
 	@Autowired
-	private UserDB userDB;
+	private GeneralDB generalDB;
 
 	@Autowired
-	private GameDB gameDB;
+	private UserDB userDB;
 
 	/*
 	 * GET /user/<username>
 	 * 
 	 * Mapping for getting user information
 	 */
-
 	@RequestMapping(
 		value = "/{username}",
 		method = RequestMethod.GET,
@@ -48,14 +49,11 @@ public class UserController {
 	)
 	public ResponseEntity<Map<String, Object>> getUser(@PathVariable("username") String username) {
 		Optional<User> user = userDB.findUserByUsername(username);
-		/*
-		 * Checks if user not exists
-		 */
+		/* Checks if user not exists */
 		if(!user.isPresent()) {
 			return error("User not found", HttpStatus.NOT_FOUND);
 		}
-		
-		Stats s = user.get().getGen().getStats();
+		Stats s = user.get().getGeneral().getStats();
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("gwhider", s.getGWHider());
 			put("gwseeker", s.getGWSeeker());
@@ -65,9 +63,6 @@ public class UserController {
 			put("tottime", s.getTotTime());
 		}}, HttpStatus.OK);
 	}
-
-
-	
 
 	/*
 	 * PUT /user/<username>
@@ -86,39 +81,24 @@ public class UserController {
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> updateUser(@PathVariable("username") String username, @RequestBody User user) {
-		/*
-		 * Checks if session not present
-		 */
+	public ResponseEntity<Map<String, Object>> updateUser(@PathVariable("username") String username, @RequestBody UserBody user) {
+		/* Checks if session not present */
 		if(user.getSession() == null) {
 			return error("Session token not present", HttpStatus.BAD_REQUEST);
 		}
 		Optional<User> foundUser = userDB.findUserByUsername(username);
-		/*
-		 * Checks if user not exists
-		 */
-
+		/* Checks if user not exists */
 		if(!foundUser.isPresent()) {
 			return error("User not found", HttpStatus.NOT_FOUND);
-
 		}
 		User u = foundUser.get();
-		/*
-		 * Checks if session invalid
-		 */
-
-		if(!u.getSession().equals(user.getSession())) {
+		/* Checks if session invalid */
+		if(!u.getGeneral().getSession().equals(user.getSession())) {
 			return error("Session token not found", HttpStatus.BAD_REQUEST);
-
 		}
-		/*
-		 * Updates specified user properties
-		 */
-		
+		/* Updates specified user properties */
 		if(user.getPassword() != null) u.setPassword(user.getPassword());
-		
 		userDB.saveAndFlush(u);
-
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
 
@@ -137,46 +117,47 @@ public class UserController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> authenticate(@PathVariable("username") String username, @RequestBody User user) {
-		/*
-		 * Checks if password not present
-		 */
+		/* Checks if password not present */
 		if(user.getPassword() == null) {
-
 			return error("Must provide password when authenticating user", HttpStatus.BAD_REQUEST);
 		}
 		Optional<User> foundUser = userDB.findUserByUsername(username);
-
-
-		/*
-		 * Checks if user not exists
-		 */
+		/* Checks if user not exists */
 		if(!foundUser.isPresent()) {
+			General row = new General();
+			row.setUser(user);
 			user.setUsername(username);
 			String session = UUID.randomUUID().toString();
-			user.setSession(session);
+			row.setSession(session);
 			user.setDeveloper(false);
+			/* Need to set password to hashed password and store salt */
+			user.setGeneral(row);
+			Stats stats = new Stats();
+			stats.setGPHider(0);
+			stats.setGPSeeker(0);
+			stats.setGWHider(0);
+			stats.setGWSeeker(0);
+			stats.setTotDistance(0);
+			stats.setTotTime(0);
+			stats.setGeneral(row);
 			userDB.saveAndFlush(user);
+			generalDB.saveAndFlush(row);
 			LOG.info("Created new user \"" + username + "\".");
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("session", session);
 			}}, HttpStatus.OK);
 		}
 		User u = foundUser.get();
-		/*
-		 * Checks if password not match
-		 */
-
+		/* Checks if password not match */
 		if(!u.getPassword().equals(user.getPassword())) {
 			return error("The password was incorrect", HttpStatus.BAD_REQUEST);
 		}
-		/*
-		 * Generates session token
-		 */
+		/* Generates session token */
+		General row = u.getGeneral();
 		String session = UUID.randomUUID().toString();
-
-		u.setSession(session);
+		row.setSession(session);
 		userDB.saveAndFlush(u);
-
+		generalDB.saveAndFlush(row);
 		LOG.info("Authenticated user \"" + username + "\".");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("session", session);
@@ -198,16 +179,12 @@ public class UserController {
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("username") String username, @RequestBody User user) {
-		/*
-		 * Checks is session not present
-		 */
+	public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable("username") String username, @RequestBody UserBody user) {
+		/* Checks is session not present */
 		if(user.getSession() == null) {
 			return error("Session token not found", HttpStatus.BAD_REQUEST);
 		}
-		/*
-		 * Checks if password not present
-		 */
+		/* Checks if password not present */
 		if(user.getPassword() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
@@ -215,32 +192,22 @@ public class UserController {
 			}}, HttpStatus.BAD_REQUEST);
 		}
 		Optional<User> foundUser = userDB.findUserByUsername(username);
-		/*
-		 * Checks if user not exists
-		 */
-
+		/* Checks if user not exists */
 		if(!foundUser.isPresent()) {
 			return error("User not found", HttpStatus.BAD_REQUEST);
-
 		}
 		User u = foundUser.get();
-		/*
-		 * Checks if session or password invalid
-		 */
-
-		if(!u.getSession().equals(user.getSession()) || !u.getPassword().equals(user.getPassword())) {
+		/* Checks if session or password invalid */
+		if(!u.getGeneral().getSession().equals(user.getSession()) || !u.getPassword().equals(user.getPassword())) {
 			return error("The password or session token was incorrect", HttpStatus.BAD_REQUEST);
 		}
-		/*
-		 * Deletes user
-		 */
+		/* Deletes user */
 		userDB.delete(u);
 		LOG.info("Deleted user \"" + username + "\".");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
-	
-	public ResponseEntity<Map<String, Object>> error(String errorMessage, HttpStatus h)
-	{
+
+	public ResponseEntity<Map<String, Object>> error(String errorMessage, HttpStatus h) {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("error", true);
 			put("message", errorMessage);

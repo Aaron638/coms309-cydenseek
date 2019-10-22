@@ -20,9 +20,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import application.db.GameDB;
+import application.db.GameUserDB;
+import application.db.GeneralDB;
 import application.db.UserDB;
 import application.model.Game;
 import application.model.GameBody;
+import application.model.GameUser;
+import application.model.General;
 import application.model.User;
 
 @RestController
@@ -32,9 +36,16 @@ public class GameController {
 	private static final Log LOG = LogFactory.getLog(GameController.class);
 
 	@Autowired
+	private GeneralDB generalDB;
+
+	@Autowired
 	private GameDB gameDB;
+
 	@Autowired
 	private UserDB userDB;
+
+	@Autowired
+	private GameUserDB gameUserDB;
 
 	/*
 	 * POST /game/new
@@ -60,99 +71,73 @@ public class GameController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> newGame(@RequestBody GameBody game) {
-		/*
-		 * Checks if session not present
-		 */
+		/* Checks if session not present */
 		if(game.getSession() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Session token not present.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		
-		/*
-		 * Checks if maxplayers not specified
-		 */
+		/* Checks if maxplayers not specified */
 		if(game.getMaxplayers() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Maxplayers is missing.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		/*
-		 * Checks if duration not specified
-		 */
+		/* Checks if duration not specified */
 		if(game.getDuration() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Duration is missing.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		/*
-		 * Checks if mode not specified
-		 */
+		/* Checks if mode not specified */
 		if(game.getMode() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Mode is missing.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		/*
-		 * Checks if grace period not specified
-		 */
+		/* Checks if grace period not specified */
 		if(game.getGperiod() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Grace period is missing.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		/*
-		 * Checks if hider not specified
-		 */
+		/* Checks if hider not specified */
 		if(game.getHider() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Must specify if hider or not.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		Optional<User> foundUser = userDB.findAll().stream().filter(x -> x.getSession().equals(game.getSession())).findFirst();
-		/*
-		 * Checks if user with token exists
-		 */
+		Optional<General> foundUser = generalDB.findAll().stream().filter(x -> x.getSession().equals(game.getSession())).findFirst();
+		/* Checks if user with token exists */
 		if(!foundUser.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Invalid session token.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		User user = foundUser.get();
-		/*
-		 * Creates and builds game
-		 */
+		User user = foundUser.get().getUser();
+		GameUser gu = new GameUser();
+		gu.setIsHider(game.getHider());
+		gu.setFound(false);
+		General row = foundUser.get();
+		row.setGameUser(gu);
+		/* Creates and builds game */
 		Game newGame = new Game();
-		if(game.getHider()) {
-			newGame.setHiders(1);
-			newGame.setSeekers(0);
-		} else {
-			newGame.setHiders(0);
-			newGame.setSeekers(1);
-		}
+		gu.setGame(newGame);
 		newGame.setCreator(user.getUsername());
 		newGame.setMaxplayers(game.getMaxplayers());
 		newGame.setStartTime(LocalTime.now());
 		newGame.setDuration(game.getDuration());
 		newGame.setGperiod(game.getGperiod());
 		gameDB.saveAndFlush(newGame);
-		/*
-		 * Updates user
-		 */
-		
-		
-		/*user.setGameId(gameDB.findAll().stream().filter(x -> x.getCreator().equals(user.getUsername())).findFirst().get().getId());
-		user.setFound(false);*/
-		
-		
-		userDB.saveAndFlush(user);
+		gameUserDB.saveAndFlush(gu);
+		generalDB.saveAndFlush(row);
 		LOG.info(user.getUsername() + " created a new game.");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("game", newGame);
@@ -183,9 +168,7 @@ public class GameController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameId") int gameId, @RequestBody GameBody game) {
-		/*
-		 * Checks if session not present
-		 */
+		/* Checks if session not present */
 		if(game.getSession() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
@@ -193,9 +176,7 @@ public class GameController {
 			}}, HttpStatus.BAD_REQUEST);
 		}
 		Optional<Game> checkGame = gameDB.findById(gameId);
-		/*
-		 * Checks if game exists
-		 */
+		/* Checks if game exists */
 		if(!checkGame.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
@@ -203,18 +184,14 @@ public class GameController {
 			}}, HttpStatus.NOT_FOUND);
 		}
 		Game foundGame = checkGame.get();
-		/*
-		 * Checks if user created (and owns) game
-		 */
-		if(!userDB.findUserByUsername(foundGame.getCreator()).get().getSession().equals(game.getSession())) {
+		/* Checks if user created (and owns) game */
+		if(!userDB.findUserByUsername(foundGame.getCreator()).get().getGeneral().getSession().equals(game.getSession())) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Cannot change game created by someone else.");
 			}}, HttpStatus.FORBIDDEN);
 		}
-		/*
-		 * Updates game with specified properties
-		 */
+		/* Updates game with specified properties */
 		if(game.getMaxplayers() != null) foundGame.setMaxplayers(game.getMaxplayers());
 		if(game.getDuration() != null) {
 			foundGame.setDuration(game.getDuration());
@@ -229,16 +206,14 @@ public class GameController {
 	 * 
 	 * Mapping for getting game leaderboard
 	 */
-/*	@RequestMapping(
+	@RequestMapping(
 		value = "/{gameId}/leaderboard",
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> leaderboard(@PathVariable("gameId") int gameId) {
 		Optional<Game> game = gameDB.findById(gameId);
-		/*
-		 * Checks if game exists
-		 
+		/* Checks if game exists */
 		if(!game.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
@@ -246,51 +221,49 @@ public class GameController {
 			}}, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", userDB
-				.findUsersByGame(gameId, (x,y) -> (x.getGwhider() + x.getGwseeker()) / (x.getGphider() + x.getGpseeker()) - (y.getGwhider() + y.getGwseeker()) / (y.getGphider() + y.getGpseeker()))
+			put("users", generalDB
+				.findUsersByGame(gameId, (x,y) -> (x.getStats().getGWHider() + x.getStats().getGWSeeker()) / (x.getStats().getGPHider() + x.getStats().getGPSeeker()) - (y.getStats().getGWHider() + y.getStats().getGWSeeker()) / (y.getStats().getGPHider() + y.getStats().getGPSeeker()))
 				.stream().map(x -> new HashMap<String, Object>() {{
-					put("username", x.getUsername());
-					put("hider", x.getHider());
-					put("gwhider", x.getGwhider());
-					put("gwseeker", x.getGwseeker());
-					put("gphider", x.getGphider());
-					put("gpseeker", x.getGpseeker());
-					put("totdistance", x.getTotdistance());
-					put("tottime", x.getTottime());
-					put("found", x.getFound());
+					put("username", x.getUser().getUsername());
+					put("hider", x.getGameUser().getIsHider());
+					put("gwhider", x.getStats().getGWHider());
+					put("gwseeker", x.getStats().getGWSeeker());
+					put("gphider", x.getStats().getGPHider());
+					put("gpseeker", x.getStats().getGPSeeker());
+					put("totdistance", x.getStats().getTotDistance());
+					put("tottime", x.getStats().getTotTime());
+					put("found", x.getGameUser().getFound());
 				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
-	}*/
+	}
 
 	/*
 	 * GET /game/<gameId>/users
 	 * 
 	 * Mapping for getting game users
 	 */
-/*	@RequestMapping(
+	@RequestMapping(
 		value = "/{gameId}/users",
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> users(@PathVariable("gameId") int gameId) {
 		Optional<Game> game = gameDB.findById(gameId);
-		/*
-		 * Checks if game exists
-		 */
-	/*	if(!game.isPresent()) {
+		/* Checks if game exists */
+		if(!game.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", userDB
-			.findUsersByGame(gameId, (x,y) -> x.getUsername().compareTo(y.getUsername()))
+			put("users", generalDB
+			.findUsersByGame(gameId, (x,y) -> x.getUser().getUsername().compareTo(y.getUser().getUsername()))
 				.stream().map(x -> new HashMap<String, Object>() {{
-					put("username", x.getUsername());
-					put("hider", x.getHider());
-					put("found", x.getFound());
+					put("username", x.getUser().getUsername());
+					put("hider", x.getGameUser().getIsHider());
+					put("found", x.getGameUser().getFound());
 				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
-	}*/
+	}
 }
