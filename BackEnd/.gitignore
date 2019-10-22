@@ -1,0 +1,6 @@
+# Ignore files that end in .project
+*.project
+*.classpath
+settings/
+bin/
+target/

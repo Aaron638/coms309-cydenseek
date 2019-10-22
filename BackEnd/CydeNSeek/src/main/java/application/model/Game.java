@@ -13,16 +13,8 @@ public class Game {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
-
 	@Column
-	private Integer radius;
-
-	@Column
-	private Integer hiders;
-
-	@Column
-	private Integer seekers;
+	private Integer gameId;
 
 	@Column
 	private Integer maxplayers;
@@ -34,31 +26,17 @@ public class Game {
 	private Integer duration;
 
 	@Column
-	private LocalTime endTime;
-
-	@Column
-	private Integer mode;
-
-	@Column
 	private Integer gperiod;
 
 	@Column
 	private String creator;
 
-	public Integer getId() {
-		return id;
+	public Integer getGameId() {
+		return gameId;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public int getRadius() {
-		return radius;
-	}
-
-	public void setRadius(int radius) {
-		this.radius = radius;
+	public void setGameId(Integer id) {
+		this.gameId = id;
 	}
 
 	public int getDuration() {
@@ -67,14 +45,6 @@ public class Game {
 
 	public void setDuration(int duration) {
 		this.duration = duration;
-	}
-
-	public int getMode() {
-		return mode;
-	}
-
-	public void setMode(int mode) {
-		this.mode = mode;
 	}
 
 	public int getGperiod() {
@@ -93,14 +63,6 @@ public class Game {
 		this.startTime = startTime;
 	}
 
-	public LocalTime getEndTime() {
-		return endTime;
-	}
-
-	public void setEndTime(LocalTime endTime) {
-		this.endTime = endTime;
-	}
-
 	public Integer getMaxplayers() {
 		return maxplayers;
 	}
@@ -115,21 +77,5 @@ public class Game {
 
 	public void setCreator(String creator) {
 		this.creator = creator;
-	}
-
-	public Integer getHiders() {
-		return hiders;
-	}
-
-	public void setHiders(Integer hiders) {
-		this.hiders = hiders;
-	}
-
-	public Integer getSeekers() {
-		return seekers;
-	}
-
-	public void setSeekers(Integer seekers) {
-		this.seekers = seekers;
 	}
 }
