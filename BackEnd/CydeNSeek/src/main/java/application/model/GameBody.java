@@ -6,8 +6,6 @@ public class GameBody {
 
 	private String session;
 
-	private Integer radius;
-
 	private Integer maxplayers;
 
 	private LocalTime startTime;
@@ -21,6 +19,8 @@ public class GameBody {
 	private String creator;
 
 	private Boolean hider;
+	
+	private Boolean found;
 
 	public String getSession() {
 		return session;
@@ -29,15 +29,7 @@ public class GameBody {
 	public void setSession(String session) {
 		this.session = session;
 	}
-
-	public Integer getRadius() {
-		return radius;
-	}
-
-	public void setRadius(Integer radius) {
-		this.radius = radius;
-	}
-
+	
 	public Integer getMaxplayers() {
 		return maxplayers;
 	}
@@ -92,5 +84,15 @@ public class GameBody {
 
 	public void setHider(Boolean hider) {
 		this.hider = hider;
+	}
+	
+	public Boolean getFound()
+	{
+		return found;
+	}
+	
+	public void setFound(Boolean found)
+	{
+		this.found = found;
 	}
 }
