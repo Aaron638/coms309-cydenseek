@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import application.db.GameDB;
+import application.db.GeneralDB;
+import application.db.StatsDB;
 import application.db.UserDB;
 import application.model.User;
 
@@ -28,7 +30,13 @@ public class MiscController {
 	private static final Log LOG = LogFactory.getLog(MiscController.class);
 
 	@Autowired
+	private GeneralDB generalDB;
+
+	@Autowired
 	private UserDB userDB;
+
+	@Autowired
+	private StatsDB statsDB;
 
 	@Autowired
 	private GameDB gameDB;
@@ -74,6 +82,7 @@ public class MiscController {
 	 * 
 	 * Mapping for getting global leaderboard
 	 */
+	
 	@RequestMapping(
 		value = "/leaderboard",
 		method = RequestMethod.GET,
@@ -81,17 +90,18 @@ public class MiscController {
 	)
 	public ResponseEntity<Map<String, Object>> leaderboard() {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", userDB
-				.findAllUsersSorted((x,y) -> (x.getGwhider() + x.getGwseeker()) / (x.getGphider() + x.getGpseeker()) - (y.getGwhider() + y.getGwseeker()) / (y.getGphider() + y.getGpseeker()))
-				.stream().map(x -> new HashMap<String, Object>() {{
-					put("username", x.getUsername());
-					put("gwhider", x.getGwhider());
-					put("gwseeker", x.getGwseeker());
-					put("gphider", x.getGphider());
-					put("gpseeker", x.getGpseeker());
-					put("totdistance", x.getTotdistance());
-					put("tottime", x.getTottime());
-				}}).collect(Collectors.toList()));
+			put("users", generalDB.findAll().stream()
+				.sorted((x,y) -> (statsDB.findById(x.getStatsId()).get().getGWHider() + statsDB.findById(x.getStatsId()).get().getGWSeeker()) / (statsDB.findById(x.getStatsId()).get().getGPHider() + statsDB.findById(x.getStatsId()).get().getGPSeeker()) - (statsDB.findById(y.getStatsId()).get().getGWHider() + statsDB.findById(y.getStatsId()).get().getGWSeeker()) / (statsDB.findById(y.getStatsId()).get().getGPHider() + statsDB.findById(y.getStatsId()).get().getGPSeeker()))
+				.map(x -> new HashMap<String, Object>() {{
+					put("username", userDB.findById(x.getUserId()).get().getUsername());
+					put("gwhider", statsDB.findById(x.getStatsId()).get().getGWHider());
+					put("gwseeker", statsDB.findById(x.getStatsId()).get().getGWSeeker());
+					put("gphider", statsDB.findById(x.getStatsId()).get().getGPHider());
+					put("gpseeker", statsDB.findById(x.getStatsId()).get().getGPSeeker());
+					put("totdistance", statsDB.findById(x.getStatsId()).get().getTotDistance());
+					put("tottime", statsDB.findById(x.getStatsId()).get().getTotTime());
+				}})
+				.collect(Collectors.toList()));
 		}}, HttpStatus.OK);
 	}
 
@@ -105,28 +115,21 @@ public class MiscController {
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> users(/*@RequestParam("session") String session*/) {
-		/*
-		Optional<User> user = userDB.findAll().stream().filter(x -> x.getSession().equals(session)).findFirst();
-		/*
-		 * Checks if session token valid
-		 * /
+	public ResponseEntity<Map<String, Object>> users(@RequestParam("session") String session) {
+		Optional<User> user = userDB.findAll().stream().filter(x -> generalDB.findById(x.getGeneralId()).get().getSession().equals(session)).findFirst();
 		if(!user.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
-				put("message", "Invalid session token.");
-			}}, HttpStatus.BAD_REQUEST);
+				put("message", "User not found.");
+			}}, HttpStatus.NOT_FOUND);
 		}
-		/*
-		 * Checks if user is developer
-		 * /
+		/* Checks if user is developer */
 		if(!user.get().getDeveloper()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Only developers can get the list of users.");
 			}}, HttpStatus.UNAUTHORIZED);
 		}
-		*/
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("users", userDB.findAllUsersSorted((x,y) -> x.getUsername().compareTo(y.getUsername())));
 		}}, HttpStatus.OK);

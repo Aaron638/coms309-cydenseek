@@ -11,7 +11,11 @@ public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column
 	private Integer id;
+
+	@Column
+	private Integer generalId;
 
 	@Column
 	private String username;
@@ -20,43 +24,10 @@ public class User {
 	private String password;
 
 	@Column
-	private String session;
-
-	@Column
-	private Integer gameId;
-
-	@Column
-	private String latitude;
-	
-	@Column
-	private String longitude;
+	private byte[] salt;
 
 	@Column
 	private Boolean developer;
-
-	@Column
-	private Boolean hider;
-
-	@Column
-	private Boolean found;
-
-	@Column
-	private Integer gwhider;
-
-	@Column
-	private Integer gwseeker;
-
-	@Column
-	private Integer gphider;
-
-	@Column
-	private Integer gpseeker;
-
-	@Column
-	private Integer totdistance;
-
-	@Column
-	private Integer tottime;
 
 	public Integer getId() {
 		return id;
@@ -82,107 +53,27 @@ public class User {
 		this.password = password;
 	}
 
-	public String getSession() {
-		return session;
-	}
-
-	public void setSession(String session) {
-		this.session = session;
-	}
-
-	public Integer getGameId() {
-		return gameId;
-	}
-
-	public void setGameId(Integer gameId) {
-		this.gameId = gameId;
-	}
-
-	public Integer getGwhider() {
-		return gwhider;
-	}
-
-	public void setGwhider(Integer gwhider) {
-		this.gwhider = gwhider;
-	}
-
-	public Integer getGwseeker() {
-		return gwseeker;
-	}
-
-	public void setGwseeker(Integer gwseeker) {
-		this.gwseeker = gwseeker;
-	}
-
-	public Integer getGphider() {
-		return gphider;
-	}
-
-	public void setGphider(Integer gphider) {
-		this.gphider = gphider;
-	}
-
-	public Integer getGpseeker() {
-		return gpseeker;
-	}
-
-	public void setGpseeker(Integer gpseeker) {
-		this.gpseeker = gpseeker;
-	}
-
-	public String getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(String location) {
-		this.latitude = location;
-	}
-	
-	public String getLongitude() {
-		return longitude;
-	}
-	
-	public void setLongitude(String longitude) {
-		this.longitude = longitude;
-	}
-
-	public Integer getTotdistance() {
-		return totdistance;
-	}
-
-	public void setTotdistance(Integer totdistance) {
-		this.totdistance = totdistance;
-	}
-
-	public Integer getTottime() {
-		return tottime;
-	}
-
-	public void setTottime(Integer totime) {
-		this.tottime = totime;
-	}
-
-	public Boolean getFound() {
-		return found;
-	}
-
-	public void setFound(Boolean found) {
-		this.found = found;
-	}
-
-	public Boolean getHider() {
-		return hider;
-	}
-
-	public void setHider(Boolean hider) {
-		this.hider = hider;
-	}
-
 	public Boolean getDeveloper() {
 		return developer;
 	}
 
 	public void setDeveloper(Boolean developer) {
 		this.developer = developer;
+	}
+
+	public byte[] getSalt() {
+		return salt;
+	}
+
+	public void setSalt(byte[] salt) {
+		this.salt = salt;
+	}
+
+	public Integer getGeneralId() {
+		return generalId;
+	}
+
+	public void setGeneralId(Integer generalId) {
+		this.generalId = generalId;
 	}
 }
