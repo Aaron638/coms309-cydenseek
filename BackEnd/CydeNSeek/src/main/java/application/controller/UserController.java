@@ -142,9 +142,15 @@ public class UserController {
 			stats.setTotDistance(0);
 			stats.setTotTime(0);
 			/* Need to get primary keys for objects */
-			userDB.saveAndFlush(user);
 			generalDB.saveAndFlush(row);
+			General foundRow = generalDB.findAll().stream().filter(x -> x.getSession().equals(session)).findFirst().get();
+			user.setGeneralId(foundRow.getId());
+			stats.setGeneralId(foundRow.getId());
+			userDB.saveAndFlush(user);
 			statsDB.saveAndFlush(stats);
+			foundRow.setUserId(userDB.findAll().stream().filter(x -> x.getGeneralId().equals(foundRow.getId())).findFirst().get().getId());
+			foundRow.setStatsId(statsDB.findAll().stream().filter(x -> x.getGeneralId().equals(foundRow.getId())).findFirst().get().getId());
+			generalDB.saveAndFlush(foundRow);
 			LOG.info("Created new user \"" + username + "\".");
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("session", session);
@@ -159,7 +165,6 @@ public class UserController {
 		General row = generalDB.findById(u.getGeneralId()).get();
 		String session = UUID.randomUUID().toString();
 		row.setSession(session);
-		userDB.saveAndFlush(u);
 		generalDB.saveAndFlush(row);
 		LOG.info("Authenticated user \"" + username + "\".");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{

@@ -130,17 +130,18 @@ public class GameController {
 		gu.setIsHider(game.getHider());
 		gu.setFound(false);
 		General row = foundUser.get();
-		row.setGameUserId(gu.getId());
+		gu.setGeneralId(row.getId());
 		/* Creates and builds game */
 		Game newGame = new Game();
-		gu.setGameId(newGame.getGameId());
 		newGame.setCreator(user.getUsername());
 		newGame.setMaxplayers(game.getMaxplayers());
 		newGame.setStartTime(LocalTime.now());
 		newGame.setDuration(game.getDuration());
 		newGame.setGperiod(game.getGperiod());
 		gameDB.saveAndFlush(newGame);
+		gu.setGameId(gameDB.findAll().stream().filter(x -> x.getCreator().equals(user.getUsername())).findFirst().get().getGameId());
 		gameUserDB.saveAndFlush(gu);
+		row.setGameUserId(gameUserDB.findAll().stream().filter(x -> x.getGeneralId().equals(row.getId())).findFirst().get().getId());
 		generalDB.saveAndFlush(row);
 		LOG.info(user.getUsername() + " created a new game.");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{

@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import application.db.GameDB;
 import application.db.GameUserDB;
 import application.db.GeneralDB;
+import application.db.StatsDB;
 import application.db.UserDB;
 import application.model.Game;
 import application.model.GameUser;
@@ -46,6 +47,9 @@ public class GameControllerTest {
 	private UserDB userDB;
 
 	@Mock
+	private StatsDB statsDB;
+
+	@Mock
 	private GameDB gameDB;
 
 	@Mock
@@ -58,11 +62,12 @@ public class GameControllerTest {
 
 	@Test
 	public void newGame() throws Exception {
-		General row = new General();
-		User user = new User();
-		user.setUsername("John");
-		row.setSession("abc-xyz-123");
-		when(generalDB.findAll()).thenReturn(Stream.of(row).collect(Collectors.toList()));
+		Game g = new Game();
+		g.setCreator("John");
+		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(buildUser()));
+		when(gameUserDB.findAll()).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
+		when(gameDB.findAll()).thenReturn(Stream.of(g).collect(Collectors.toList()));
+		when(generalDB.findAll()).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
 		this.mockMvc.perform(post("/game/new")
 			.contentType(APPLICATION_JSON_VALUE)
 			.content("{"
@@ -80,8 +85,12 @@ public class GameControllerTest {
 
 	@Test
 	public void leaderboard() throws Exception {
+		when(statsDB.findById(any(Integer.class))).thenReturn(Optional.of(buildStats()));
+		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(buildUser()));
 		when(gameDB.findById(any(Integer.class))).thenReturn(Optional.of(new Game()));
-		when(gameUserDB.findUsersByGame(any(Integer.class), any(Comparator.class))).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
+		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGeneral()));
+		when(gameUserDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGameUser()));
+		when(gameUserDB.findUsersByGame(any(Integer.class), any(Comparator.class))).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/game/" + GAMEID + "/leaderboard"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
@@ -90,7 +99,10 @@ public class GameControllerTest {
 	@Test
 	public void users() throws Exception {
 		when(gameDB.findById(any(Integer.class))).thenReturn(Optional.of(new Game()));
-		when(gameUserDB.findUsersByGame(any(Integer.class), any(Comparator.class))).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
+		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGeneral()));
+		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(buildUser()));
+		when(gameUserDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGameUser()));
+		when(gameUserDB.findUsersByGame(any(Integer.class), any(Comparator.class))).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/game/" + GAMEID + "/users"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
@@ -98,8 +110,22 @@ public class GameControllerTest {
 
 	private static General buildGeneral() {
 		General general = new General();
+		general.setId(1);
+		general.setSession("abc-xyz-123");
+		general.setUserId(1);
+		general.setStatsId(1);
+		general.setGameUserId(1);
+		return general;
+	}
+
+	private static User buildUser() {		
 		User user = new User();
 		user.setUsername("John");
+		user.setGeneralId(1);
+		return user;
+	}
+
+	private static Stats buildStats() {
 		Stats stats = new Stats();
 		stats.setGPHider(5);
 		stats.setGPSeeker(10);
@@ -107,9 +133,15 @@ public class GameControllerTest {
 		stats.setGWSeeker(3);
 		stats.setTotDistance(45);
 		stats.setTotTime(39);
+		stats.setGeneralId(1);
+		return stats;
+	}
+
+	private static GameUser buildGameUser() {
 		GameUser gameUser = new GameUser();
 		gameUser.setFound(false);
 		gameUser.setIsHider(true);
-		return general;
+		gameUser.setGeneralId(1);
+		return gameUser;
 	}
 }

@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import application.db.GameDB;
 import application.db.GeneralDB;
+import application.db.StatsDB;
 import application.db.UserDB;
 import application.model.General;
 import application.model.Stats;
@@ -42,6 +44,9 @@ public class MiscControllerTest {
 	@Mock
 	private UserDB userDB;
 
+	@Mock
+	private StatsDB statsDB;
+
 	private List<User> users;
 
 	@InjectMocks
@@ -52,6 +57,7 @@ public class MiscControllerTest {
 	@Before
 	public void setup() {
 		User u = new User();
+		u.setGeneralId(1);
 		Stats s = new Stats();
 		u.setUsername("John");
 		u.setDeveloper(true);
@@ -59,7 +65,10 @@ public class MiscControllerTest {
 		s.setGPSeeker(10);
 		s.setGWHider(5);
 		s.setGWSeeker(8);
+		s.setGeneralId(1);
 		General row = new General();
+		row.setUserId(1);
+		row.setStatsId(1);
 		row.setSession("abc-123-xyz");
 		users = Stream.of(u).collect(Collectors.toList());
 	}
@@ -81,8 +90,11 @@ public class MiscControllerTest {
 	@Test
 	public void leaderboard() throws Exception {
 		General g = new General();
+		g.setUserId(1);
+		g.setStatsId(1);
 		User u = new User();
 		u.setUsername("Tom");
+		u.setGeneralId(1);
 		Stats s = new Stats();
 		s.setGPHider(12);
 		s.setGPSeeker(10);
@@ -90,6 +102,9 @@ public class MiscControllerTest {
 		s.setGWSeeker(8);
 		s.setTotDistance(500);
 		s.setTotTime(30);
+		s.setGeneralId(1);
+		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(u));
+		when(statsDB.findById(any(Integer.class))).thenReturn(Optional.of(s));
 		when(generalDB.findAll()).thenReturn(Stream.of(g).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/leaderboard"))
 			.andExpect(status().isOk())
@@ -98,7 +113,10 @@ public class MiscControllerTest {
 
 	@Test
 	public void users() throws Exception {
+		General g = new General();
+		g.setSession("abc-123-xyz");
 		when(userDB.findAll()).thenReturn(users);
+		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(g));
 		when(userDB.findAllUsersSorted(any(Comparator.class))).thenReturn(users);
 		this.mockMvc.perform(get("/users?session=abc-123-xyz"))
 			.andExpect(status().isOk())

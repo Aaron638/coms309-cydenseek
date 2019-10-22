@@ -21,9 +21,8 @@ public class ServerErrorController implements ErrorController {
 	public ResponseEntity<Map<String, Object>> error() {
 		LOG.error("Error mapping utilized.");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("error", new HashMap<String, Object>() {{
-				put("message", "There was an issue with your request.");				
-			}});
+			put("error", true);
+			put("message", "There was an issue with your request.");				
 		}}, HttpStatus.BAD_REQUEST);
 	}
 
