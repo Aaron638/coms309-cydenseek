@@ -7,15 +7,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-
 
 @Entity
 public class User {
 
+	@Column
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user", nullable = false)
+	private General general;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column
 	private Integer id;
 
 	@Column
@@ -25,16 +29,11 @@ public class User {
 	private String password;
 
 	@Column
-	private String session;
+	private byte[] salt;
 
 	@Column
 	private Boolean developer;
-	
-	@Column
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user", nullable = false)
-	private General general;
-	
+
 	public Integer getId() {
 		return id;
 	}
@@ -59,14 +58,6 @@ public class User {
 		this.password = password;
 	}
 
-	public String getSession() {
-		return session;
-	}
-
-	public void setSession(String session) {
-		this.session = session;
-	}
-
 	public Boolean getDeveloper() {
 		return developer;
 	}
@@ -74,15 +65,20 @@ public class User {
 	public void setDeveloper(Boolean developer) {
 		this.developer = developer;
 	}
-	
-	public General getGen()
-	{
+
+	public General getGeneral() {
 		return general;
 	}
-	
-	public void setGen(General general)
-	{
+
+	public void setGeneral(General general) {
 		this.general = general;
 	}
-	
+
+	public byte[] getSalt() {
+		return salt;
+	}
+
+	public void setSalt(byte[] salt) {
+		this.salt = salt;
+	}
 }

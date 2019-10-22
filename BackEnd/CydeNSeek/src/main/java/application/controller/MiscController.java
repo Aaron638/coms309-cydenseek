@@ -29,13 +29,13 @@ public class MiscController {
 	private static final Log LOG = LogFactory.getLog(MiscController.class);
 
 	@Autowired
+	private GeneralDB generalDB;
+
+	@Autowired
 	private UserDB userDB;
 
 	@Autowired
 	private GameDB gameDB;
-
-	@Autowired
-	private GeneralDB generalDB;
 
 	/*
 	 * GET /
@@ -85,7 +85,6 @@ public class MiscController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> leaderboard() {
-		
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("users", generalDB.findAll().stream()
 				.sorted((x,y) -> (x.getStats().getGWHider() + x.getStats().getGWSeeker()) / (x.getStats().getGPHider() + x.getStats().getGPSeeker()) - (y.getStats().getGWHider() + y.getStats().getGWSeeker()) / (y.getStats().getGPHider() + y.getStats().getGPSeeker()))
@@ -113,25 +112,20 @@ public class MiscController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> users(@RequestParam("session") String session) {
-		
-		Optional<User> user = userDB.findAll().stream().filter(x -> x.getSession().equals(session)).findFirst();
-		
+		Optional<User> user = userDB.findAll().stream().filter(x -> x.getGeneral().getSession().equals(session)).findFirst();
 		if(!user.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "User not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-		/*
-		 * Checks if user is developer
-		 */
+		/* Checks if user is developer */
 		if(!user.get().getDeveloper()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Only developers can get the list of users.");
 			}}, HttpStatus.UNAUTHORIZED);
 		}
-		
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("users", userDB.findAllUsersSorted((x,y) -> x.getUsername().compareTo(y.getUsername())));
 		}}, HttpStatus.OK);
