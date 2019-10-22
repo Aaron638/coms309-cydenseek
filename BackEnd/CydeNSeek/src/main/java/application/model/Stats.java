@@ -5,21 +5,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 
 @Entity
 public class Stats {
-
-	@Column
-	@OneToOne
-	@JoinColumn(name = "stats")
-	private General general;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private Integer id;
+
+	@Column
+	private Integer generalId;
 
 	@Column
 	private Integer gphider;
@@ -38,14 +34,6 @@ public class Stats {
 
 	@Column
 	private Integer tottime;
-
-	public General getGeneral() {
-		return general;
-	}
-
-	public void setGeneral(General general) {
-		this.general = general;
-	}
 
 	public Integer getGPHider() {
 		return gphider;
@@ -93,5 +81,21 @@ public class Stats {
 
 	public void setTotTime(Integer tottime) {
 		this.tottime = tottime;
+	}
+
+	public Integer getGeneralId() {
+		return generalId;
+	}
+
+	public void setGeneralId(Integer generalId) {
+		this.generalId = generalId;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 }

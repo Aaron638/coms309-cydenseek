@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import application.db.GameDB;
 import application.db.GameUserDB;
 import application.db.GeneralDB;
+import application.db.StatsDB;
 import application.db.UserDB;
 import application.model.Game;
 import application.model.GameBody;
@@ -43,6 +44,9 @@ public class GameController {
 
 	@Autowired
 	private UserDB userDB;
+
+	@Autowired
+	private StatsDB statsDB;
 
 	@Autowired
 	private GameUserDB gameUserDB;
@@ -121,15 +125,15 @@ public class GameController {
 				put("message", "Invalid session token.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		User user = foundUser.get().getUser();
+		User user = userDB.findById(foundUser.get().getUserId()).get();
 		GameUser gu = new GameUser();
 		gu.setIsHider(game.getHider());
 		gu.setFound(false);
 		General row = foundUser.get();
-		row.setGameUser(gu);
+		row.setGameUserId(gu.getId());
 		/* Creates and builds game */
 		Game newGame = new Game();
-		gu.setGame(newGame);
+		gu.setGameId(newGame.getGameId());
 		newGame.setCreator(user.getUsername());
 		newGame.setMaxplayers(game.getMaxplayers());
 		newGame.setStartTime(LocalTime.now());
@@ -185,7 +189,7 @@ public class GameController {
 		}
 		Game foundGame = checkGame.get();
 		/* Checks if user created (and owns) game */
-		if(!userDB.findUserByUsername(foundGame.getCreator()).get().getGeneral().getSession().equals(game.getSession())) {
+		if(!generalDB.findById(userDB.findUserByUsername(foundGame.getCreator()).get().getGeneralId()).get().getSession().equals(game.getSession())) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Cannot change game created by someone else.");
@@ -221,18 +225,18 @@ public class GameController {
 			}}, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", generalDB
-				.findUsersByGame(gameId, (x,y) -> (x.getStats().getGWHider() + x.getStats().getGWSeeker()) / (x.getStats().getGPHider() + x.getStats().getGPSeeker()) - (y.getStats().getGWHider() + y.getStats().getGWSeeker()) / (y.getStats().getGPHider() + y.getStats().getGPSeeker()))
+			put("users", gameUserDB
+				.findUsersByGame(gameId, (x,y) -> (statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGWHider() + statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGWSeeker()) / (statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGPHider() + statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGPSeeker()) - (statsDB.findById(generalDB.findById(y.getGeneralId()).get().getStatsId()).get().getGWHider() + statsDB.findById(generalDB.findById(y.getGeneralId()).get().getStatsId()).get().getGWSeeker()) / (statsDB.findById(generalDB.findById(y.getGeneralId()).get().getStatsId()).get().getGPHider() + statsDB.findById(generalDB.findById(y.getGeneralId()).get().getStatsId()).get().getGPSeeker()))
 				.stream().map(x -> new HashMap<String, Object>() {{
-					put("username", x.getUser().getUsername());
-					put("hider", x.getGameUser().getIsHider());
-					put("gwhider", x.getStats().getGWHider());
-					put("gwseeker", x.getStats().getGWSeeker());
-					put("gphider", x.getStats().getGPHider());
-					put("gpseeker", x.getStats().getGPSeeker());
-					put("totdistance", x.getStats().getTotDistance());
-					put("tottime", x.getStats().getTotTime());
-					put("found", x.getGameUser().getFound());
+					put("username", userDB.findById(generalDB.findById(x.getGeneralId()).get().getUserId()).get().getUsername());
+					put("hider", gameUserDB.findById(generalDB.findById(x.getGeneralId()).get().getGameUserId()).get().getIsHider());
+					put("gwhider", statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGWHider());
+					put("gwseeker", statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGWSeeker());
+					put("gphider", statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGPHider());
+					put("gpseeker", statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGPSeeker());
+					put("totdistance", statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getTotDistance());
+					put("tottime", statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getTotTime());
+					put("found", gameUserDB.findById(generalDB.findById(x.getGeneralId()).get().getGameUserId()).get().getFound());
 				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
 	}
@@ -257,12 +261,12 @@ public class GameController {
 			}}, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", generalDB
-			.findUsersByGame(gameId, (x,y) -> x.getUser().getUsername().compareTo(y.getUser().getUsername()))
+			put("users", gameUserDB
+			.findUsersByGame(gameId, (x,y) -> userDB.findById(generalDB.findById(x.getGeneralId()).get().getUserId()).get().getUsername().compareTo(userDB.findById(generalDB.findById(y.getGeneralId()).get().getUserId()).get().getUsername()))
 				.stream().map(x -> new HashMap<String, Object>() {{
-					put("username", x.getUser().getUsername());
-					put("hider", x.getGameUser().getIsHider());
-					put("found", x.getGameUser().getFound());
+					put("username", userDB.findById(generalDB.findById(x.getGeneralId()).get().getUserId()).get().getUsername());
+					put("hider", gameUserDB.findById(generalDB.findById(x.getGeneralId()).get().getGameUserId()).get().getIsHider());
+					put("found", gameUserDB.findById(generalDB.findById(x.getGeneralId()).get().getGameUserId()).get().getFound());
 				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
 	}

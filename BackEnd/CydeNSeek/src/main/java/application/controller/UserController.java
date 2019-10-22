@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import application.db.GeneralDB;
+import application.db.StatsDB;
 import application.db.UserDB;
 import application.model.General;
 import application.model.Stats;
@@ -37,6 +38,9 @@ public class UserController {
 	@Autowired
 	private UserDB userDB;
 
+	@Autowired
+	private StatsDB statsDB;
+
 	/*
 	 * GET /user/<username>
 	 * 
@@ -53,7 +57,7 @@ public class UserController {
 		if(!user.isPresent()) {
 			return error("User not found", HttpStatus.NOT_FOUND);
 		}
-		Stats s = user.get().getGeneral().getStats();
+		Stats s = statsDB.findById(generalDB.findById(user.get().getGeneralId()).get().getStatsId()).get();
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("gwhider", s.getGWHider());
 			put("gwseeker", s.getGWSeeker());
@@ -93,7 +97,7 @@ public class UserController {
 		}
 		User u = foundUser.get();
 		/* Checks if session invalid */
-		if(!u.getGeneral().getSession().equals(user.getSession())) {
+		if(!generalDB.findById(u.getGeneralId()).get().getSession().equals(user.getSession())) {
 			return error("Session token not found", HttpStatus.BAD_REQUEST);
 		}
 		/* Updates specified user properties */
@@ -125,13 +129,11 @@ public class UserController {
 		/* Checks if user not exists */
 		if(!foundUser.isPresent()) {
 			General row = new General();
-			row.setUser(user);
 			user.setUsername(username);
 			String session = UUID.randomUUID().toString();
 			row.setSession(session);
 			user.setDeveloper(false);
 			/* Need to set password to hashed password and store salt */
-			user.setGeneral(row);
 			Stats stats = new Stats();
 			stats.setGPHider(0);
 			stats.setGPSeeker(0);
@@ -139,7 +141,7 @@ public class UserController {
 			stats.setGWSeeker(0);
 			stats.setTotDistance(0);
 			stats.setTotTime(0);
-			stats.setGeneral(row);
+			/* Need to get primary keys for objects */
 			userDB.saveAndFlush(user);
 			generalDB.saveAndFlush(row);
 			LOG.info("Created new user \"" + username + "\".");
@@ -153,7 +155,7 @@ public class UserController {
 			return error("The password was incorrect", HttpStatus.BAD_REQUEST);
 		}
 		/* Generates session token */
-		General row = u.getGeneral();
+		General row = generalDB.findById(u.getGeneralId()).get();
 		String session = UUID.randomUUID().toString();
 		row.setSession(session);
 		userDB.saveAndFlush(u);
@@ -198,7 +200,7 @@ public class UserController {
 		}
 		User u = foundUser.get();
 		/* Checks if session or password invalid */
-		if(!u.getGeneral().getSession().equals(user.getSession()) || !u.getPassword().equals(user.getPassword())) {
+		if(!generalDB.findById(u.getGeneralId()).get().getSession().equals(user.getSession()) || !u.getPassword().equals(user.getPassword())) {
 			return error("The password or session token was incorrect", HttpStatus.BAD_REQUEST);
 		}
 		/* Deletes user */

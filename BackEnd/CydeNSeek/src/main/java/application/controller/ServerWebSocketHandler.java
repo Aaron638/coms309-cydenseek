@@ -52,7 +52,11 @@ public class ServerWebSocketHandler {
 		}
 		LOG.info(username + " has connected.");
 		sessions.put(username, session);
-		games.put(username, userDB.findUserByUsername(username).get().getGeneral().getGameUser().getGame().getGameId());
+		games.put(username, gameUserDB.findById(
+			generalDB.findById(
+				userDB.findUserByUsername(username).get().getGeneralId()
+			).get().getGameUserId()
+		).get().getGameId());
 		usernames.put(session, username);
 	}
 
@@ -75,7 +79,7 @@ public class ServerWebSocketHandler {
 			send(session, "{\"error\":true,\"message\":\"Session token not present.\"}");
 			return;
 		}
-		if(!userDB.findUserByUsername(username).get().getGeneral().getSession().equals(msg.getString("session"))) {
+		if(!generalDB.findById(userDB.findUserByUsername(username).get().getGeneralId()).get().getSession().equals(msg.getString("session"))) {
 			send(session, "{\"error\":true,\"message\":\"Invalid session token.\"}");
 			return;
 		}
@@ -96,29 +100,29 @@ public class ServerWebSocketHandler {
 			return;
 		}
 		Optional<User> user = userDB.findUserByUsername(username);
-		GameUser gu = user.get().getGeneral().getGameUser();
+		GameUser gu = gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get();
 		gu.setLatitude(msg.getDouble("latitude"));
 		gu.setLongitude(msg.getDouble("longitude"));
 		gameUserDB.saveAndFlush(gu);
-		generalDB.findUsersByGame(user.get().getGeneral().getGameUser().getGame().getGameId(), (x,y) -> 0).stream().forEach(x -> {
-			if(gu.getIsHider().booleanValue() == x.getGameUser().getIsHider().booleanValue()) return;
-			if(Math.abs(gu.getLatitude().doubleValue() - x.getGameUser().getLatitude().doubleValue()) < 1.5 && Math.abs(gu.getLongitude().doubleValue() - x.getGameUser().getLongitude().doubleValue()) < 1.5) {
+		gameUserDB.findUsersByGame(gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId(), (x,y) -> 0).stream().forEach(x -> {
+			if(gu.getIsHider().booleanValue() == x.getIsHider().booleanValue()) return;
+			if(Math.abs(gu.getLatitude().doubleValue() - x.getLatitude().doubleValue()) < 1.5 && Math.abs(gu.getLongitude().doubleValue() - x.getLongitude().doubleValue()) < 1.5) {
 				if(gu.getIsHider().booleanValue()) {
 					gu.setFound(true);
 					send(sessions.get(username), "{\"found\":true}");
 					gameUserDB.saveAndFlush(gu);
 				} else {
-					GameUser g = x.getGameUser();
+					GameUser g = x;
 					g.setFound(true);
-					send(sessions.get(x.getUser().getUsername()), "{\"found\":true}");
+					send(sessions.get(userDB.findById(generalDB.findById(x.getGeneralId()).get().getUserId()).get().getUsername()), "{\"found\":true}");
 					gameUserDB.saveAndFlush(g);
 				}
 			}
 		});
-		long playersleft = generalDB.findUsersByGame(user.get().getGeneral().getGameUser().getGame().getGameId(), (x,y) -> 0).stream().filter(x -> x.getGameUser().getIsHider().booleanValue() && !x.getGameUser().getFound().booleanValue()).count();
+		long playersleft = gameUserDB.findUsersByGame(gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId(), (x,y) -> 0).stream().filter(x -> x.getIsHider().booleanValue() && !x.getFound().booleanValue()).count();
 		if(playersleft <= 1) {
-			if(playersleft == 0) broadcast("{\"winner\":false}", user.get().getGeneral().getGameUser().getGame().getGameId());
-			else broadcast("{\"winner\":\"" + generalDB.findUsersByGame(user.get().getGeneral().getGameUser().getGame().getGameId(), (x,y) -> 0).stream().filter(x -> x.getGameUser().getIsHider().booleanValue() && !x.getGameUser().getFound().booleanValue()).findFirst().get().getUser().getUsername() + "\"}", gu.getGame().getGameId());
+			if(playersleft == 0) broadcast("{\"winner\":false}", gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId());
+			else broadcast("{\"winner\":\"" + userDB.findById(generalDB.findById(gameUserDB.findUsersByGame(gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId(), (x,y) -> 0).stream().filter(x -> x.getIsHider().booleanValue() && !x.getFound().booleanValue()).findFirst().get().getGeneralId()).get().getUserId()).get().getUsername() + "\"}", gu.getGameId());
 			sessions.clear();
 			usernames.clear();
 			return;
@@ -128,7 +132,7 @@ public class ServerWebSocketHandler {
 		out.put("username", username);
 		out.put("latitude", msg.getDouble("latitude"));
 		out.put("longitude", msg.getDouble("longitude"));
-		broadcast(out.toString(), user.get().getGeneral().getGameUser().getGame().getGameId());
+		broadcast(out.toString(), gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId());
 	}
 
 	@OnClose

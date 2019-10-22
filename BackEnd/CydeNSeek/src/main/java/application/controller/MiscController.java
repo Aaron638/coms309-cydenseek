@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import application.db.GameDB;
 import application.db.GeneralDB;
+import application.db.StatsDB;
 import application.db.UserDB;
 import application.model.User;
 
@@ -33,6 +34,9 @@ public class MiscController {
 
 	@Autowired
 	private UserDB userDB;
+
+	@Autowired
+	private StatsDB statsDB;
 
 	@Autowired
 	private GameDB gameDB;
@@ -87,15 +91,15 @@ public class MiscController {
 	public ResponseEntity<Map<String, Object>> leaderboard() {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("users", generalDB.findAll().stream()
-				.sorted((x,y) -> (x.getStats().getGWHider() + x.getStats().getGWSeeker()) / (x.getStats().getGPHider() + x.getStats().getGPSeeker()) - (y.getStats().getGWHider() + y.getStats().getGWSeeker()) / (y.getStats().getGPHider() + y.getStats().getGPSeeker()))
+				.sorted((x,y) -> (statsDB.findById(x.getStatsId()).get().getGWHider() + statsDB.findById(x.getStatsId()).get().getGWSeeker()) / (statsDB.findById(x.getStatsId()).get().getGPHider() + statsDB.findById(x.getStatsId()).get().getGPSeeker()) - (statsDB.findById(y.getStatsId()).get().getGWHider() + statsDB.findById(y.getStatsId()).get().getGWSeeker()) / (statsDB.findById(y.getStatsId()).get().getGPHider() + statsDB.findById(y.getStatsId()).get().getGPSeeker()))
 				.map(x -> new HashMap<String, Object>() {{
-					put("username", x.getUser().getUsername());
-					put("gwhider", x.getStats().getGWHider());
-					put("gwseeker", x.getStats().getGWSeeker());
-					put("gphider", x.getStats().getGPHider());
-					put("gpseeker", x.getStats().getGPSeeker());
-					put("totdistance", x.getStats().getTotDistance());
-					put("tottime", x.getStats().getTotTime());
+					put("username", userDB.findById(x.getUserId()).get().getUsername());
+					put("gwhider", statsDB.findById(x.getStatsId()).get().getGWHider());
+					put("gwseeker", statsDB.findById(x.getStatsId()).get().getGWSeeker());
+					put("gphider", statsDB.findById(x.getStatsId()).get().getGPHider());
+					put("gpseeker", statsDB.findById(x.getStatsId()).get().getGPSeeker());
+					put("totdistance", statsDB.findById(x.getStatsId()).get().getTotDistance());
+					put("tottime", statsDB.findById(x.getStatsId()).get().getTotTime());
 				}})
 				.collect(Collectors.toList()));
 		}}, HttpStatus.OK);
@@ -112,7 +116,7 @@ public class MiscController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> users(@RequestParam("session") String session) {
-		Optional<User> user = userDB.findAll().stream().filter(x -> x.getGeneral().getSession().equals(session)).findFirst();
+		Optional<User> user = userDB.findAll().stream().filter(x -> generalDB.findById(x.getGeneralId()).get().getSession().equals(session)).findFirst();
 		if(!user.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);

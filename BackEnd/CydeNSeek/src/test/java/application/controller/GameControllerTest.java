@@ -61,7 +61,6 @@ public class GameControllerTest {
 		General row = new General();
 		User user = new User();
 		user.setUsername("John");
-		row.setUser(user);
 		row.setSession("abc-xyz-123");
 		when(generalDB.findAll()).thenReturn(Stream.of(row).collect(Collectors.toList()));
 		this.mockMvc.perform(post("/game/new")
@@ -82,7 +81,7 @@ public class GameControllerTest {
 	@Test
 	public void leaderboard() throws Exception {
 		when(gameDB.findById(any(Integer.class))).thenReturn(Optional.of(new Game()));
-		when(generalDB.findUsersByGame(any(Integer.class), any(Comparator.class))).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
+		when(gameUserDB.findUsersByGame(any(Integer.class), any(Comparator.class))).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/game/" + GAMEID + "/leaderboard"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
@@ -91,7 +90,7 @@ public class GameControllerTest {
 	@Test
 	public void users() throws Exception {
 		when(gameDB.findById(any(Integer.class))).thenReturn(Optional.of(new Game()));
-		when(generalDB.findUsersByGame(any(Integer.class), any(Comparator.class))).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
+		when(gameUserDB.findUsersByGame(any(Integer.class), any(Comparator.class))).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/game/" + GAMEID + "/users"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
@@ -111,9 +110,6 @@ public class GameControllerTest {
 		GameUser gameUser = new GameUser();
 		gameUser.setFound(false);
 		gameUser.setIsHider(true);
-		general.setUser(user);
-		general.setStats(stats);
-		general.setGameUser(gameUser);
 		return general;
 	}
 }

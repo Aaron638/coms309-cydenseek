@@ -61,7 +61,6 @@ public class MiscControllerTest {
 		s.setGWSeeker(8);
 		General row = new General();
 		row.setSession("abc-123-xyz");
-		u.setGeneral(row);
 		users = Stream.of(u).collect(Collectors.toList());
 	}
 	
@@ -84,7 +83,6 @@ public class MiscControllerTest {
 		General g = new General();
 		User u = new User();
 		u.setUsername("Tom");
-		g.setUser(u);
 		Stats s = new Stats();
 		s.setGPHider(12);
 		s.setGPSeeker(10);
@@ -92,7 +90,6 @@ public class MiscControllerTest {
 		s.setGWSeeker(8);
 		s.setTotDistance(500);
 		s.setTotTime(30);
-		g.setStats(s);
 		when(generalDB.findAll()).thenReturn(Stream.of(g).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/leaderboard"))
 			.andExpect(status().isOk())
