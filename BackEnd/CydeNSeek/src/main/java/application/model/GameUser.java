@@ -1,32 +1,24 @@
 package application.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 @Entity
 public class GameUser {
-
-	@Column
-	@ManyToOne
-	@JoinColumn(name = "gameuser")
-	private General general;
-
-	@Column
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "GU")
-	private Game game;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private Integer id;
+
+	@Column
+	private Integer generalId;
+
+	@Column
+	private Integer gameId;
 
 	@Column
 	private Boolean found;
@@ -72,11 +64,27 @@ public class GameUser {
 		this.longitude = longitude;
 	}
 
-	public Game getGame() {
-		return game;
+	public Integer getGameId() {
+		return gameId;
 	}
 
-	public void setGame(Game game) {
-		this.game = game;
+	public void setGameId(Integer gameId) {
+		this.gameId = gameId;
+	}
+
+	public Integer getGeneralId() {
+		return generalId;
+	}
+
+	public void setGeneralId(Integer generalId) {
+		this.generalId = generalId;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 }

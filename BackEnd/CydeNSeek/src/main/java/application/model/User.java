@@ -2,25 +2,20 @@ package application.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 
 @Entity
 public class User {
-
-	@Column
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user", nullable = false)
-	private General general;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
 	private Integer id;
+
+	@Column
+	private Integer generalId;
 
 	@Column
 	private String username;
@@ -66,19 +61,19 @@ public class User {
 		this.developer = developer;
 	}
 
-	public General getGeneral() {
-		return general;
-	}
-
-	public void setGeneral(General general) {
-		this.general = general;
-	}
-
 	public byte[] getSalt() {
 		return salt;
 	}
 
 	public void setSalt(byte[] salt) {
 		this.salt = salt;
+	}
+
+	public Integer getGeneralId() {
+		return generalId;
+	}
+
+	public void setGeneralId(Integer generalId) {
+		this.generalId = generalId;
 	}
 }

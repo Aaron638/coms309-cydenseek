@@ -1,28 +1,13 @@
 package application.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 
 @Entity
-
 public class General {
-
-	@Column
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-	private User userFK;
-
-	@Column
-	@OneToOne(mappedBy = "stats", cascade = CascadeType.ALL)
-	private Stats statsFK;
-
-	@Column
-	@OneToOne(mappedBy = "gameuser", cascade = CascadeType.ALL)
-	private GameUser gameuserFK;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,40 +15,16 @@ public class General {
 	private Integer id;
 
 	@Column
-	private User user;
+	private Integer userId;
 
 	@Column
-	private Stats stats;
+	private Integer statsId;
 
 	@Column
-	private GameUser gameUser;
+	private Integer gameUserId;
 
 	@Column
 	private String session;
-
-	public User getUserFK() {
-		return userFK;
-	}
-
-	public void setUserFK(User userFK) {
-		this.userFK = userFK;
-	}
-
-	public Stats getStatsFK() {
-		return statsFK;
-	}
-
-	public void setStatsFK(Stats statsFK) {
-		this.statsFK = statsFK;
-	}
-
-	public GameUser getGameUserFK() {
-		return gameuserFK;
-	}
-
-	public void setGameUserFK(GameUser gameuserFK) {
-		this.gameuserFK = gameuserFK;
-	}
 
 	public String getSession() {
 		return session;
@@ -73,27 +34,35 @@ public class General {
 		this.session = session;
 	}
 
-	public User getUser() {
-		return user;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
-	public Stats getStats() {
-		return stats;
+	public Integer getUserId() {
+		return userId;
 	}
 
-	public void setStats(Stats stats) {
-		this.stats = stats;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
-	public GameUser getGameUser() {
-		return gameUser;
+	public Integer getStatsId() {
+		return statsId;
 	}
 
-	public void setGameUser(GameUser gameUser) {
-		this.gameUser = gameUser;
+	public void setStatsId(Integer statsId) {
+		this.statsId = statsId;
+	}
+
+	public Integer getGameUserId() {
+		return gameUserId;
+	}
+
+	public void setGameUserId(Integer gameUserId) {
+		this.gameUserId = gameUserId;
 	}
 }
