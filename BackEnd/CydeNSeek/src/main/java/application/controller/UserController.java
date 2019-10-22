@@ -144,6 +144,7 @@ public class UserController {
 			/* Need to get primary keys for objects */
 			userDB.saveAndFlush(user);
 			generalDB.saveAndFlush(row);
+			statsDB.saveAndFlush(stats);
 			LOG.info("Created new user \"" + username + "\".");
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("session", session);
