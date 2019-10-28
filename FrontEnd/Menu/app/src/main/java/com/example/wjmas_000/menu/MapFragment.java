@@ -17,7 +17,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-
+//TODO CURRENTLY NOT BEING USED
 public class MapFragment extends Fragment {
 
     MapView mMapView;

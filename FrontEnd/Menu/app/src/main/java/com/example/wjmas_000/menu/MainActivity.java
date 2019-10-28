@@ -2,6 +2,7 @@ package com.example.wjmas_000.menu;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -187,8 +188,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 //FragmentManager manager = getSupportFragmentManager();/*.beginTransaction().replace(R.id.fragment_container,
                 //        new MapFragment()).commit();*/
                 //manager.beginTransaction().replace(R.id.fragment_container, new MapFragment()).commit();
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new MapFragment()).commit();
+                //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        //new MapFragment()).commit();
+                launchMaps();
+
                 break;
 
                 /*
@@ -217,6 +220,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    //launches the maps activity
+    private void launchMaps() {
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
     }
 
     @Override
