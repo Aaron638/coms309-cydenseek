@@ -12,7 +12,7 @@ import application.model.GameUser;
 @Repository
 public interface GameUserDB extends JpaRepository<GameUser, Integer> {
 
-	public default List<GameUser> findUsersByGame(int gameId, Comparator<? super GameUser> comparator) {
-		return findAll().stream().filter(x -> x.getGameId().equals(gameId)).sorted(comparator).collect(Collectors.toList());
+	public default List<GameUser> findUsersByGame(String gameId, Comparator<? super GameUser> comparator) {
+		return findAll().stream().filter(x -> x.getSession().equals(gameId)).sorted(comparator).collect(Collectors.toList());
 	}
 }

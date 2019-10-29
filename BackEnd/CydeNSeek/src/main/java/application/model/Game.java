@@ -17,6 +17,9 @@ public class Game {
 	private Integer gameId;
 
 	@Column
+	private String session;
+
+	@Column
 	private Integer maxplayers;
 
 	@Column
@@ -77,5 +80,13 @@ public class Game {
 
 	public void setCreator(String creator) {
 		this.creator = creator;
+	}
+
+	public String getSession() {
+		return session;
+	}
+
+	public void setSession(String session) {
+		this.session = session;
 	}
 }
