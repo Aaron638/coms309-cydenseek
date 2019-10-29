@@ -104,7 +104,7 @@ public class ServerWebSocketHandler {
 		gu.setLatitude(msg.getDouble("latitude"));
 		gu.setLongitude(msg.getDouble("longitude"));
 		gameUserDB.saveAndFlush(gu);
-		gameUserDB.findUsersByGame(gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId(), (x,y) -> 0).stream().forEach(x -> {
+		gameUserDB.findUsersByGame(gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getSession(), (x,y) -> 0).stream().forEach(x -> {
 			if(gu.getIsHider().booleanValue() == x.getIsHider().booleanValue()) return;
 			if(Math.abs(gu.getLatitude().doubleValue() - x.getLatitude().doubleValue()) < 1.5 && Math.abs(gu.getLongitude().doubleValue() - x.getLongitude().doubleValue()) < 1.5) {
 				if(gu.getIsHider().booleanValue()) {
@@ -119,10 +119,10 @@ public class ServerWebSocketHandler {
 				}
 			}
 		});
-		long playersleft = gameUserDB.findUsersByGame(gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId(), (x,y) -> 0).stream().filter(x -> x.getIsHider().booleanValue() && !x.getFound().booleanValue()).count();
+		long playersleft = gameUserDB.findUsersByGame(gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getSession(), (x,y) -> 0).stream().filter(x -> x.getIsHider().booleanValue() && !x.getFound().booleanValue()).count();
 		if(playersleft <= 1) {
 			if(playersleft == 0) broadcast("{\"winner\":false}", gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId());
-			else broadcast("{\"winner\":\"" + userDB.findById(generalDB.findById(gameUserDB.findUsersByGame(gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId(), (x,y) -> 0).stream().filter(x -> x.getIsHider().booleanValue() && !x.getFound().booleanValue()).findFirst().get().getGeneralId()).get().getUserId()).get().getUsername() + "\"}", gu.getGameId());
+			else broadcast("{\"winner\":\"" + userDB.findById(generalDB.findById(gameUserDB.findUsersByGame(gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getSession(), (x,y) -> 0).stream().filter(x -> x.getIsHider().booleanValue() && !x.getFound().booleanValue()).findFirst().get().getGeneralId()).get().getUserId()).get().getUsername() + "\"}", gu.getGameId());
 			sessions.clear();
 			usernames.clear();
 			return;

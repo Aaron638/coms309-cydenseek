@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -133,6 +134,9 @@ public class GameController {
 		gu.setGeneralId(row.getId());
 		/* Creates and builds game */
 		Game newGame = new Game();
+		String session = UUID.randomUUID().toString();
+		newGame.setSession(session);
+		gu.setSession(session);
 		newGame.setCreator(user.getUsername());
 		newGame.setMaxplayers(game.getMaxplayers());
 		newGame.setStartTime(LocalTime.now());
@@ -172,7 +176,7 @@ public class GameController {
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameId") int gameId, @RequestBody GameBody game) {
+	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameId") String gameId, @RequestBody GameBody game) {
 		/* Checks if session not present */
 		if(game.getSession() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -180,7 +184,7 @@ public class GameController {
 				put("message", "Session token not present.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		Optional<Game> checkGame = gameDB.findById(gameId);
+		Optional<Game> checkGame = gameDB.findAll().stream().filter(x -> x.getSession().equals(gameId)).findFirst();
 		/* Checks if game exists */
 		if(!checkGame.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -216,8 +220,8 @@ public class GameController {
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> leaderboard(@PathVariable("gameId") int gameId) {
-		Optional<Game> game = gameDB.findById(gameId);
+	public ResponseEntity<Map<String, Object>> leaderboard(@PathVariable("gameId") String gameId) {
+		Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().equals(gameId)).findFirst();
 		/* Checks if game exists */
 		if(!game.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -252,8 +256,8 @@ public class GameController {
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> users(@PathVariable("gameId") int gameId) {
-		Optional<Game> game = gameDB.findById(gameId);
+	public ResponseEntity<Map<String, Object>> users(@PathVariable("gameId") String gameId) {
+		Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().equals(gameId)).findFirst();
 		/* Checks if game exists */
 		if(!game.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{

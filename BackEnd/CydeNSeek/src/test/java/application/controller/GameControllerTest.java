@@ -85,12 +85,12 @@ public class GameControllerTest {
 
 	@Test
 	public void leaderboard() throws Exception {
+		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
 		when(statsDB.findById(any(Integer.class))).thenReturn(Optional.of(buildStats()));
 		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(buildUser()));
-		when(gameDB.findById(any(Integer.class))).thenReturn(Optional.of(new Game()));
 		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGeneral()));
 		when(gameUserDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGameUser()));
-		when(gameUserDB.findUsersByGame(any(Integer.class), any(Comparator.class))).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
+		when(gameUserDB.findUsersByGame(any(String.class), any(Comparator.class))).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/game/" + GAMEID + "/leaderboard"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
@@ -98,11 +98,11 @@ public class GameControllerTest {
 
 	@Test
 	public void users() throws Exception {
-		when(gameDB.findById(any(Integer.class))).thenReturn(Optional.of(new Game()));
+		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
 		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGeneral()));
 		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(buildUser()));
 		when(gameUserDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGameUser()));
-		when(gameUserDB.findUsersByGame(any(Integer.class), any(Comparator.class))).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
+		when(gameUserDB.findUsersByGame(any(String.class), any(Comparator.class))).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/game/" + GAMEID + "/users"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
@@ -139,9 +139,16 @@ public class GameControllerTest {
 
 	private static GameUser buildGameUser() {
 		GameUser gameUser = new GameUser();
+		gameUser.setSession(GAMEID);
 		gameUser.setFound(false);
 		gameUser.setIsHider(true);
 		gameUser.setGeneralId(1);
 		return gameUser;
+	}
+
+	private static Game buildGame() {
+		Game game = new Game();
+		game.setSession(GAMEID);
+		return game;
 	}
 }

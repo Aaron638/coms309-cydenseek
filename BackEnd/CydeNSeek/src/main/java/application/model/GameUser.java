@@ -21,6 +21,9 @@ public class GameUser {
 	private Integer gameId;
 
 	@Column
+	private String session;
+
+	@Column
 	private Boolean found;
 
 	@Column
@@ -86,5 +89,13 @@ public class GameUser {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public String getSession() {
+		return session;
+	}
+
+	public void setSession(String session) {
+		this.session = session;
 	}
 }
