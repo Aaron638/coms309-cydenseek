@@ -27,6 +27,7 @@ import application.db.GameDB;
 import application.db.GeneralDB;
 import application.db.StatsDB;
 import application.db.UserDB;
+import application.model.Game;
 import application.model.General;
 import application.model.Stats;
 import application.model.User;
@@ -74,21 +75,21 @@ public class MiscControllerTest {
 	}
 	
 	@Test
-	public void index() throws Exception {
+	public void index_succeeds() throws Exception {
 		this.mockMvc.perform(get("/"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("")));
 	}
 
 	@Test
-	public void test() throws Exception {
+	public void test_succeeds() throws Exception {
 		this.mockMvc.perform(get("/test"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("obj")));
 	}
 
 	@Test
-	public void leaderboard() throws Exception {
+	public void leaderboard_succeeds() throws Exception {
 		General g = new General();
 		g.setUserId(1);
 		g.setStatsId(1);
@@ -112,7 +113,34 @@ public class MiscControllerTest {
 	}
 
 	@Test
-	public void users() throws Exception {
+	public void users_failsWhenSessionTokenInvalid() throws Exception {
+		User user = new User();
+		user.setGeneralId(1);
+		when(userDB.findAll()).thenReturn(Stream.of(user).collect(Collectors.toList()));
+		General row = new General();
+		row.setSession("not-John");
+		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(row));
+		this.mockMvc.perform(get("/users?session=abc-123-xyz"))
+			.andExpect(status().isNotFound())
+			.andExpect(content().string(containsString("not found")));
+	}
+
+	@Test
+	public void users_failsWhenNotDeveloper() throws Exception {
+		User user = new User();
+		user.setGeneralId(1);
+		user.setDeveloper(false);
+		when(userDB.findAll()).thenReturn(Stream.of(user).collect(Collectors.toList()));
+		General row = new General();
+		row.setSession("abc-123-xyz");
+		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(row));
+		this.mockMvc.perform(get("/users?session=abc-123-xyz"))
+			.andExpect(status().isUnauthorized())
+			.andExpect(content().string(containsString("developer")));
+	}
+
+	@Test
+	public void users_succeeds() throws Exception {
 		General g = new General();
 		g.setSession("abc-123-xyz");
 		when(userDB.findAll()).thenReturn(users);
@@ -121,5 +149,12 @@ public class MiscControllerTest {
 		this.mockMvc.perform(get("/users?session=abc-123-xyz"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
+	}
+
+	@Test
+	public void games_succeeds() throws Exception {
+		this.mockMvc.perform(get("/games"))
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("games")));
 	}
 }
