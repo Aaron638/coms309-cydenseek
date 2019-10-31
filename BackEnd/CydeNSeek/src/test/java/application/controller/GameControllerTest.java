@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,7 +39,8 @@ import application.model.User;
 @SpringBootTest
 public class GameControllerTest {
 
-	private static final String GAMEID = "12345";
+	private static final String GAMESESSION = "game-session";
+	private static final String USERSESSION = "user-session";
 
 	@Mock
 	private GeneralDB generalDB;
@@ -61,17 +63,112 @@ public class GameControllerTest {
 	private MockMvc mockMvc = MockMvcBuilders.standaloneSetup(gameController).build();
 
 	@Test
-	public void newGame() throws Exception {
-		Game g = new Game();
-		g.setCreator("John");
+	public void newGame_fails_whenBodyEmpty_becauseSessionTokenMissing() throws Exception {
+		this.mockMvc.perform(post("/game/new")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{}")
+		)
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(containsString("token")));
+	}
+
+	@Test
+	public void newGame_fails_whenMaxplayersMissing() throws Exception {
+		this.mockMvc.perform(post("/game/new")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"session\":\"\""
+				+ "}")
+		)
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(containsString("Maxplayers")));
+	}
+
+	@Test
+	public void newGame_fails_whenDurationMissing() throws Exception {
+		this.mockMvc.perform(post("/game/new")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"session\":\"\","
+				+ "\"maxplayers\":3"
+				+ "}")
+		)
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(containsString("Duration")));
+	}
+
+	@Test
+	public void newGame_fails_whenModeMissing() throws Exception {
+		this.mockMvc.perform(post("/game/new")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"session\":\"\","
+				+ "\"maxplayers\":3,"
+				+ "\"duration\":10"
+				+ "}")
+		)
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(containsString("Mode")));
+	}
+
+	@Test
+	public void newGame_fails_whenGracePeriodMissing() throws Exception {
+		this.mockMvc.perform(post("/game/new")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"session\":\"\","
+				+ "\"maxplayers\":3,"
+				+ "\"duration\":10,"
+				+ "\"mode\":0"
+				+ "}")
+		)
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(containsString("Grace period")));
+	}
+
+	@Test
+	public void newGame_fails_whenHiderNotSpecified() throws Exception {
+		this.mockMvc.perform(post("/game/new")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"session\":\"\","
+				+ "\"maxplayers\":3,"
+				+ "\"duration\":10,"
+				+ "\"mode\":0,"
+				+ "\"gperiod\":5"
+				+ "}")
+		)
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(containsString("hider")));
+	}
+
+	@Test
+	public void newGame_fails_whenSessionTokenInvalid() throws Exception {
+		this.mockMvc.perform(post("/game/new")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"session\":\"\","
+				+ "\"maxplayers\":3,"
+				+ "\"duration\":10,"
+				+ "\"mode\":0,"
+				+ "\"gperiod\":5,"
+				+ "\"hider\":true"
+				+ "}")
+		)
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(containsString("Invalid session token")));
+	}
+
+	@Test
+	public void newGame_succeeds() throws Exception {
 		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(buildUser()));
 		when(gameUserDB.findAll()).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
-		when(gameDB.findAll()).thenReturn(Stream.of(g).collect(Collectors.toList()));
+		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
 		when(generalDB.findAll()).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
 		this.mockMvc.perform(post("/game/new")
 			.contentType(APPLICATION_JSON_VALUE)
 			.content("{"
-				+ "\"session\": \"abc-xyz-123\","
+				+ "\"session\": \"" + USERSESSION + "\","
 				+ "\"maxplayers\": 10,"
 				+ "\"duration\": 5,"
 				+ "\"mode\": 0,"
@@ -84,26 +181,113 @@ public class GameControllerTest {
 	}
 
 	@Test
-	public void leaderboard() throws Exception {
+	public void updateGame_failsWhenBodyEmpty_becauseSessionTokenMissing() throws Exception {
+		this.mockMvc.perform(put("/game/" + GAMESESSION)
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{}")
+		)
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(containsString("token")));
+	}
+
+	@Test
+	public void updateGame_failsWhenGameSessionInvalid() throws Exception {
+		Game game = new Game();
+		game.setSession("not-the-game");
+		when(gameDB.findAll()).thenReturn(Stream.of(game).collect(Collectors.toList()));
+		this.mockMvc.perform(put("/game/" + GAMESESSION)
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"session\":\"\""
+				+ "}")
+		)
+			.andExpect(status().isNotFound())
+			.andExpect(content().string(containsString("not found")));
+	}
+
+	@Test
+	public void updateGame_failsWhenSessionTokenInvalid() throws Exception {
+		Game game = new Game();
+		game.setCreator("John");
+		game.setSession(GAMESESSION);
+		when(gameDB.findAll()).thenReturn(Stream.of(game).collect(Collectors.toList()));
+		User user = new User();
+		user.setUsername("John");
+		user.setGeneralId(1);
+		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.of(user));
+		General row = new General();
+		row.setSession("not-John");
+		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(row));
+		this.mockMvc.perform(put("/game/" + GAMESESSION)
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"session\":\"\""
+				+ "}")
+		)
+			.andExpect(status().isForbidden())
+			.andExpect(content().string(containsString("someone else")));
+	}
+
+	@Test
+	public void updateGame_succeeds() throws Exception {
+		Game game = new Game();
+		game.setCreator("John");
+		game.setSession(GAMESESSION);
+		when(gameDB.findAll()).thenReturn(Stream.of(game).collect(Collectors.toList()));
+		User user = new User();
+		user.setUsername("John");
+		user.setGeneralId(1);
+		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.of(user));
+		General row = new General();
+		row.setSession(USERSESSION);
+		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(row));
+		this.mockMvc.perform(put("/game/" + GAMESESSION)
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"session\":\"" + USERSESSION + "\""
+				+ "}")
+		)
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("{}")));
+	}
+
+	@Test
+	public void leaderboard_failsWhenGameSessionInvalid() throws Exception {
+		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
+		this.mockMvc.perform(get("/game/not-the-game/leaderboard"))
+			.andExpect(status().isNotFound())
+			.andExpect(content().string(containsString("not found")));
+	}
+
+	@Test
+	public void leaderboard_succeeds() throws Exception {
 		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
 		when(statsDB.findById(any(Integer.class))).thenReturn(Optional.of(buildStats()));
 		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(buildUser()));
 		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGeneral()));
 		when(gameUserDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGameUser()));
 		when(gameUserDB.findUsersByGame(any(String.class), any(Comparator.class))).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
-		this.mockMvc.perform(get("/game/" + GAMEID + "/leaderboard"))
+		this.mockMvc.perform(get("/game/" + GAMESESSION + "/leaderboard"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
 	}
 
 	@Test
-	public void users() throws Exception {
+	public void users_failsWhenGameSessionInvalid() throws Exception {
+		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
+		this.mockMvc.perform(get("/game/not-the-game/users"))
+			.andExpect(status().isNotFound())
+			.andExpect(content().string(containsString("not found")));
+	}
+
+	@Test
+	public void users_succeeds() throws Exception {
 		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
 		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGeneral()));
 		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(buildUser()));
 		when(gameUserDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGameUser()));
 		when(gameUserDB.findUsersByGame(any(String.class), any(Comparator.class))).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
-		this.mockMvc.perform(get("/game/" + GAMEID + "/users"))
+		this.mockMvc.perform(get("/game/" + GAMESESSION + "/users"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
 	}
@@ -111,7 +295,7 @@ public class GameControllerTest {
 	private static General buildGeneral() {
 		General general = new General();
 		general.setId(1);
-		general.setSession("abc-xyz-123");
+		general.setSession(USERSESSION);
 		general.setUserId(1);
 		general.setStatsId(1);
 		general.setGameUserId(1);
@@ -139,7 +323,7 @@ public class GameControllerTest {
 
 	private static GameUser buildGameUser() {
 		GameUser gameUser = new GameUser();
-		gameUser.setSession(GAMEID);
+		gameUser.setSession(GAMESESSION);
 		gameUser.setFound(false);
 		gameUser.setIsHider(true);
 		gameUser.setGeneralId(1);
@@ -148,7 +332,8 @@ public class GameControllerTest {
 
 	private static Game buildGame() {
 		Game game = new Game();
-		game.setSession(GAMEID);
+		game.setSession(GAMESESSION);
+		game.setCreator("John");
 		return game;
 	}
 }
