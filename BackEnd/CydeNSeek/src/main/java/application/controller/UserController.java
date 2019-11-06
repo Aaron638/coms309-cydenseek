@@ -141,7 +141,6 @@ public class UserController {
 			stats.setGWSeeker(0);
 			stats.setTotDistance(0);
 			stats.setTotTime(0);
-			/* Need to get primary keys for objects */
 			generalDB.saveAndFlush(row);
 			General foundRow = generalDB.findAll().stream().filter(x -> x.getSession().equals(session)).findFirst().get();
 			user.setGeneralId(foundRow.getId());
