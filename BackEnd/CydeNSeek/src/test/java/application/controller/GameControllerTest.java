@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +25,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import application.db.GameDB;
-import application.db.GameUserDB;
 import application.db.GeneralDB;
 import application.db.StatsDB;
 import application.db.UserDB;
@@ -53,9 +52,6 @@ public class GameControllerTest {
 
 	@Mock
 	private GameDB gameDB;
-
-	@Mock
-	private GameUserDB gameUserDB;
 
 	@InjectMocks
 	private GameController gameController = new GameController();
@@ -162,8 +158,6 @@ public class GameControllerTest {
 	@Test
 	public void newGame_succeeds() throws Exception {
 		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(buildUser()));
-		when(gameUserDB.findAll()).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
-		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
 		when(generalDB.findAll()).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
 		this.mockMvc.perform(post("/game/new")
 			.contentType(APPLICATION_JSON_VALUE)
@@ -262,11 +256,11 @@ public class GameControllerTest {
 	@Test
 	public void leaderboard_succeeds() throws Exception {
 		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
-		when(statsDB.findById(any(Integer.class))).thenReturn(Optional.of(buildStats()));
-		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(buildUser()));
-		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGeneral()));
-		when(gameUserDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGameUser()));
-		when(gameUserDB.findUsersByGame(any(String.class), any(Comparator.class))).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
+		ServerWebSocketHandler.gameusers = new HashMap<>();
+		ServerWebSocketHandler.gameusers.put("John", buildGameUser());
+		when(generalDB.findAll()).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
+		when(userDB.findAll()).thenReturn(Stream.of(buildUser()).collect(Collectors.toList()));
+		when(statsDB.findAll()).thenReturn(Stream.of(buildStats()).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/game/" + GAMESESSION + "/leaderboard"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
@@ -283,10 +277,8 @@ public class GameControllerTest {
 	@Test
 	public void users_succeeds() throws Exception {
 		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
-		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGeneral()));
-		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(buildUser()));
-		when(gameUserDB.findById(any(Integer.class))).thenReturn(Optional.of(buildGameUser()));
-		when(gameUserDB.findUsersByGame(any(String.class), any(Comparator.class))).thenReturn(Stream.of(buildGameUser()).collect(Collectors.toList()));
+		ServerWebSocketHandler.gameusers = new HashMap<>();
+		ServerWebSocketHandler.gameusers.put("John", buildGameUser());
 		this.mockMvc.perform(get("/game/" + GAMESESSION + "/users"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
@@ -311,6 +303,7 @@ public class GameControllerTest {
 
 	private static Stats buildStats() {
 		Stats stats = new Stats();
+		stats.setId(1);
 		stats.setGPHider(5);
 		stats.setGPSeeker(10);
 		stats.setGWHider(2);
@@ -322,12 +315,11 @@ public class GameControllerTest {
 	}
 
 	private static GameUser buildGameUser() {
-		GameUser gameUser = new GameUser();
-		gameUser.setSession(GAMESESSION);
-		gameUser.setFound(false);
-		gameUser.setIsHider(true);
-		gameUser.setGeneralId(1);
-		return gameUser;
+		GameUser gu = new GameUser();
+		gu.setGameSession(GAMESESSION);
+		gu.setHider(true);
+		gu.setFound(true);
+		return gu;
 	}
 
 	private static Game buildGame() {

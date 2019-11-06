@@ -27,7 +27,6 @@ import application.db.GameDB;
 import application.db.GeneralDB;
 import application.db.StatsDB;
 import application.db.UserDB;
-import application.model.Game;
 import application.model.General;
 import application.model.Stats;
 import application.model.User;

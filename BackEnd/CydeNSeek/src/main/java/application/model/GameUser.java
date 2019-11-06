@@ -1,38 +1,17 @@
 package application.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Entity
 public class GameUser {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column
-	private Integer id;
+	private String gameSession;
 
-	@Column
-	private Integer generalId;
+	private String userSession;
 
-	@Column
-	private Integer gameId;
-
-	@Column
-	private String session;
-
-	@Column
 	private Boolean found;
 
-	@Column
-	private Boolean isHider;
+	private Boolean hider;
 
-	@Column
 	private Double latitude;
 
-	@Column
 	private Double longitude;
 
 	public Boolean getFound() {
@@ -43,12 +22,12 @@ public class GameUser {
 		this.found = found;
 	}
 
-	public Boolean getIsHider() {
-		return isHider;
+	public Boolean getHider() {
+		return hider;
 	}
 
-	public void setIsHider(Boolean isHider) {
-		this.isHider = isHider;
+	public void setHider(Boolean isHider) {
+		this.hider = isHider;
 	}
 
 	public Double getLatitude() {
@@ -67,35 +46,19 @@ public class GameUser {
 		this.longitude = longitude;
 	}
 
-	public Integer getGameId() {
-		return gameId;
+	public String getUserSession() {
+		return userSession;
 	}
 
-	public void setGameId(Integer gameId) {
-		this.gameId = gameId;
+	public void setUserSession(String userSession) {
+		this.userSession = userSession;
 	}
 
-	public Integer getGeneralId() {
-		return generalId;
+	public String getGameSession() {
+		return gameSession;
 	}
 
-	public void setGeneralId(Integer generalId) {
-		this.generalId = generalId;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getSession() {
-		return session;
-	}
-
-	public void setSession(String session) {
-		this.session = session;
+	public void setGameSession(String gameSession) {
+		this.gameSession = gameSession;
 	}
 }

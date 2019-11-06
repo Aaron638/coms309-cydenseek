@@ -4,18 +4,12 @@ import java.time.LocalTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class Game {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column
-	private Integer gameId;
-
 	@Column
 	private String session;
 
@@ -33,14 +27,6 @@ public class Game {
 
 	@Column
 	private String creator;
-
-	public Integer getGameId() {
-		return gameId;
-	}
-
-	public void setGameId(Integer id) {
-		this.gameId = id;
-	}
 
 	public int getDuration() {
 		return duration;
