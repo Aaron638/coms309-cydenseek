@@ -8,11 +8,9 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,14 +27,10 @@ import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONObject;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MenuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout drawer;
     private WebSocketClient cc;
     private double longitude;
@@ -50,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             lm.removeUpdates(this);
             longitude = location.getLongitude();
             latitude = location.getLatitude();
-            Toast.makeText(MainActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
+            Toast.makeText(MenuActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -108,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (location != null){
             longitude = location.getLongitude();
             latitude = location.getLatitude();
-            Toast.makeText(MainActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
+            Toast.makeText(MenuActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
         } else {
             lm.requestLocationUpdates(bestProvider, 1000, 0, locListen);
         }
