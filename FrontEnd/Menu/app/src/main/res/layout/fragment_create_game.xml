@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CreateGameFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="134dp"
+        android:layout_height="29dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="136dp"
+        android:text="Create Game"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/set_num_players"
+        android:layout_width="134dp"
+        android:layout_height="29dp"
+        android:layout_marginTop="184dp"
+        android:layout_marginEnd="136dp"
+        android:text="Number of Players"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/set_duration"
+        android:layout_width="134dp"
+        android:layout_height="29dp"
+        android:layout_marginTop="268dp"
+        android:layout_marginEnd="148dp"
+        android:text="Game Duration"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/edit_gameName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="Lobby name"
+        android:text=""
+        tools:layout_editor_absoluteX="92dp"
+        tools:layout_editor_absoluteY="110dp" />
+
+    <SeekBar
+        android:id="@+id/seekBar_num_players"
+        android:layout_width="184dp"
+        android:layout_height="19dp"
+        tools:layout_editor_absoluteX="92dp"
+        tools:layout_editor_absoluteY="229dp" />
+
+    <SeekBar
+        android:id="@+id/seekBar_game_duration"
+        android:layout_width="184dp"
+        android:layout_height="19dp"
+        tools:layout_editor_absoluteX="91dp"
+        tools:layout_editor_absoluteY="316dp" />
+
+    <TextView
+        android:id="@+id/Number_Players"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/number_players"
+        tools:layout_editor_absoluteX="296dp"
+        tools:layout_editor_absoluteY="234dp" />
+
+    <TextView
+        android:id="@+id/game_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/number_players"
+        tools:layout_editor_absoluteX="288dp"
+        tools:layout_editor_absoluteY="316dp" />
+
+</android.support.constraint.ConstraintLayout>

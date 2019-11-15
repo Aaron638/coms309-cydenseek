@@ -5,28 +5,40 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_creategame"
+            android:icon="@drawable/ic_leaderboard"
+            android:title="Create Game" />
+        <item
+            android:id="@+id/nav_joingame"
+            android:icon="@drawable/ic_leaderboard"
+            android:title="Join Game" />
+        <item
             android:id="@+id/nav_leaderboard"
             android:icon="@drawable/ic_leaderboard"
             android:title="LeaderBoard" />
-        <item
+        <!--item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_map"
-            android:title="Map" />
-        <item
+            android:title="Map" /-->
+        <!--item
             android:id="@+id/nav_player_list"
             android:icon="@drawable/ic_player_list"
-            android:title="Player List" />
-        <item
+            android:title="Player List" /-->
+        <!--item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_profile"
-            android:title="Profile" />
+            android:title="Profile" /-->
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_share"
+            android:title="Settings" />
         <item
             android:id="@+id/nav_login"
             android:icon="@drawable/ic_login"
             android:title="Login" />
     </group>
 
-    <item android:title="Communicate">
+    <!--item android:title="Communicate">
         <menu>
             <item
                 android:id="@+id/nav_share"
@@ -37,6 +49,6 @@
                 android:icon="@drawable/ic_send"
                 android:title="Send" />
         </menu>
-    </item>
+    </item-->
 
 </menu>

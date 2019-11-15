@@ -169,30 +169,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-            /*
-            case R.id.nav_message:
+
+            case R.id.nav_creategame:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new MessageFragment()).commit();
+                        new CreateGameFragment()).commit();
                 break;
-                */
+            case R.id.nav_joingame:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new JoinFragment()).commit();
+                break;
             case R.id.nav_leaderboard:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new LeaderboardFragment()).commit();
                 break;
-            case R.id.nav_player_list:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new PlayerListFragment()).commit();
-                break;
 
-            case R.id.nav_map:
+            //case R.id.nav_map:
                 //FragmentManager manager = getSupportFragmentManager();/*.beginTransaction().replace(R.id.fragment_container,
                 //        new MapFragment()).commit();*/
                 //manager.beginTransaction().replace(R.id.fragment_container, new MapFragment()).commit();
                 //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         //new MapFragment()).commit();
-                launchMaps();
+             //   launchMaps();
 
-                break;
+             //   break;
 
                 /*
             case R.id.nav_chat:
@@ -200,22 +199,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         new ChatFragment()).commit();
                 break;
                 */
+                /*
             case R.id.nav_profile:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new ProfileFragment()).commit();
                 break;
 
-            case R.id.nav_login:
+                 */
+            case R.id.nav_settings:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new LoginFragment()).commit();
+                        new SettingsFragment()).commit();
                 break;
-
+/*
             case R.id.nav_share:
                 Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_send:
                 Toast.makeText(this, "Send", Toast.LENGTH_SHORT).show();
                 break;
+
+ */
         }
 
         drawer.closeDrawer(GravityCompat.START);
