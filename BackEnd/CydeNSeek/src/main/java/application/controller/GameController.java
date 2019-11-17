@@ -28,6 +28,7 @@ import application.model.Game;
 import application.model.GameBody;
 import application.model.GameUser;
 import application.model.General;
+import application.model.Stats;
 import application.model.User;
 
 @RestController
@@ -50,6 +51,18 @@ public class GameController {
 
 	@Autowired
 	private GameUserDB gameUserDB;
+	
+	@Autowired
+	private Optional<User> u;
+	
+	@Autowired 
+	private Optional<General> g;
+	
+	@Autowired
+	private Optional<GameUser> gu;
+	
+	@Autowired
+	private Optional<Stats> s;
 
 	/*
 	 * POST /game/new
@@ -229,15 +242,19 @@ public class GameController {
 			put("users", gameUserDB
 				.findUsersByGame(gameId, (x,y) -> (statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGWHider() + statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGWSeeker()) / (statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGPHider() + statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGPSeeker()) - (statsDB.findById(generalDB.findById(y.getGeneralId()).get().getStatsId()).get().getGWHider() + statsDB.findById(generalDB.findById(y.getGeneralId()).get().getStatsId()).get().getGWSeeker()) / (statsDB.findById(generalDB.findById(y.getGeneralId()).get().getStatsId()).get().getGPHider() + statsDB.findById(generalDB.findById(y.getGeneralId()).get().getStatsId()).get().getGPSeeker()))
 				.stream().map(x -> new HashMap<String, Object>() {{
-					put("username", userDB.findById(generalDB.findById(x.getGeneralId()).get().getUserId()).get().getUsername());
-					put("hider", gameUserDB.findById(generalDB.findById(x.getGeneralId()).get().getGameUserId()).get().getIsHider());
-					put("gwhider", statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGWHider());
-					put("gwseeker", statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGWSeeker());
-					put("gphider", statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGPHider());
-					put("gpseeker", statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getGPSeeker());
-					put("totdistance", statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getTotDistance());
-					put("tottime", statsDB.findById(generalDB.findById(x.getGeneralId()).get().getStatsId()).get().getTotTime());
-					put("found", gameUserDB.findById(generalDB.findById(x.getGeneralId()).get().getGameUserId()).get().getFound());
+					g = generalDB.findById(x.getGeneralId());
+					u = userDB.findById(g.get().getUserId());
+					gu = gameUserDB.findById(g.get().getGameUserId());
+					s = statsDB.findById(g.get().getStatsId());
+					put("username", u.get().getUsername());
+					put("hider", gu.get().getIsHider());
+					put("gwhider", s.get().getGWHider());
+					put("gwseeker", s.get().getGWSeeker());
+					put("gphider", s.get().getGPHider());
+					put("gpseeker", s.get().getGPSeeker());
+					put("totdistance", s.get().getTotDistance());
+					put("tottime", s.get().getTotTime());
+					put("found", gu.get().getFound());
 				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
 	}
@@ -261,13 +278,18 @@ public class GameController {
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
+		
+		
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("users", gameUserDB
 			.findUsersByGame(gameId, (x,y) -> userDB.findById(generalDB.findById(x.getGeneralId()).get().getUserId()).get().getUsername().compareTo(userDB.findById(generalDB.findById(y.getGeneralId()).get().getUserId()).get().getUsername()))
 				.stream().map(x -> new HashMap<String, Object>() {{
-					put("username", userDB.findById(generalDB.findById(x.getGeneralId()).get().getUserId()).get().getUsername());
-					put("hider", gameUserDB.findById(generalDB.findById(x.getGeneralId()).get().getGameUserId()).get().getIsHider());
-					put("found", gameUserDB.findById(generalDB.findById(x.getGeneralId()).get().getGameUserId()).get().getFound());
+					g = generalDB.findById(x.getGeneralId());
+					u = userDB.findById(g.get().getUserId());
+					gu = gameUserDB.findById(g.get().getGameUserId());
+					put("username", u.get().getUsername());
+					put("hider", gu.get().getIsHider());
+					put("found", gu.get().getFound());
 				}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
 	}
