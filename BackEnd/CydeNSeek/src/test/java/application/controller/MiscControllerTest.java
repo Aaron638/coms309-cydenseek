@@ -95,6 +95,7 @@ public class MiscControllerTest {
 		User u = new User();
 		u.setUsername("Tom");
 		u.setGeneralId(1);
+		u.setId(1);
 		Stats s = new Stats();
 		s.setGPHider(12);
 		s.setGPSeeker(10);
@@ -103,8 +104,9 @@ public class MiscControllerTest {
 		s.setTotDistance(500);
 		s.setTotTime(30);
 		s.setGeneralId(1);
-		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(u));
-		when(statsDB.findById(any(Integer.class))).thenReturn(Optional.of(s));
+		s.setId(1);
+		when(userDB.findAll()).thenReturn(Stream.of(u).collect(Collectors.toList()));
+		when(statsDB.findAll()).thenReturn(Stream.of(s).collect(Collectors.toList()));
 		when(generalDB.findAll()).thenReturn(Stream.of(g).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/leaderboard"))
 			.andExpect(status().isOk())
