@@ -22,6 +22,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.android.volley.VolleyLog.TAG;
 
@@ -74,6 +76,7 @@ public class CreateGameFragment extends Fragment {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
+                Log.d(TAG, response.toString());
 
             }
         }, new Response.ErrorListener() {
@@ -83,7 +86,23 @@ public class CreateGameFragment extends Fragment {
                 error.printStackTrace();
                 //mTextViewResult.setText("Error");
             }
-        });
+        }){
+            @Override
+            protected Map<String, String> getParams(){
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("session", "abc-123-xyz");
+                params.put("radius", "10");
+                params.put("maxplayers", "10");
+                params.put("startTime", "20:00:00");
+                params.put("duration", "10");
+                params.put("mode", "0");
+                params.put("gperiod", "10");
+                params.put("creator", "user");
+                params.put("hider", "true");
+
+                return params;
+            }
+        };
         rq.add(request);
 
         return false;
