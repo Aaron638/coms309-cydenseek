@@ -38,8 +38,6 @@ public class UserControllerTest {
 	private static final String USERNAME = "user";
 	private static final String USERSESSION = "user-session";
 
-	private General row;
-
 	@Mock
 	private GeneralDB generalDB;
 
@@ -144,7 +142,7 @@ public class UserControllerTest {
 	}
 
 	@Test
-	public void authenticate_failsWhenPasswordMissing() throws Exception {
+	public void newUser_failsWithoutPassword() throws Exception {
 		this.mockMvc.perform(post("/user/" + USERNAME)
 			.contentType(APPLICATION_JSON_VALUE)
 			.content("{}")
@@ -154,25 +152,22 @@ public class UserControllerTest {
 	}
 
 	@Test
-	public void authenticate_failsWhenPasswordInvalid() throws Exception {
-		User user = new User();
-		user.setPassword("mypassword");
-		user.setGeneralId(1);
-		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.of(user));
+	public void newUser_failsWithTakenUsername() throws Exception {
+		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.of(new User()));
 		this.mockMvc.perform(post("/user/" + USERNAME)
 			.contentType(APPLICATION_JSON_VALUE)
 			.content("{"
-				+ "\"password\":\"notmypassword\""
+				+ "\"password\":\"mypassword\""
 				+ "}")
 		)
 			.andExpect(status().isBadRequest())
-			.andExpect(content().string(containsString("password")));
+			.andExpect(content().string(containsString("already taken")));
 	}
 
 	@Test
-	public void authenticate_succeedsWithNewUser() throws Exception {
+	public void newUser_succeeds() throws Exception {
 		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.empty());
-		row = new General();
+		final General row = new General();
 		row.setId(1);
 		when(generalDB.saveAndFlush(any(General.class))).then(x -> {
 			row.setSession(((General)x.getArgument(0)).getSession());
@@ -198,13 +193,52 @@ public class UserControllerTest {
 	}
 
 	@Test
-	public void authenticate_succeedsWithKnownUser() throws Exception {
+	public void authenticate_failsWhenPasswordMissing() throws Exception {
+		this.mockMvc.perform(post("/user/" + USERNAME + "/auth")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{}")
+			)
+		.andExpect(status().isBadRequest())
+		.andExpect(content().string(containsString("password")));
+	}
+	
+	@Test
+	public void authenticate_failsWhenInvalidUser() throws Exception {
+		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.empty());
+		this.mockMvc.perform(post("/user/" + USERNAME + "/auth")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"password\":\"mypassword\""
+				+ "}")
+			)
+		.andExpect(status().isNotFound())
+		.andExpect(content().string(containsString("not found")));
+	}
+
+	@Test
+	public void authenticate_failsWhenPasswordInvalid() throws Exception {
+		User user = new User();
+		user.setPassword("mypassword");
+		user.setGeneralId(1);
+		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.of(user));
+		this.mockMvc.perform(post("/user/" + USERNAME + "/auth")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"password\":\"notmypassword\""
+				+ "}")
+			)
+		.andExpect(status().isBadRequest())
+		.andExpect(content().string(containsString("password")));
+	}
+	
+	@Test
+	public void authenticate_succeeds() throws Exception {
 		User user = new User();
 		user.setPassword("mypassword");
 		user.setGeneralId(1);
 		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.of(user));
 		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(new General()));
-		this.mockMvc.perform(post("/user/" + USERNAME)
+		this.mockMvc.perform(post("/user/" + USERNAME + "/auth")
 			.contentType(APPLICATION_JSON_VALUE)
 			.content("{"
 				+ "\"password\":\"mypassword\""
@@ -212,6 +246,65 @@ public class UserControllerTest {
 		)
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("session")));
+	}
+
+	@Test
+	public void logout_failsWithoutSessionToken() throws Exception {
+		this.mockMvc.perform(post("/user/" + USERNAME + "/logout")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{}")
+		)
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(containsString("session token")));
+	}
+
+	@Test
+	public void logout_failsWithInvalidUser() throws Exception {
+		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.empty());
+		this.mockMvc.perform(post("/user/" + USERNAME + "/logout")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"session\":\"abc-123-xyz\""
+				+ "}")
+		)
+			.andExpect(status().isNotFound())
+			.andExpect(content().string(containsString("not found")));
+	}
+
+	@Test
+	public void logout_failsWithInvalidSessionToken() throws Exception {
+		User u = new User();
+		u.setGeneralId(1);
+		General row = new General();
+		row.setSession("");
+		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.of(u));
+		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(row));
+		this.mockMvc.perform(post("/user/" + USERNAME + "/logout")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"session\":\"abc-123-xyz\""
+				+ "}")
+		)
+			.andExpect(status().isBadRequest())
+			.andExpect(content().string(containsString("session token")));
+	}
+
+	@Test
+	public void logout_succeeds() throws Exception {
+		User u = new User();
+		u.setGeneralId(1);
+		General row = new General();
+		row.setSession("abc-123-xyz");
+		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.of(u));
+		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(row));
+		this.mockMvc.perform(post("/user/" + USERNAME + "/logout")
+			.contentType(APPLICATION_JSON_VALUE)
+			.content("{"
+				+ "\"session\":\"abc-123-xyz\""
+				+ "}")
+		)
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("")));
 	}
 
 	@Test
