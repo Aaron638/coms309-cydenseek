@@ -219,22 +219,21 @@ public class GameController {
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-		List<String> usernames = ServerWebSocketHandler.gameusers.entrySet().stream().filter(x -> gameId.equals(x.getValue().getGameSession())).map(x -> x.getKey()).collect(Collectors.toList());
+		List<GameUser> gameusers = ServerWebSocketHandler.gameusers.entrySet().stream().filter(x -> gameId.equals(x.getValue().getGameSession())).map(x -> x.getValue()).collect(Collectors.toList());
 		final Map<Integer, General> rows = generalDB.findAll().stream().collect(Collectors.toMap(x->x.getId(), x->x));
 		final Map<Integer, String> users = userDB.findAll().stream().collect(Collectors.toMap(x->rows.get(x.getGeneralId()).getStatsId(), x->x.getUsername()));
 		final Map<String, Stats> userStats = statsDB.findAll().stream().collect(Collectors.toMap(x->users.get(x.getId()), x->x));
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", usernames.stream().sorted((x,y) -> {
-				Stats statsX = userStats.get(x);
-				Stats statsY = userStats.get(y);
+			put("users", gameusers.stream().sorted((x,y) -> {
+				Stats statsX = userStats.get(x.getUsername());
+				Stats statsY = userStats.get(y.getUsername());
 				return (statsX.getGWHider() + statsX.getGWSeeker()) / (statsX.getGPHider() + statsX.getGPSeeker()) - (statsY.getGWHider() + statsY.getGWSeeker()) / (statsY.getGPHider() + statsY.getGPSeeker());
 			}).map(x -> {
-				GameUser gameuser = ServerWebSocketHandler.gameusers.get(x);
-				Stats stats = userStats.get(x);
+				Stats stats = userStats.get(x.getUsername());
 				return new HashMap<String, Object>() {{
 					put("username", x);
-					put("hider", gameuser.getHider());
-					put("found", gameuser.getFound());
+					put("hider", x.getHider());
+					put("found", x.getFound());
 					put("gwhider", stats.getGWHider());
 					put("gwseeker", stats.getGWSeeker());
 					put("gphider", stats.getGPHider());
@@ -265,14 +264,13 @@ public class GameController {
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-		List<String> usernames = ServerWebSocketHandler.gameusers.entrySet().stream().filter(x -> gameId.equals(x.getValue().getGameSession())).map(x -> x.getKey()).collect(Collectors.toList());
+		List<GameUser> gameusers = ServerWebSocketHandler.gameusers.entrySet().stream().filter(x -> gameId.equals(x.getValue().getGameSession())).map(x -> x.getValue()).collect(Collectors.toList());
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", usernames.stream().sorted((x,y) -> x.compareTo(y)).map(x -> {
-				GameUser gameuser = ServerWebSocketHandler.gameusers.get(x);
+			put("users", gameusers.stream().sorted((x,y) -> x.getUsername().compareTo(y.getUsername())).map(x -> {
 				return new HashMap<String, Object>() {{
-					put("username", x);
-					put("hider", gameuser.getHider());
-					put("found", gameuser.getFound());
+					put("username", x.getUsername());
+					put("hider", x.getHider());
+					put("found", x.getFound());
 				}};
 			}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);

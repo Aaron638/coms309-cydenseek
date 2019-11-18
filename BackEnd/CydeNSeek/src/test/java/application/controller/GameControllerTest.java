@@ -10,7 +10,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -256,8 +255,7 @@ public class GameControllerTest {
 	@Test
 	public void leaderboard_succeeds() throws Exception {
 		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
-		ServerWebSocketHandler.gameusers = new HashMap<>();
-		ServerWebSocketHandler.gameusers.put("John", buildGameUser());
+		ServerWebSocketHandler.gameusers.put(null, buildGameUser());
 		when(generalDB.findAll()).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
 		when(userDB.findAll()).thenReturn(Stream.of(buildUser()).collect(Collectors.toList()));
 		when(statsDB.findAll()).thenReturn(Stream.of(buildStats()).collect(Collectors.toList()));
@@ -277,8 +275,7 @@ public class GameControllerTest {
 	@Test
 	public void users_succeeds() throws Exception {
 		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
-		ServerWebSocketHandler.gameusers = new HashMap<>();
-		ServerWebSocketHandler.gameusers.put("John", buildGameUser());
+		ServerWebSocketHandler.gameusers.put(null, buildGameUser());
 		this.mockMvc.perform(get("/game/" + GAMESESSION + "/users"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
@@ -316,6 +313,7 @@ public class GameControllerTest {
 
 	private static GameUser buildGameUser() {
 		GameUser gu = new GameUser();
+		gu.setUsername("John");
 		gu.setGameSession(GAMESESSION);
 		gu.setHider(true);
 		gu.setFound(true);
