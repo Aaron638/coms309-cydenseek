@@ -43,21 +43,28 @@ public class LoginFragment extends Fragment {
         return rootView;
     }
 
-    public int validate(String x, String y){
-        //Retrieve stings from input
+    public void validate(String user, String pass){
+        //1: send username and password strings to backend
+
+
+        //2.0: get response from backend
+
+
+        //2.1: If user gave the correct information, then display "Successful Login". Set activity variable 'LoginCode' to key given by backend
+
+
+        //2.2: If user did not give correct information, then display "Failed Login".  Do not move from this fragment
 
 
 
         String hold;
-        if((x.equals("James")) && y.equals("Bond")){
+        if((user.equals("James")) && pass.equals("Bond")){
             hold = "Successful Login";
             result.setText(hold);
-            return 0;
         }
         else{
             hold = "Failed Login";
             result.setText(hold);
-            return -1;
         }
 
     }

@@ -16,6 +16,7 @@
             android:id="@+id/nav_leaderboard"
             android:icon="@drawable/ic_leaderboard"
             android:title="LeaderBoard" />
+
         <!--item
             android:id="@+id/nav_map"
             android:icon="@drawable/ic_map"
@@ -36,6 +37,10 @@
             android:id="@+id/nav_login"
             android:icon="@drawable/ic_login"
             android:title="Login" />
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_login"
+            android:title="Logout" />
     </group>
 
     <!--item android:title="Communicate">

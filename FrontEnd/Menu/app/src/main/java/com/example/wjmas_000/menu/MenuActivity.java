@@ -36,6 +36,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     private double longitude;
     private double latitude;
     private LocationManager lm;
+    private int LoginCode;      //Reference for login session?
 
     public LocationListener locListen = new LocationListener() {
         @Override
@@ -176,6 +177,15 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new LeaderboardFragment()).commit();
                 break;
+            case R.id.nav_login:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new LoginFragment()).commit();
+                break;
+            case R.id.nav_logout:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new LogoutFragment()).commit();
+                break;
+
 
             //case R.id.nav_map:
                 //FragmentManager manager = getSupportFragmentManager();/*.beginTransaction().replace(R.id.fragment_container,
