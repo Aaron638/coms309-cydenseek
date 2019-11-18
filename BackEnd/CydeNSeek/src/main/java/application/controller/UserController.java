@@ -109,13 +109,64 @@ public class UserController {
 	/*
 	 * POST /user/<username>
 	 * 
-	 * Mapping for authenticating user
+	 * Mapping for new user
 	 * {
 	 * 		"password": "mysecurepassword"
 	 * }
 	 */
 	@RequestMapping(
 		value = "/{username}",
+		method = RequestMethod.POST,
+		consumes = APPLICATION_JSON_VALUE,
+		produces = APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<Map<String, Object>> newUser(@PathVariable("username") final String username, @RequestBody final User user) {
+		/* Checks if password not present */
+		if(user.getPassword() == null) {
+			return error("Must provide password when authenticating user", HttpStatus.BAD_REQUEST);
+		}
+		Optional<User> foundUser = userDB.findUserByUsername(username);
+		if(foundUser.isPresent()) {
+			return error("Username already taken.", HttpStatus.BAD_REQUEST);
+		}
+		General row = new General();
+		user.setUsername(username);
+		String session = UUID.randomUUID().toString();
+		row.setSession(session);
+		user.setDeveloper(false);
+		/* Need to set password to hashed password and store salt */
+		Stats stats = new Stats();
+		stats.setGPHider(0);
+		stats.setGPSeeker(0);
+		stats.setGWHider(0);
+		stats.setGWSeeker(0);
+		stats.setTotDistance(0);
+		stats.setTotTime(0);
+		generalDB.saveAndFlush(row);
+		General foundRow = generalDB.findAll().stream().filter(x -> x.getSession().equals(session)).findFirst().get();
+		user.setGeneralId(foundRow.getId());
+		stats.setGeneralId(foundRow.getId());
+		userDB.saveAndFlush(user);
+		statsDB.saveAndFlush(stats);
+		foundRow.setUserId(userDB.findAll().stream().filter(x -> x.getGeneralId().equals(foundRow.getId())).findFirst().get().getId());
+		foundRow.setStatsId(statsDB.findAll().stream().filter(x -> x.getGeneralId().equals(foundRow.getId())).findFirst().get().getId());
+		generalDB.saveAndFlush(foundRow);
+		LOG.info("Created new user \"" + username + "\".");
+		return new ResponseEntity<>(new HashMap<String, Object>() {{
+			put("session", session);
+		}}, HttpStatus.OK);
+	}
+
+	/*
+	 * POST /user/<username>/auth
+	 * 
+	 * Mapping for authenticating user
+	 * {
+	 * 		"password": "mysecurepassword"
+	 * }
+	 */
+	@RequestMapping(
+		value = "/{username}/auth",
 		method = RequestMethod.POST,
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
@@ -128,32 +179,7 @@ public class UserController {
 		Optional<User> foundUser = userDB.findUserByUsername(username);
 		/* Checks if user not exists */
 		if(!foundUser.isPresent()) {
-			General row = new General();
-			user.setUsername(username);
-			String session = UUID.randomUUID().toString();
-			row.setSession(session);
-			user.setDeveloper(false);
-			/* Need to set password to hashed password and store salt */
-			Stats stats = new Stats();
-			stats.setGPHider(0);
-			stats.setGPSeeker(0);
-			stats.setGWHider(0);
-			stats.setGWSeeker(0);
-			stats.setTotDistance(0);
-			stats.setTotTime(0);
-			generalDB.saveAndFlush(row);
-			General foundRow = generalDB.findAll().stream().filter(x -> x.getSession().equals(session)).findFirst().get();
-			user.setGeneralId(foundRow.getId());
-			stats.setGeneralId(foundRow.getId());
-			userDB.saveAndFlush(user);
-			statsDB.saveAndFlush(stats);
-			foundRow.setUserId(userDB.findAll().stream().filter(x -> x.getGeneralId().equals(foundRow.getId())).findFirst().get().getId());
-			foundRow.setStatsId(statsDB.findAll().stream().filter(x -> x.getGeneralId().equals(foundRow.getId())).findFirst().get().getId());
-			generalDB.saveAndFlush(foundRow);
-			LOG.info("Created new user \"" + username + "\".");
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("session", session);
-			}}, HttpStatus.OK);
+			return error("User not found.", HttpStatus.NOT_FOUND);
 		}
 		User u = foundUser.get();
 		/* Checks if password not match */
@@ -169,6 +195,37 @@ public class UserController {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("session", session);
 		}}, HttpStatus.OK);
+	}
+
+	/*
+	 * POST /user/<username>/logout
+	 * 
+	 * Mapping for logging out
+	 * {
+	 * 		"session": "abc-123-xyz"
+	 * }
+	 */
+	@RequestMapping(
+		value = "/{username}/logout",
+		method = RequestMethod.POST,
+		consumes = APPLICATION_JSON_VALUE,
+		produces = APPLICATION_JSON_VALUE
+	)
+	public ResponseEntity<Map<String, Object>> logout(@PathVariable("username") final String username, @RequestBody final UserBody body) {
+		if(body.getSession() == null) {
+			return error("Missing session token.", HttpStatus.BAD_REQUEST);
+		}
+		Optional<User> foundUser = userDB.findUserByUsername(username);
+		if(!foundUser.isPresent()) {
+			return error("User not found.", HttpStatus.NOT_FOUND);
+		}
+		General row = generalDB.findById(foundUser.get().getGeneralId()).get();
+		if(!row.getSession().equals(body.getSession())) {
+			return error("Invalid session token.", HttpStatus.BAD_REQUEST);
+		}
+		row.setSession("CLEARED");
+		generalDB.saveAndFlush(row);
+		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
 
 	/*
