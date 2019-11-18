@@ -22,6 +22,9 @@ import application.db.GameDB;
 import application.db.GeneralDB;
 import application.db.StatsDB;
 import application.db.UserDB;
+import application.model.GameUser;
+import application.model.General;
+import application.model.Stats;
 import application.model.User;
 
 @RestController
@@ -40,6 +43,18 @@ public class MiscController {
 
 	@Autowired
 	private GameDB gameDB;
+	
+	@Autowired
+	private Optional<User> u;
+	
+	@Autowired
+	private Optional<GameUser> gu;
+	
+	@Autowired
+	private Optional<General> g;
+	
+	@Autowired
+	private Optional<Stats> s;
 
 	/*
 	 * GET /
@@ -93,13 +108,15 @@ public class MiscController {
 			put("users", generalDB.findAll().stream()
 				.sorted((x,y) -> (statsDB.findById(x.getStatsId()).get().getGWHider() + statsDB.findById(x.getStatsId()).get().getGWSeeker()) / (statsDB.findById(x.getStatsId()).get().getGPHider() + statsDB.findById(x.getStatsId()).get().getGPSeeker()) - (statsDB.findById(y.getStatsId()).get().getGWHider() + statsDB.findById(y.getStatsId()).get().getGWSeeker()) / (statsDB.findById(y.getStatsId()).get().getGPHider() + statsDB.findById(y.getStatsId()).get().getGPSeeker()))
 				.map(x -> new HashMap<String, Object>() {{
-					put("username", userDB.findById(x.getUserId()).get().getUsername());
-					put("gwhider", statsDB.findById(x.getStatsId()).get().getGWHider());
-					put("gwseeker", statsDB.findById(x.getStatsId()).get().getGWSeeker());
-					put("gphider", statsDB.findById(x.getStatsId()).get().getGPHider());
-					put("gpseeker", statsDB.findById(x.getStatsId()).get().getGPSeeker());
-					put("totdistance", statsDB.findById(x.getStatsId()).get().getTotDistance());
-					put("tottime", statsDB.findById(x.getStatsId()).get().getTotTime());
+					u = userDB.findById(x.getUserId());
+					s = statsDB.findById(x.getStatsId());
+					put("username", u.get().getUsername());
+					put("gwhider", s.get().getGWHider());
+					put("gwseeker", s.get().getGWSeeker());
+					put("gphider", s.get().getGPHider());
+					put("gpseeker", s.get().getGPSeeker());
+					put("totdistance", s.get().getTotDistance());
+					put("tottime", s.get().getTotTime());
 				}})
 				.collect(Collectors.toList()));
 		}}, HttpStatus.OK);
