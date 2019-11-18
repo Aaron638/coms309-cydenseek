@@ -185,6 +185,10 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new LogoutFragment()).commit();
                 break;
+            case R.id.nav_CreateAccount:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new CreateAccountFragment()).commit();
+                break;
 
 
             //case R.id.nav_map:

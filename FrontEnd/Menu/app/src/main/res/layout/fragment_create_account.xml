@@ -5,30 +5,31 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <TextView
-        android:id="@+id/tvTitle3"
-        android:layout_width="176dp"
-        android:layout_height="40dp"
+    <EditText
+        android:id="@+id/etPassword_AccountCreation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="53dp"
-        android:text="Login Screen"
-        android:textAlignment="center"
-        android:textSize="18sp"
-        tools:text="Login Screen" />
+        android:layout_marginTop="190dp"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPersonName"
+        android:singleLine="false"
+        android:text="Password" />
 
     <Button
-        android:id="@+id/btnLogin"
+        android:id="@+id/btnCreate_AccountCreation"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="235dp"
-        android:text="Login"
-        tools:text="Login" />
+        android:layout_marginBottom="171dp"
+        android:text="Create"
+        tools:text="Create" />
 
     <EditText
-        android:id="@+id/etUsername"
+        android:id="@+id/etUsername_AccountCreation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -40,25 +41,35 @@
         android:text="Username" />
 
     <EditText
-        android:id="@+id/etPassword"
+        android:id="@+id/etPasswordConfirm_AccountCreation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="199dp"
+        android:layout_centerInParent="true"
         android:ems="10"
         android:hint="Password"
         android:inputType="textPersonName"
         android:singleLine="false"
-        android:text="Password" />
+        android:text="Confirm Password" />
 
     <TextView
-        android:id="@+id/tvResult"
+        android:id="@+id/tvResult_AccountCreation"
         android:layout_width="221dp"
-        android:layout_height="158dp"
+        android:layout_height="107dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="35dp"
         android:textAlignment="center"
         android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="176dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="53dp"
+        android:text="Account Creation"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        tools:text="Account Creation" />
 </RelativeLayout>

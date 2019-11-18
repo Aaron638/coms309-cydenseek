@@ -25,7 +25,7 @@ public class LogoutFragment extends Fragment {
 
 
         logoutBtn = rootView.findViewById(R.id.btnLogout);
-        result = rootView.findViewById(R.id.tvResult);
+        result = rootView.findViewById(R.id.tvResult_Logout);
 
         logoutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
