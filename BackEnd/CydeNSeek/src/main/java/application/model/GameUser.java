@@ -2,6 +2,10 @@ package application.model;
 
 public class GameUser {
 
+	private String username;
+
+	private Boolean verified;
+
 	private String gameSession;
 
 	private String userSession;
@@ -60,5 +64,21 @@ public class GameUser {
 
 	public void setGameSession(String gameSession) {
 		this.gameSession = gameSession;
+	}
+
+	public Boolean getVerified() {
+		return verified;
+	}
+
+	public void setVerified(Boolean verified) {
+		this.verified = verified;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 }
