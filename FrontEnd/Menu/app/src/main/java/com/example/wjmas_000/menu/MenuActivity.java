@@ -239,6 +239,11 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
     }
 
+    private void launchGame() {
+        Intent intent = new Intent(this, GameActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
