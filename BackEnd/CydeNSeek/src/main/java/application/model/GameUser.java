@@ -1,35 +1,21 @@
 package application.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-@Entity
 public class GameUser {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column
-	private Integer id;
+	private String username;
 
-	@Column
-	private Integer generalId;
+	private Boolean verified;
 
-	@Column
-	private Integer gameId;
+	private String gameSession;
 
-	@Column
+	private String userSession;
+
 	private Boolean found;
 
-	@Column
-	private Boolean isHider;
+	private Boolean hider;
 
-	@Column
 	private Double latitude;
 
-	@Column
 	private Double longitude;
 
 	public Boolean getFound() {
@@ -40,12 +26,12 @@ public class GameUser {
 		this.found = found;
 	}
 
-	public Boolean getIsHider() {
-		return isHider;
+	public Boolean getHider() {
+		return hider;
 	}
 
-	public void setIsHider(Boolean isHider) {
-		this.isHider = isHider;
+	public void setHider(Boolean isHider) {
+		this.hider = isHider;
 	}
 
 	public Double getLatitude() {
@@ -64,27 +50,35 @@ public class GameUser {
 		this.longitude = longitude;
 	}
 
-	public Integer getGameId() {
-		return gameId;
+	public String getUserSession() {
+		return userSession;
 	}
 
-	public void setGameId(Integer gameId) {
-		this.gameId = gameId;
+	public void setUserSession(String userSession) {
+		this.userSession = userSession;
 	}
 
-	public Integer getGeneralId() {
-		return generalId;
+	public String getGameSession() {
+		return gameSession;
 	}
 
-	public void setGeneralId(Integer generalId) {
-		this.generalId = generalId;
+	public void setGameSession(String gameSession) {
+		this.gameSession = gameSession;
 	}
 
-	public Integer getId() {
-		return id;
+	public Boolean getVerified() {
+		return verified;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setVerified(Boolean verified) {
+		this.verified = verified;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 }

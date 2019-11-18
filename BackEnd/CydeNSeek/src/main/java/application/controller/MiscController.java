@@ -48,9 +48,6 @@ public class MiscController {
 	private Optional<User> u;
 	
 	@Autowired
-	private Optional<GameUser> gu;
-	
-	@Autowired
 	private Optional<General> g;
 	
 	@Autowired
