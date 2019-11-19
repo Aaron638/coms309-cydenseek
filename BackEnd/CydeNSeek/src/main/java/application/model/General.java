@@ -21,9 +21,6 @@ public class General {
 	private Integer statsId;
 
 	@Column
-	private Integer gameUserId;
-
-	@Column
 	private String session;
 
 	public String getSession() {
@@ -56,13 +53,5 @@ public class General {
 
 	public void setStatsId(Integer statsId) {
 		this.statsId = statsId;
-	}
-
-	public Integer getGameUserId() {
-		return gameUserId;
-	}
-
-	public void setGameUserId(Integer gameUserId) {
-		this.gameUserId = gameUserId;
 	}
 }
