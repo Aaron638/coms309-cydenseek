@@ -17,7 +17,7 @@ public class Game {
 	@GeneratedValue(generator = "UUID")
 	@GenericGenerator(
 		name = "UUID",
-		strategy = "org.hibernate.ud.UUIDGenerator"
+		strategy = "org.hibernate.id.UUIDGenerator"
 	)
 	@Column
 	private UUID session;

@@ -43,7 +43,8 @@ public class ServerWebSocketHandler {
 	public static Map<Session, GameUser> gameusers = new HashMap<>();
 
 	@OnOpen
-	public void onOpen(final Session session, @PathParam("gameSession") final UUID gameSession, @PathParam("username") final String username) {
+	public void onOpen(final Session session, @PathParam("gameSession") final String gSession, @PathParam("username") final String username) {
+		final UUID gameSession = UUID.fromString(gSession);
 		if(!userDB.findUserByUsername(username).isPresent()) {
 			send(session, "{\"error\":true,\"message\":\"User not found.\"}");
 			return;
