@@ -17,8 +17,6 @@ import com.android.volley.toolbox.Volley;
 
 public class JoinFragment extends Fragment {
 
-    private static final String TAG = CardViewFragment.class.getSimpleName();
-
     /** The CardView widget. */
     //@VisibleForTesting
     CardView mCardView;
@@ -58,6 +56,7 @@ public class JoinFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_join, container, false);
 
+        /*
         Button buttonJoin = (Button) rootView.findViewById(R.id.button_join_game);
         mQueue = Volley.newRequestQueue(getActivity());
 
@@ -67,7 +66,7 @@ public class JoinFragment extends Fragment {
                 callBackend();
             }
         });
-
+        */
         return rootView;
     }
 
@@ -82,41 +81,8 @@ public class JoinFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mCardView = (CardView) view.findViewById(R.id.cardview);
-        mRadiusSeekBar = (SeekBar) view.findViewById(R.id.cardview_radius_seekbar);
-        mRadiusSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Log.d(TAG, String.format("SeekBar Radius progress : %d", progress));
-                mCardView.setRadius(progress);
-            }
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                //Do nothing
-            }
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                //Do nothing
-            }
-        });
 
-        mElevationSeekBar = (SeekBar) view.findViewById(R.id.cardview_elevation_seekbar);
-        mElevationSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Log.d(TAG, String.format("SeekBar Elevation progress : %d", progress));
-                mCardView.setElevation(progress);
-            }
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                //Do nothing
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                //Do nothing
-            }
-        });
     }
 
 }
