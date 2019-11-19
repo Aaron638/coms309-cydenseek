@@ -74,27 +74,28 @@ public class MiscControllerTest {
 	}
 	
 	@Test
-	public void index() throws Exception {
+	public void index_succeeds() throws Exception {
 		this.mockMvc.perform(get("/"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("")));
 	}
 
 	@Test
-	public void test() throws Exception {
+	public void test_succeeds() throws Exception {
 		this.mockMvc.perform(get("/test"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("obj")));
 	}
 
 	@Test
-	public void leaderboard() throws Exception {
+	public void leaderboard_succeeds() throws Exception {
 		General g = new General();
 		g.setUserId(1);
 		g.setStatsId(1);
 		User u = new User();
 		u.setUsername("Tom");
 		u.setGeneralId(1);
+		u.setId(1);
 		Stats s = new Stats();
 		s.setGPHider(12);
 		s.setGPSeeker(10);
@@ -103,8 +104,9 @@ public class MiscControllerTest {
 		s.setTotDistance(500);
 		s.setTotTime(30);
 		s.setGeneralId(1);
-		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(u));
-		when(statsDB.findById(any(Integer.class))).thenReturn(Optional.of(s));
+		s.setId(1);
+		when(userDB.findAll()).thenReturn(Stream.of(u).collect(Collectors.toList()));
+		when(statsDB.findAll()).thenReturn(Stream.of(s).collect(Collectors.toList()));
 		when(generalDB.findAll()).thenReturn(Stream.of(g).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/leaderboard"))
 			.andExpect(status().isOk())
@@ -112,7 +114,34 @@ public class MiscControllerTest {
 	}
 
 	@Test
-	public void users() throws Exception {
+	public void users_failsWhenSessionTokenInvalid() throws Exception {
+		User user = new User();
+		user.setGeneralId(1);
+		when(userDB.findAll()).thenReturn(Stream.of(user).collect(Collectors.toList()));
+		General row = new General();
+		row.setSession("not-John");
+		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(row));
+		this.mockMvc.perform(get("/users?session=abc-123-xyz"))
+			.andExpect(status().isNotFound())
+			.andExpect(content().string(containsString("not found")));
+	}
+
+	@Test
+	public void users_failsWhenNotDeveloper() throws Exception {
+		User user = new User();
+		user.setGeneralId(1);
+		user.setDeveloper(false);
+		when(userDB.findAll()).thenReturn(Stream.of(user).collect(Collectors.toList()));
+		General row = new General();
+		row.setSession("abc-123-xyz");
+		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(row));
+		this.mockMvc.perform(get("/users?session=abc-123-xyz"))
+			.andExpect(status().isUnauthorized())
+			.andExpect(content().string(containsString("developer")));
+	}
+
+	@Test
+	public void users_succeeds() throws Exception {
 		General g = new General();
 		g.setSession("abc-123-xyz");
 		when(userDB.findAll()).thenReturn(users);
@@ -121,5 +150,12 @@ public class MiscControllerTest {
 		this.mockMvc.perform(get("/users?session=abc-123-xyz"))
 			.andExpect(status().isOk())
 			.andExpect(content().string(containsString("John")));
+	}
+
+	@Test
+	public void games_succeeds() throws Exception {
+		this.mockMvc.perform(get("/games"))
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("games")));
 	}
 }

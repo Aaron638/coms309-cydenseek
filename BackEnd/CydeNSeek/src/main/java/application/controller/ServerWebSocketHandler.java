@@ -2,7 +2,8 @@ package application.controller;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -19,13 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import application.config.CustomConfigurator;
-import application.db.GameUserDB;
+import application.db.GameDB;
 import application.db.GeneralDB;
 import application.db.UserDB;
 import application.model.GameUser;
-import application.model.User;
 
-@ServerEndpoint(value = "/user/{username}/location", configurator = CustomConfigurator.class)
+@ServerEndpoint(value = "/{gameSession}/{username}", configurator = CustomConfigurator.class)
 @Component
 public class ServerWebSocketHandler {
 
@@ -38,36 +38,40 @@ public class ServerWebSocketHandler {
 	private UserDB userDB;
 
 	@Autowired
-	private GameUserDB gameUserDB;
+	private GameDB gameDB;
 
-	private static Map<String, Session> sessions = new HashMap<>();
-	private static Map<String, Integer> games = new HashMap<>();
-	private static Map<Session, String> usernames = new HashMap<>();
+	public static Map<Session, GameUser> gameusers = new HashMap<>();
 
 	@OnOpen
-	public void onOpen(Session session, @PathParam("username") String username) {
+	public void onOpen(final Session session, @PathParam("gameSession") final String gameSession, @PathParam("username") final String username) {
 		if(!userDB.findUserByUsername(username).isPresent()) {
 			send(session, "{\"error\":true,\"message\":\"User not found.\"}");
 			return;
 		}
+		if(!gameDB.findGameBySession(gameSession).isPresent()) {
+			send(session, "{\"error\":true,\"message\":\"Game not found.\"}");
+			return;
+		}
 		LOG.info(username + " has connected.");
-		sessions.put(username, session);
-		games.put(username, gameUserDB.findById(
-			generalDB.findById(
-				userDB.findUserByUsername(username).get().getGeneralId()
-			).get().getGameUserId()
-		).get().getGameId());
-		usernames.put(session, username);
+		GameUser gu = new GameUser();
+		gu.setVerified(false);
+		gu.setGameSession(gameSession);
+		gu.setFound(false);
+		gu.setUsername(username);
+		final String userSession = UUID.randomUUID().toString();
+		gu.setUserSession(userSession);
+		gameusers.put(session, gu);
 	}
 
 	@OnMessage
-	public void onMessage(Session session, String message) {
-		String username = usernames.get(session);
-		if(username == null) {
+	public void onMessage(final Session session, final String message) {
+		final GameUser gu = gameusers.get(session);
+		if(gu == null) {
 			send(session, "{\"error\":true,\"message\":\"Socket connection failed.\"}");
 			return;
 		}
-		JSONObject msg;
+		final String username = gu.getUsername();
+		final JSONObject msg;
 		try {
 			msg = new JSONObject(message);
 		} catch(Exception e) {
@@ -75,13 +79,25 @@ public class ServerWebSocketHandler {
 			LOG.error(e);
 			return;
 		}
-		if(!msg.has("session")) {
-			send(session, "{\"error\":true,\"message\":\"Session token not present.\"}");
-			return;
-		}
-		if(!generalDB.findById(userDB.findUserByUsername(username).get().getGeneralId()).get().getSession().equals(msg.getString("session"))) {
-			send(session, "{\"error\":true,\"message\":\"Invalid session token.\"}");
-			return;
+		if(!gu.getVerified().booleanValue()) {
+			if(!msg.has("session")) {
+				send(session, "{\"error\":true,\"message\":\"Session token not present.\"}");
+				return;
+			}
+			if(!generalDB.findById(userDB.findUserByUsername(username).get().getGeneralId()).get().getSession().equals(msg.getString("session"))) {
+				send(session, "{\"error\":true,\"message\":\"Invalid session token.\"}");
+				return;
+			}
+			if(!msg.has("hider")) {
+				send(session, "{\"error\":true,\"message\":\"Must specify if hider or not.\"}");
+				return;
+			}
+			if(!(msg.get("hider") instanceof Boolean)) {
+				send(session, "{\"error\":true,\"message\":\"Hider must be boolean.\"}");
+				return;
+			}
+			gu.setHider(msg.getBoolean("hider"));
+			gu.setVerified(true);
 		}
 		if(!msg.has("latitude")) {
 			send(session, "{\"error\":true,\"message\":\"Latitude not present.\"}");
@@ -99,59 +115,52 @@ public class ServerWebSocketHandler {
 			send(session, "{\"error\":true,\"message\":\"Longitude must be double.\"}");
 			return;
 		}
-		Optional<User> user = userDB.findUserByUsername(username);
-		GameUser gu = gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get();
 		gu.setLatitude(msg.getDouble("latitude"));
 		gu.setLongitude(msg.getDouble("longitude"));
-		gameUserDB.saveAndFlush(gu);
-		gameUserDB.findUsersByGame(gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId(), (x,y) -> 0).stream().forEach(x -> {
-			if(gu.getIsHider().booleanValue() == x.getIsHider().booleanValue()) return;
-			if(Math.abs(gu.getLatitude().doubleValue() - x.getLatitude().doubleValue()) < 1.5 && Math.abs(gu.getLongitude().doubleValue() - x.getLongitude().doubleValue()) < 1.5) {
-				if(gu.getIsHider().booleanValue()) {
+		final String gameSession = gu.getGameSession();
+		final Map<Session, GameUser> gameUsers = gameusers.entrySet().stream().filter(x -> gameSession.equals(x.getValue().getGameSession())).collect(Collectors.toMap(e->e.getKey(),e->e.getValue()));;
+		gameUsers.entrySet().stream().forEach(x -> {
+			final GameUser other = x.getValue();
+			if(gu.getHider().booleanValue() == other.getHider().booleanValue()) return;
+			if(Math.abs(gu.getLatitude().doubleValue() - other.getLatitude().doubleValue()) < 1.5 && Math.abs(gu.getLongitude().doubleValue() - other.getLongitude().doubleValue()) < 1.5) {
+				if(gu.getHider().booleanValue()) {
 					gu.setFound(true);
-					send(sessions.get(username), "{\"found\":true}");
-					gameUserDB.saveAndFlush(gu);
+					send(session, "{\"found\":true}");
 				} else {
-					GameUser g = x;
-					g.setFound(true);
-					send(sessions.get(userDB.findById(generalDB.findById(x.getGeneralId()).get().getUserId()).get().getUsername()), "{\"found\":true}");
-					gameUserDB.saveAndFlush(g);
+					gameusers.get(x.getKey()).setFound(true);
+					send(x.getKey(), "{\"found\":true}");
 				}
 			}
 		});
-		long playersleft = gameUserDB.findUsersByGame(gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId(), (x,y) -> 0).stream().filter(x -> x.getIsHider().booleanValue() && !x.getFound().booleanValue()).count();
+		final Map<Session, GameUser> usersLeft = gameUsers.entrySet().stream().filter(x -> x.getValue().getHider().booleanValue() && !x.getValue().getFound().booleanValue()).collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
+		final long playersleft = usersLeft.size();
 		if(playersleft <= 1) {
-			if(playersleft == 0) broadcast("{\"winner\":false}", gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId());
-			else broadcast("{\"winner\":\"" + userDB.findById(generalDB.findById(gameUserDB.findUsersByGame(gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId(), (x,y) -> 0).stream().filter(x -> x.getIsHider().booleanValue() && !x.getFound().booleanValue()).findFirst().get().getGeneralId()).get().getUserId()).get().getUsername() + "\"}", gu.getGameId());
-			sessions.clear();
-			usernames.clear();
+			if(playersleft == 0) broadcast("{\"winner\":false}", gu.getGameSession());
+			else broadcast("{\"winner\":\"" + usersLeft.entrySet().stream().findFirst().get().getKey() + "\"}", gu.getGameSession());
 			return;
 		}
 		LOG.info(username + " has been updated.");
-		JSONObject out = new JSONObject();
+		final JSONObject out = new JSONObject();
 		out.put("username", username);
 		out.put("latitude", msg.getDouble("latitude"));
 		out.put("longitude", msg.getDouble("longitude"));
-		broadcast(out.toString(), gameUserDB.findById(generalDB.findById(user.get().getGeneralId()).get().getGameUserId()).get().getGameId());
+		broadcast(out.toString(), gameSession);
 	}
 
 	@OnClose
-	public void onClose(Session session) {
-		String username = usernames.get(session);
-		if(username == null) return;
-		sessions.remove(username);
-		LOG.info(username + " has closed connection.");
-		usernames.remove(session);
-		broadcast("{\"username\":\"" + username + "\"}", games.get(username));
-		games.remove(username);
+	public void onClose(final Session session) {
+		final GameUser gu = gameusers.remove(session);
+		LOG.info(gu.getUsername() + " has closed connection.");
+		broadcast("{\"username\":\"" + gu.getUsername() + "\"}", gu.getGameSession());
 	}
 
 	@OnError
-	public void onError(Session session, Throwable e) {
+	public void onError(final Session session, final Throwable e) {
 		LOG.error(e);
+		gameusers.remove(session);
 	}
 
-	private static void send(Session session, String message) {
+	private static void send(final Session session, final String message) {
 		try {
 			session.getBasicRemote().sendText(message);
 		} catch(Exception e) {
@@ -159,9 +168,9 @@ public class ServerWebSocketHandler {
 		}
 	}
 
-	private static void broadcast(String message, Integer gameId) {
-		sessions.forEach((username, session) -> {
-			if(games.get(username).equals(gameId)) synchronized(session) {
+	private static void broadcast(final String message, final String gameSession) {
+		gameusers.forEach((session, gameuser) -> {
+			if(gameuser.getGameSession().equals(gameSession)) synchronized(session) {
 				send(session, message);
 			}
 		});
