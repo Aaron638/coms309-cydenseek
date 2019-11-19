@@ -20,8 +20,6 @@ public class GameBody {
 
 	private Boolean hider;
 	
-	private Boolean found;
-
 	public String getSession() {
 		return session;
 	}
@@ -84,15 +82,5 @@ public class GameBody {
 
 	public void setHider(Boolean hider) {
 		this.hider = hider;
-	}
-	
-	public Boolean getFound()
-	{
-		return found;
-	}
-	
-	public void setFound(Boolean found)
-	{
-		this.found = found;
 	}
 }
