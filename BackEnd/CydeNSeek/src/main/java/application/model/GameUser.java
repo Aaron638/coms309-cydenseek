@@ -1,12 +1,14 @@
 package application.model;
 
+import java.util.UUID;
+
 public class GameUser {
 
 	private String username;
 
 	private Boolean verified;
 
-	private String gameSession;
+	private UUID gameSession;
 
 	private String userSession;
 
@@ -58,11 +60,11 @@ public class GameUser {
 		this.userSession = userSession;
 	}
 
-	public String getGameSession() {
+	public UUID getGameSession() {
 		return gameSession;
 	}
 
-	public void setGameSession(String gameSession) {
+	public void setGameSession(UUID gameSession) {
 		this.gameSession = gameSession;
 	}
 
