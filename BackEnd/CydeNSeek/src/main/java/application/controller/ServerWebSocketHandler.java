@@ -43,7 +43,7 @@ public class ServerWebSocketHandler {
 	public static Map<Session, GameUser> gameusers = new HashMap<>();
 
 	@OnOpen
-	public void onOpen(final Session session, @PathParam("gameSession") final String gameSession, @PathParam("username") final String username) {
+	public void onOpen(final Session session, @PathParam("gameSession") final UUID gameSession, @PathParam("username") final String username) {
 		if(!userDB.findUserByUsername(username).isPresent()) {
 			send(session, "{\"error\":true,\"message\":\"User not found.\"}");
 			return;
@@ -117,7 +117,7 @@ public class ServerWebSocketHandler {
 		}
 		gu.setLatitude(msg.getDouble("latitude"));
 		gu.setLongitude(msg.getDouble("longitude"));
-		final String gameSession = gu.getGameSession();
+		final UUID gameSession = gu.getGameSession();
 		final Map<Session, GameUser> gameUsers = gameusers.entrySet().stream().filter(x -> gameSession.equals(x.getValue().getGameSession())).collect(Collectors.toMap(e->e.getKey(),e->e.getValue()));;
 		gameUsers.entrySet().stream().forEach(x -> {
 			final GameUser other = x.getValue();
@@ -168,9 +168,9 @@ public class ServerWebSocketHandler {
 		}
 	}
 
-	private static void broadcast(final String message, final String gameSession) {
+	private static void broadcast(final String message, final UUID gameSession) {
 		gameusers.forEach((session, gameuser) -> {
-			if(gameuser.getGameSession().equals(gameSession)) synchronized(session) {
+			if(gameuser.getGameSession().compareTo(gameSession) == 0) synchronized(session) {
 				send(session, message);
 			}
 		});
