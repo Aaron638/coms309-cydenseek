@@ -30,14 +30,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //        .findFragmentById(R.id.map);
         //mapFragment.getMapAsync(this);
 
-        foundPlayerButton = findViewById(R.id.found_player_button);
 
-        foundPlayerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
     }
 
 
