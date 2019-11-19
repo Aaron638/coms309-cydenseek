@@ -287,7 +287,6 @@ public class GameControllerTest {
 		general.setSession(USERSESSION);
 		general.setUserId(1);
 		general.setStatsId(1);
-		general.setGameUserId(1);
 		return general;
 	}
 

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import application.model.Game;
 
 @Repository
-public interface GameDB extends JpaRepository<Game, Integer> {
+public interface GameDB extends JpaRepository<Game, String> {
 
 	public default Optional<Game> findGameBySession(final String gameSession) {
 		return findAll().stream().filter(x -> gameSession.equals(x.getSession())).findFirst();
