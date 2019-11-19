@@ -133,8 +133,8 @@ public class GameController {
 		newGame.setCreator(user.getUsername());
 		newGame.setMaxplayers(game.getMaxplayers());
 		newGame.setStartTime(LocalTime.now());
-		newGame.setDuration(game.getDuration());
-		newGame.setGperiod(game.getGperiod());
+		//newGame.setDuration(game.getDuration());
+		//newGame.setGperiod(game.getGperiod());
 		gameDB.saveAndFlush(newGame);
 		generalDB.saveAndFlush(row);
 		LOG.info(user.getUsername() + " created a new game.");
@@ -192,10 +192,10 @@ public class GameController {
 		}
 		/* Updates game with specified properties */
 		if(game.getMaxplayers() != null) foundGame.setMaxplayers(game.getMaxplayers());
-		if(game.getDuration() != null) {
+		/*if(game.getDuration() != null) {
 			foundGame.setDuration(game.getDuration());
-		}
-		if(game.getGperiod() != null) foundGame.setGperiod(game.getGperiod());
+		}*/
+		//if(game.getGperiod() != null) foundGame.setGperiod(game.getGperiod());
 		gameDB.saveAndFlush(foundGame);
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}

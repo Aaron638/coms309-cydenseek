@@ -20,10 +20,10 @@ public class Game {
 	private LocalTime startTime;
 
 	@Column
-	private Integer duration;
+	private final Integer duration = 10;
 
 	@Column
-	private Integer gperiod;
+	private final Integer gperiod = 5;
 
 	@Column
 	private String creator;
@@ -32,17 +32,17 @@ public class Game {
 		return duration;
 	}
 
-	public void setDuration(int duration) {
+	/*public void setDuration(int duration) {
 		this.duration = duration;
-	}
+	}*/
 
 	public int getGperiod() {
 		return gperiod;
 	}
 
-	public void setGperiod(int gperiod) {
+	/*public void setGperiod(int gperiod) {
 		this.gperiod = gperiod;
-	}
+	}*/
 
 	public LocalTime getStartTime() {
 		return startTime;
