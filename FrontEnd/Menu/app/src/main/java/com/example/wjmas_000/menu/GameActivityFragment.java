@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 /**
  * A placeholder fragment containing a simple view.
+ * TODO might not be needed
  */
 public class GameActivityFragment extends Fragment {
 
