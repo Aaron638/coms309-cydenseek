@@ -16,8 +16,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
 
-//TODO CURRENTLY NOT BEING USED
 public class MapFragment extends Fragment {
 
     MapView mMapView;
@@ -50,6 +51,18 @@ public class MapFragment extends Fragment {
                 map.addMarker(option);
                 map.moveCamera(CameraUpdateFactory.newLatLng(latlong));
                 //map.moveCamera(CameraUpdateFactory.zoomIn());
+
+                //showing that we can draw on map
+                // Instantiates a new Polygon object and adds points to define a rectangle
+                PolygonOptions rectOptions = new PolygonOptions()
+                        .add(new LatLng(42.35, -93.0),
+                                new LatLng(42.45, -93.0),
+                                new LatLng(42.45, -93.2),
+                                new LatLng(42.35, -93.2),
+                                new LatLng(42.35, -93.0));
+
+                // Get back the mutable Polygon
+                Polygon polygon = map.addPolygon(rectOptions);
             }
         });
 

@@ -32,37 +32,10 @@ import java.net.URISyntaxException;
 
 public class MenuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout drawer;
-    private WebSocketClient cc;
-    private double longitude;
-    private double latitude;
-    private LocationManager lm;
     private int LoginCode;      //Reference for login session?
 
-    public LocationListener locListen = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            Log.d("", "NonNull location");
-            lm.removeUpdates(this);
-            longitude = location.getLongitude();
-            latitude = location.getLatitude();
-            Toast.makeText(MenuActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
-        }
+    //TODO this location stuff needs to be moved to backend
 
-        @Override
-        public void onStatusChanged(String s, int i, Bundle bundle) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String s) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String s) {
-
-        }
-    };
 
 
     @Override
@@ -90,75 +63,6 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
             navigationView.setCheckedItem(R.id.nav_message);
         }
         */
-
-        //This is for location
-
-        lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 10);
-        }
-        Criteria criteria = new Criteria();
-        String bestProvider = String.valueOf(lm.getBestProvider(criteria, true)).toString();
-        Location location = lm.getLastKnownLocation(bestProvider);
-        if (location != null){
-            longitude = location.getLongitude();
-            latitude = location.getLatitude();
-            Toast.makeText(MenuActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
-        } else {
-            lm.requestLocationUpdates(bestProvider, 1000, 0, locListen);
-        }
-
-        Draft[] drafts = {new Draft_6455()};
-
-        String w = "ws://coms-309-vb-1.misc.iastate.edu:8080/user/joe/location";
-
-        try{
-            Log.d("Socket:", "Trying socket");
-            cc = new WebSocketClient(new URI(w), (Draft) drafts[0]){
-                @Override
-                public void onOpen(ServerHandshake handshake) {
-                    Log.d("OPEN", "run() returned: " + "is connecting");
-                }
-
-                @Override
-                public void onMessage(String message) {
-                    Log.d("", "run() returned: "+ message);
-                    //???? what goes here?
-                }
-
-                @Override
-                public void onClose(int code, String reason, boolean remote) {
-                    Log.d("CLOSE", "onClose() returned: " + reason);
-                }
-
-
-                @Override
-                public void onError(Exception e)
-                {
-                    Log.d("Exception:", e.getMessage());
-                }
-
-            };
-        } catch (URISyntaxException e) {
-            Log.d("Exception:", e.getMessage());
-            e.printStackTrace();
-        }
-        cc.connect();
-        while(!cc.isOpen());
-        try{
-            JSONObject obj = new JSONObject();
-            obj.put("session", "9ccea0b9-12a5-4baa-9a38-85bc66204190");
-            obj.put("latitude", latitude);
-            obj.put("longitude", longitude);
-            cc.send(obj.toString());
-        } catch (Exception e)
-        {
-            Log.d("ExceptionSendMessage:", e.toString());
-            e.printStackTrace();
-        }
-
-
-
     }
 
     @Override
@@ -207,13 +111,6 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                         new ChatFragment()).commit();
                 break;
                 */
-                /*
-            case R.id.nav_profile:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new ProfileFragment()).commit();
-                break;
-
-                 */
             case R.id.nav_settings:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new SettingsFragment()).commit();

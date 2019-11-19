@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_lobby"
+            android:icon="@drawable/ic_leaderboard"
+            android:title="Game Lobby" />
+        <item
+            android:id="@+id/nav_Map"
+            android:icon="@drawable/ic_map"
+            android:title="Map" />
+        <item
+            android:id="@+id/nav_found_player"
+            android:icon="@drawable/ic_chat"
+            android:title="Player Code" />
+
+    </group>
+
+
+</menu>

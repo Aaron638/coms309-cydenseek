@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,6 +23,8 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +34,19 @@ import static com.android.volley.VolleyLog.TAG;
 public class CreateGameFragment extends Fragment {
 
     private RequestQueue rq;
+    EditText editMaxPlayers, editGPeriod, editDuration;
+    int maxPlayers, gperiod, duration = 0;
+    String userSession = "abc-123-xyz";
+
+    public Date getCurrentTime() {
+        return currentTime;
+    }
+
+    public void setCurrentTime() {
+        currentTime = Calendar.getInstance().getTime();
+    }
+
+    Date currentTime;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,16 +58,23 @@ public class CreateGameFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-
         View rootView = inflater.inflate(R.layout.fragment_create_game, container, false);
 
         rq = Volley.newRequestQueue(getActivity());
+
+        editMaxPlayers = (EditText) rootView.findViewById(R.id.edit_maxPlayers);
+        //maxPlayers = Integer.parseInt(editMaxPlayers.getText().toString());
+        editGPeriod = (EditText) rootView.findViewById(R.id.edit_gperiod);
+        //gperiod = Integer.parseInt(editGPeriod.getText().toString());
+        editDuration = (EditText) rootView.findViewById(R.id.edit_duration);
+        //duration = Integer.parseInt(editDuration.getText().toString());
 
         Button buttonCreateGame = (Button) rootView.findViewById(R.id.button_create_game);
         buttonCreateGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {//Press button, if callBackend returns true, launch the game
+
+                setCurrentTime();
                 if (callBackend()){
                     launchGame();
                 }
@@ -90,13 +113,13 @@ public class CreateGameFragment extends Fragment {
             @Override
             protected Map<String, String> getParams(){
                 Map<String, String>  params = new HashMap<String, String>();
-                params.put("session", "abc-123-xyz");
-                params.put("radius", "10");
-                params.put("maxplayers", "10");
-                params.put("startTime", "20:00:00");
-                params.put("duration", "10");
+                params.put("session", userSession);
+                params.put("radius", "10");     //hard coded for now
+                params.put("maxplayers", editMaxPlayers.getText().toString());
+                params.put("startTime", getCurrentTime().toString());       //TODO this is probably incorrect, maybe should just be hard coded on backend
+                params.put("duration", editDuration.getText().toString());
                 params.put("mode", "0");
-                params.put("gperiod", "10");
+                params.put("gperiod", editGPeriod.getText().toString());
                 params.put("creator", "user");
                 params.put("hider", "true");
 
@@ -105,7 +128,7 @@ public class CreateGameFragment extends Fragment {
         };
         rq.add(request);
 
-        return false;
+        return true;
     }
 
 
