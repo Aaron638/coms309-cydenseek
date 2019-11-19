@@ -128,7 +128,7 @@ public class GameController {
 		General row = foundUser.get();
 		/* Creates and builds game */
 		Game newGame = new Game();
-		String session = UUID.randomUUID().toString();
+		final UUID session = UUID.randomUUID();
 		newGame.setSession(session);
 		newGame.setCreator(user.getUsername());
 		newGame.setMaxplayers(game.getMaxplayers());
@@ -144,7 +144,7 @@ public class GameController {
 	}
 
 	/*
-	 * PUT /game/<gameId>
+	 * PUT /game/<gameSession>
 	 * 
 	 * Mapping for updating game
 	 * Request Body:
@@ -161,12 +161,12 @@ public class GameController {
 	 * }
 	 */
 	@RequestMapping(
-		value = "/{gameId}",
+		value = "/{gameSession}",
 		method = RequestMethod.PUT,
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameId") String gameId, @RequestBody GameBody game) {
+	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameSession") final UUID gameSession, @RequestBody GameBody game) {
 		/* Checks if session not present */
 		if(game.getSession() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -174,7 +174,7 @@ public class GameController {
 				put("message", "Session token not present.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		Optional<Game> checkGame = gameDB.findAll().stream().filter(x -> x.getSession().equals(gameId)).findFirst();
+		Optional<Game> checkGame = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
 		/* Checks if game exists */
 		if(!checkGame.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -201,17 +201,17 @@ public class GameController {
 	}
 
 	/*
-	 * GET /game/<gameId>/leaderboard
+	 * GET /game/<gameSession>/leaderboard
 	 * 
 	 * Mapping for getting game leaderboard
 	 */
 	@RequestMapping(
-		value = "/{gameId}/leaderboard",
+		value = "/{gameSession}/leaderboard",
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> leaderboard(@PathVariable("gameId") String gameId) {
-		Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().equals(gameId)).findFirst();
+	public ResponseEntity<Map<String, Object>> leaderboard(@PathVariable("gameSession") final UUID gameSession) {
+		Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
 		/* Checks if game exists */
 		if(!game.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -219,7 +219,7 @@ public class GameController {
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-		List<GameUser> gameusers = ServerWebSocketHandler.gameusers.entrySet().stream().filter(x -> gameId.equals(x.getValue().getGameSession())).map(x -> x.getValue()).collect(Collectors.toList());
+		List<GameUser> gameusers = ServerWebSocketHandler.gameusers.entrySet().stream().filter(x -> gameSession.compareTo(x.getValue().getGameSession()) == 0).map(x -> x.getValue()).collect(Collectors.toList());
 		final Map<Integer, General> rows = generalDB.findAll().stream().collect(Collectors.toMap(x->x.getId(), x->x));
 		final Map<Integer, String> users = userDB.findAll().stream().collect(Collectors.toMap(x->rows.get(x.getGeneralId()).getStatsId(), x->x.getUsername()));
 		final Map<String, Stats> userStats = statsDB.findAll().stream().collect(Collectors.toMap(x->users.get(x.getId()), x->x));
@@ -246,17 +246,17 @@ public class GameController {
 	}
 
 	/*
-	 * GET /game/<gameId>/users
+	 * GET /game/<gameSession>/users
 	 * 
 	 * Mapping for getting game users
 	 */
 	@RequestMapping(
-		value = "/{gameId}/users",
+		value = "/{gameSession}/users",
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> users(@PathVariable("gameId") String gameId) {
-		Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().equals(gameId)).findFirst();
+	public ResponseEntity<Map<String, Object>> users(@PathVariable("gameSession") final UUID gameSession) {
+		Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
 		/* Checks if game exists */
 		if(!game.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -264,7 +264,7 @@ public class GameController {
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-		List<GameUser> gameusers = ServerWebSocketHandler.gameusers.entrySet().stream().filter(x -> gameId.equals(x.getValue().getGameSession())).map(x -> x.getValue()).collect(Collectors.toList());
+		List<GameUser> gameusers = ServerWebSocketHandler.gameusers.entrySet().stream().filter(x -> gameSession.compareTo(x.getValue().getGameSession()) == 0).map(x -> x.getValue()).collect(Collectors.toList());
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("users", gameusers.stream().sorted((x,y) -> x.getUsername().compareTo(y.getUsername())).map(x -> {
 				return new HashMap<String, Object>() {{
