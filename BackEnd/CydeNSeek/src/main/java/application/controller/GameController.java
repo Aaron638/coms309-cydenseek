@@ -143,7 +143,7 @@ public class GameController {
 		generalDB.saveAndFlush(row);
 		LOG.info(user.getUsername() + " created a new game.");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("game", newGame);
+			put("session", session.toString());
 		}}, HttpStatus.OK);
 	}
 
@@ -171,7 +171,16 @@ public class GameController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameSession") final String session, @RequestBody GameBody game) {
-		final UUID gameSession = UUID.fromString(session);
+		final UUID gameSession;
+		try {
+			gameSession = UUID.fromString(session);
+		} catch(IllegalArgumentException e) {
+			LOG.error(e);
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Invalid game session.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
 		/* Checks if session not present */
 		if(game.getSession() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -216,7 +225,16 @@ public class GameController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> leaderboard(@PathVariable("gameSession") final String session) {
-		final UUID gameSession = UUID.fromString(session);
+		final UUID gameSession;
+		try {
+			gameSession = UUID.fromString(session);
+		} catch(IllegalArgumentException e) {
+			LOG.error(e);
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Invalid game session.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
 		Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
 		/* Checks if game exists */
 		if(!game.isPresent()) {
@@ -262,7 +280,16 @@ public class GameController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> users(@PathVariable("gameSession") final String session) {
-		final UUID gameSession = UUID.fromString(session);
+		final UUID gameSession;
+		try {
+			gameSession = UUID.fromString(session);
+		} catch(IllegalArgumentException e) {
+			LOG.error(e);
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Invalid game session.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
 		Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
 		/* Checks if game exists */
 		if(!game.isPresent()) {
