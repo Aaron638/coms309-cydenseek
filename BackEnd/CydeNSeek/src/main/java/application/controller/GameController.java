@@ -89,12 +89,14 @@ public class GameController {
 			}}, HttpStatus.BAD_REQUEST);
 		}
 		/* Checks if duration not specified */
+		/*
 		if(game.getDuration() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Duration is missing.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
+		*/
 		/* Checks if mode not specified */
 		if(game.getMode() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -103,12 +105,14 @@ public class GameController {
 			}}, HttpStatus.BAD_REQUEST);
 		}
 		/* Checks if grace period not specified */
+		/*
 		if(game.getGperiod() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Grace period is missing.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
+		*/
 		/* Checks if hider not specified */
 		if(game.getHider() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -133,8 +137,8 @@ public class GameController {
 		newGame.setCreator(user.getUsername());
 		newGame.setMaxplayers(game.getMaxplayers());
 		newGame.setStartTime(LocalTime.now());
-		newGame.setDuration(game.getDuration());
-		newGame.setGperiod(game.getGperiod());
+		newGame.setDuration(10/*game.getDuration()*/);
+		newGame.setGperiod(5/*game.getGperiod()*/);
 		gameDB.saveAndFlush(newGame);
 		generalDB.saveAndFlush(row);
 		LOG.info(user.getUsername() + " created a new game.");
