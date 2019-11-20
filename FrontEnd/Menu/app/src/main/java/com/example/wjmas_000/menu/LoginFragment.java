@@ -134,7 +134,7 @@ public class LoginFragment extends Fragment {
     }
 
     public void setThisSession(String s){
-        session.equals(s);
+        session = s;
     }
 
 }

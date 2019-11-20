@@ -79,7 +79,7 @@ public class CreateGameFragment extends Fragment {
 
                 setCurrentTime();
                 if (callBackend()){
-                    launchGame();
+                    //launchGame();
                 }
             }
         });
@@ -110,7 +110,7 @@ public class CreateGameFragment extends Fragment {
 
         JSONObject response = new JSONObject();
         try {
-            response.put("session", "c5ad4ed8-017b-4831-b56b-a084d626f069");
+            response.put("session", "0ac7e5b3-ab02-4b47-a1d3-c7eb642b047c");
             response.put("maxplayers", "10");
             response.put("startTime", "20:00:00");
             response.put("mode", "1");

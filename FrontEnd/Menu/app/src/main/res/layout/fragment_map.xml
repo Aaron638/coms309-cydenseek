@@ -6,9 +6,8 @@
     android:background="@android:color/holo_orange_light"
     tools:context=".GameActivity">
 
-    <fragment
+    <com.google.android.gms.maps.MapView
         android:id="@+id/mapboi"
-        class="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

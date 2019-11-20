@@ -40,7 +40,8 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
     private double latitude;
     private LocationManager lm;
 
-    String gameSessionId = getIntent().getStringExtra("EXTRA_SESSION_ID");
+    String gameSessionId = "10cab074-218e-41b1-853a-abd5e76a19a8";
+        //getIntent().getStringExtra("GAME_SESSION_ID");
 
 
     public LocationListener locListen = new LocationListener() {
@@ -105,7 +106,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
 
         Draft[] drafts = {new Draft_6455()};
 
-        String w = "ws://coms-309-vb-1.misc.iastate.edu:8080/user/aaron3/";
+        String w = "ws://coms-309-vb-1.misc.iastate.edu:8080/user/aaron/";
 
         try{
             Log.d("Socket:", "Trying socket");
@@ -151,6 +152,8 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
             Log.d("ExceptionSendMessage:", e.toString());
             e.printStackTrace();
         }
+
+
 
 
     }

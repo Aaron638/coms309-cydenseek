@@ -15,6 +15,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
@@ -49,7 +50,7 @@ public class MapFragment extends Fragment {
                 MarkerOptions option = new MarkerOptions();
                 option.position(latlong).title("Iowa State University");
                 map.addMarker(option);
-                map.moveCamera(CameraUpdateFactory.newLatLng(latlong));
+                //map.moveCamera(CameraUpdateFactory.newLatLng(latlong));
                 //map.moveCamera(CameraUpdateFactory.zoomIn());
 
                 //showing that we can draw on map
