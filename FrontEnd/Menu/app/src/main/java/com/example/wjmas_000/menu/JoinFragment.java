@@ -5,49 +5,46 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.SeekBar;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
+import static com.android.volley.VolleyLog.TAG;
 
 
 public class JoinFragment extends Fragment {
 
-    /** The CardView widget. */
-    //@VisibleForTesting
-    CardView mCardView;
-
-    /**
-     * SeekBar that changes the cornerRadius attribute for the {@link #mCardView} widget.
-     */
-    //@VisibleForTesting
-    SeekBar mRadiusSeekBar;
-
-    /**
-     * SeekBar that changes the Elevation attribute for the {@link #mCardView} widget.
-     */
-    //@VisibleForTesting
-    SeekBar mElevationSeekBar;
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment NotificationFragment.
-     */
-
     private RequestQueue mQueue;
+    JSONArray gamesJsonArray;
+    ArrayList<String> gameUserNames;
+    ArrayList<String> gameMaxPlayers;
     String gameID;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -56,17 +53,42 @@ public class JoinFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_join, container, false);
 
-        /*
-        Button buttonJoin = (Button) rootView.findViewById(R.id.button_join_game);
+        gameUserNames = new ArrayList<>();
+        gameMaxPlayers = new ArrayList();
+
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+
+        Button buttonRefresh = (Button) rootView.findViewById(R.id.button_refresh);
         mQueue = Volley.newRequestQueue(getActivity());
 
-        buttonJoin.setOnClickListener(new View.OnClickListener() {
+        buttonRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 callBackend();
             }
         });
-        */
+
+        try {
+            for (int i =0; i < gamesJsonArray.length(); i++){
+                JSONObject gameI = gamesJsonArray.getJSONObject(i);
+                gameUserNames.add(gameI.getString("creator"));
+                gameMaxPlayers.add(gameI.getString("maxplayers"));
+                //ADD MORE for duration, period and start time
+                //gameMaxPlayers.add(gamesJsonArray.getString("maxplayers"));
+                //gameMaxPlayers.add(gamesJsonArray.getString("maxplayers"));
+                //gameMaxPlayers.add(gamesJsonArray.getString("maxplayers"));
+            }
+
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        CustomAdapter adapter = new CustomAdapter(getActivity(), gameUserNames, gameMaxPlayers);
+        recyclerView.setAdapter(adapter);
+
         return rootView;
     }
 
@@ -74,15 +96,27 @@ public class JoinFragment extends Fragment {
 
         String urlGames = "http://coms-309-vb-1.misc.iastate.edu:8080/games/";
 
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, urlGames, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(TAG, response.toString());
+                try {
+                    gamesJsonArray = response.getJSONArray("games");
 
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "onErrorResponse: error");
+                error.printStackTrace();
+                //mTextViewResult.setText("Error");
+            }
+        });
+        mQueue.add(request);
     }
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        mCardView = (CardView) view.findViewById(R.id.cardview);
-
-
-    }
 
 }

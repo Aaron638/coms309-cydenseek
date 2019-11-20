@@ -11,6 +11,7 @@ import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -32,11 +33,8 @@ import java.net.URISyntaxException;
 
 public class MenuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout drawer;
-    private int LoginCode;      //Reference for login session?
-
-    //TODO this location stuff needs to be moved to backend
-
-
+    //private int LoginCode;      //Reference for login session?
+    public User userperson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +53,8 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+
+
         //What do if rotation of device
         /*
         if (savedInstanceState == null) {
@@ -70,8 +70,11 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()) {
 
             case R.id.nav_creategame:
+                Fragment fragment = new CreateGameFragment();
+                //Bundle bundle = new Bundle();
+                //bundle.putString("a", );
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new CreateGameFragment()).commit();
+                        fragment).commit();
                 break;
             case R.id.nav_joingame:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
