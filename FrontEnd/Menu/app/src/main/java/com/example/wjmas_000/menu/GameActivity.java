@@ -40,6 +40,8 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
     private double latitude;
     private LocationManager lm;
 
+    String gameSessionId = getIntent().getStringExtra("EXTRA_SESSION_ID");
+
 
     public LocationListener locListen = new LocationListener() {
         @Override
@@ -103,7 +105,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
 
         Draft[] drafts = {new Draft_6455()};
 
-        String w = "ws://coms-309-vb-1.misc.iastate.edu:8080/user/joe/location";
+        String w = "ws://coms-309-vb-1.misc.iastate.edu:8080/user/aaron3/";
 
         try{
             Log.d("Socket:", "Trying socket");
@@ -140,7 +142,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
         while(!cc.isOpen());
         try{
             JSONObject obj = new JSONObject();
-            obj.put("session", "9ccea0b9-12a5-4baa-9a38-85bc66204190");
+            obj.put("session", gameSessionId);
             obj.put("latitude", latitude);
             obj.put("longitude", longitude);
             cc.send(obj.toString());
@@ -158,16 +160,16 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
         switch (menuItem.getItemId()){
 
             case R.id.nav_lobby:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new LobbyFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new LobbyFragment()).commit();
                 break;
             case R.id.nav_Map:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new MapFragment()).commit();
                 break;
             case R.id.nav_found_player:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new FoundPlayerFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new FoundPlayerFragment()).commit();
                 break;
             default:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new MapFragment()).commit();
                 break;
         }
 

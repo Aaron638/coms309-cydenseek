@@ -20,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
@@ -36,8 +37,9 @@ public class CreateGameFragment extends Fragment {
     private RequestQueue rq;
     EditText editMaxPlayers, editGPeriod, editDuration;
     int maxPlayers, gperiod, duration = 0;
-    String username = "userboi";
-    String userSession = "abc-123-xyz";//TODO HARD CODED VALUE FOR NOW
+    String username = "aaron";
+    String userSession = "abc-123-xyz" /*"52f0178f-c72d-45f7-854a-5eff850d1ab7"*/;//TODO HARD CODED VALUE FOR NOW
+    String gameSession = "abc-123-xyz";
 
     public Date getCurrentTime() {
         return currentTime;
@@ -65,9 +67,9 @@ public class CreateGameFragment extends Fragment {
 
         editMaxPlayers = (EditText) rootView.findViewById(R.id.edit_maxPlayers);
         //maxPlayers = Integer.parseInt(editMaxPlayers.getText().toString());
-        editGPeriod = (EditText) rootView.findViewById(R.id.edit_gperiod);
+        editGPeriod = (EditText) rootView.findViewById(R.id.edit_session);
         //gperiod = Integer.parseInt(editGPeriod.getText().toString());
-        editDuration = (EditText) rootView.findViewById(R.id.edit_duration);
+        editDuration = (EditText) rootView.findViewById(R.id.edit_username);
         //duration = Integer.parseInt(editDuration.getText().toString());
 
         Button buttonCreateGame = (Button) rootView.findViewById(R.id.button_create_game);
@@ -97,6 +99,7 @@ public class CreateGameFragment extends Fragment {
     //launches the game activity
     private void launchGame(){
         Intent intent = new Intent(getActivity(), GameActivity.class);
+        intent.putExtra("GAME_SESSION_ID", gameSession);
         startActivity(intent);
     }
 
@@ -105,11 +108,26 @@ public class CreateGameFragment extends Fragment {
 
         String url = "http://coms-309-vb-1.misc.iastate.edu:8080/game/new";
 
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+        JSONObject response = new JSONObject();
+        try {
+            response.put("session", "c5ad4ed8-017b-4831-b56b-a084d626f069");
+            response.put("maxplayers", "10");
+            response.put("startTime", "20:00:00");
+            response.put("mode", "1");
+            response.put("hider", "true");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, response, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 Log.d(TAG, response.toString());
-
+                try {
+                    gameSession = response.getString("session");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -118,23 +136,8 @@ public class CreateGameFragment extends Fragment {
                 error.printStackTrace();
                 //mTextViewResult.setText("Error");
             }
-        }){
-            @Override
-            protected Map<String, String> getParams(){
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("session", "fa2adf23-8ba7-49c3-9214-83dd44810cfa");
-                params.put("radius", "10");     //hard coded for now
-                params.put("maxplayers", editMaxPlayers.getText().toString());
-                params.put("startTime", "20:00:00"/*getCurrentTime().toString()*/);       //TODO this is probably incorrect, maybe should just be hard coded on backend
-                //params.put("duration", editDuration.getText().toString());
-                params.put("mode", "0");
-                //params.put("gperiod", editGPeriod.getText().toString());
-                params.put("creator", username);
-                params.put("hider", "true");
+        });
 
-                return params;
-            }
-        };
         rq.add(request);
 
         return true;
