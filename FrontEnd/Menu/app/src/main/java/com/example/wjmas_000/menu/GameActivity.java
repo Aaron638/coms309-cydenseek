@@ -119,6 +119,10 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onMessage(String message) {
                     Log.d("", "run() returned: "+ message);
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            message,
+                            Toast.LENGTH_SHORT);
+                    toast.show();
                     //???? what goes here?
                 }
 

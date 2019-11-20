@@ -77,16 +77,7 @@ public class LoginFragment extends Fragment {
         jsonSend(url, json);
 
 
-        if(session != null){
-            hold = "Account Created";
-            result.setText(session);
-            //((MenuActivity)getActivity()).setSession(session);
-        }
-        //2.2: If user did not give correct information, then display "Failed Login".  Do not move from this fragment
-        else{
-            hold = "Failed Login";
-            result.setText(hold);
-        }
+
 
         //2.0: get response from backend
 
@@ -112,9 +103,20 @@ public class LoginFragment extends Fragment {
                 try {
                     String s = response.getString("session");
                     session = s;
-                    setThisSession(s);
 
-                    //((MenuActivity)getActivity()).setSession(s);
+                    //Display
+                    String hold;
+                    if(session != null){
+                        hold = "Account Created";
+                        result.setText(hold);
+                        ((MenuActivity)getActivity()).setSession(session);
+                    }
+                    //2.2: If user did not give correct information, then display "Failed Login".  Do not move from this fragment
+                    else{
+                        hold = "Failed Login";
+                        result.setText(hold);
+                    }
+
 
 
                 } catch (JSONException e) {
@@ -130,11 +132,14 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        mQueue.add(request);
-    }
+        mQueue.add(request);}
 
     public void setThisSession(String s){
         session = s;
+
+
     }
+
+
 
 }
