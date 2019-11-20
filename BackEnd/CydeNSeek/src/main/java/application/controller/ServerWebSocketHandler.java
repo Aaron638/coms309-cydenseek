@@ -44,7 +44,14 @@ public class ServerWebSocketHandler {
 
 	@OnOpen
 	public void onOpen(final Session session, @PathParam("gameSession") final String gSession, @PathParam("username") final String username) {
-		final UUID gameSession = UUID.fromString(gSession);
+		final UUID gameSession;
+		try {
+			gameSession = UUID.fromString(gSession);
+		} catch(IllegalArgumentException e) {
+			LOG.error(e);
+			send(session, "{\"error\":true,\"message\":\"\"}");
+			return;
+		}
 		if(!userDB.findUserByUsername(username).isPresent()) {
 			send(session, "{\"error\":true,\"message\":\"User not found.\"}");
 			return;
