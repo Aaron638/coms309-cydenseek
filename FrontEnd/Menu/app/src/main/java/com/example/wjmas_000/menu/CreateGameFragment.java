@@ -36,7 +36,8 @@ public class CreateGameFragment extends Fragment {
     private RequestQueue rq;
     EditText editMaxPlayers, editGPeriod, editDuration;
     int maxPlayers, gperiod, duration = 0;
-    String userSession = "abc-123-xyz";
+    String username = "userboi";
+    String userSession = "abc-123-xyz";//TODO HARD CODED VALUE FOR NOW
 
     public Date getCurrentTime() {
         return currentTime;
@@ -81,6 +82,14 @@ public class CreateGameFragment extends Fragment {
             }
         });
 
+        Button buttonfakeGame = (Button) rootView.findViewById(R.id.button_dev_gameStart);
+        buttonfakeGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchGame();
+            }
+        });
+
 
         return rootView;
     }
@@ -116,11 +125,11 @@ public class CreateGameFragment extends Fragment {
                 params.put("session", userSession);
                 params.put("radius", "10");     //hard coded for now
                 params.put("maxplayers", editMaxPlayers.getText().toString());
-                params.put("startTime", getCurrentTime().toString());       //TODO this is probably incorrect, maybe should just be hard coded on backend
+                params.put("startTime", "20:00:00"/*getCurrentTime().toString()*/);       //TODO this is probably incorrect, maybe should just be hard coded on backend
                 params.put("duration", editDuration.getText().toString());
                 params.put("mode", "0");
                 params.put("gperiod", editGPeriod.getText().toString());
-                params.put("creator", "user");
+                params.put("creator", username);
                 params.put("hider", "true");
 
                 return params;

@@ -54,4 +54,14 @@
         android:hint="Duration of Game (min)"
         android:inputType="number" />
 
+    <Button
+        android:id="@+id/button_dev_gameStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="34dp"
+        android:layout_marginBottom="43dp"
+        android:text="fakeStart" />
+
 </RelativeLayout>
