@@ -16,7 +16,7 @@
         android:hint="Password"
         android:inputType="textPersonName"
         android:singleLine="false"
-        android:text="Password" />
+        android:text="abcd" />
 
     <Button
         android:id="@+id/btnCreate_AccountCreation"
@@ -36,9 +36,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="120dp"
         android:ems="10"
-        android:hint="Username"
         android:inputType="textPersonName"
-        android:text="Username" />
+        android:text="Bob1" />
 
     <EditText
         android:id="@+id/etPasswordConfirm_AccountCreation"
@@ -49,7 +48,7 @@
         android:hint="Password"
         android:inputType="textPersonName"
         android:singleLine="false"
-        android:text="Confirm Password" />
+        android:text="abcd" />
 
     <TextView
         android:id="@+id/tvResult_AccountCreation"
