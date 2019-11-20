@@ -143,7 +143,7 @@ public class GameController {
 		generalDB.saveAndFlush(row);
 		LOG.info(user.getUsername() + " created a new game.");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("game", newGame);
+			put("session", session.toString());
 		}}, HttpStatus.OK);
 	}
 
