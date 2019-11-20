@@ -22,6 +22,7 @@ import application.db.GameDB;
 import application.db.GeneralDB;
 import application.db.StatsDB;
 import application.db.UserDB;
+import application.model.General;
 import application.model.Stats;
 import application.model.User;
 
@@ -41,7 +42,6 @@ public class MiscController {
 
 	@Autowired
 	private GameDB gameDB;
-<<<<<<< BackEnd/CydeNSeek/src/main/java/application/controller/MiscController.java
 	
 	@Autowired
 	private Optional<User> u;
