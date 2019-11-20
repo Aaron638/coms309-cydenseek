@@ -89,16 +89,7 @@ public class CreateAccountFragment extends Fragment {
             jsonSend(url, json);
 
 
-            if(session != null){
-                hold = "Account Created";
-                result.setText(session);
-                //((MenuActivity)getActivity()).setSession(session);
-            }
-            //2.2: If user did not give correct information, then display "Failed Login".  Do not move from this fragment
-            else{
-                hold = "Username already in use";
-                result.setText(hold);
-            }
+
 
 
 
@@ -135,7 +126,18 @@ public class CreateAccountFragment extends Fragment {
                 try {
                     String s = response.getString("session");
                     session = s;
-                    setThisSession(s);
+
+                    String hold;
+                    if(session != null){
+                        hold = "Account Created";
+                        result.setText(hold);
+                        ((MenuActivity)getActivity()).setSession(session);
+                    }
+                    //2.2: If user did not give correct information, then display "Failed Login".  Do not move from this fragment
+                    else{
+                        hold = "Username already in use";
+                        result.setText(hold);
+                    }
 
                     //((MenuActivity)getActivity()).setSession(s);
 
@@ -156,11 +158,6 @@ public class CreateAccountFragment extends Fragment {
         mQueue.add(request);
     }
 
-
-
-    public void setThisSession(String s){
-        session.equals(s);
-    }
 
 
 

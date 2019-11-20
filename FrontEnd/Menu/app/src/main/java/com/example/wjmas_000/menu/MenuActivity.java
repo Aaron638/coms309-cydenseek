@@ -35,6 +35,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawer;
 //<<<<<<< HEAD
     private String session;      //Reference for login session
+    private String user;
 
     //TODO this location stuff needs to be moved to backend
 
@@ -157,7 +158,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setSession(String s){
-        session.equals(s);
+        session = s;
     }
 
     public String getSession(){
@@ -165,11 +166,11 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void setUsername(String s){
-        session.equals(s);
+        user = s;
     }
 
     public String getUsername(){
-        return session;
+        return user;
     }
 
 }
