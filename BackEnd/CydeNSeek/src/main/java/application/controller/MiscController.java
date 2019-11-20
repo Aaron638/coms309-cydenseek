@@ -22,8 +22,6 @@ import application.db.GameDB;
 import application.db.GeneralDB;
 import application.db.StatsDB;
 import application.db.UserDB;
-import application.model.GameUser;
-import application.model.General;
 import application.model.Stats;
 import application.model.User;
 
@@ -43,6 +41,7 @@ public class MiscController {
 
 	@Autowired
 	private GameDB gameDB;
+<<<<<<< BackEnd/CydeNSeek/src/main/java/application/controller/MiscController.java
 	
 	@Autowired
 	private Optional<User> u;
@@ -101,20 +100,29 @@ public class MiscController {
 		produces = APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<Map<String, Object>> leaderboard() {
+		final Map<Integer, String> users = userDB.findAll().stream().collect(Collectors.toMap(x->x.getId(), x->x.getUsername()));
+		final Map<Integer, Stats> userStats = statsDB.findAll().stream().collect(Collectors.toMap(x->x.getId(), x->x));
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("users", generalDB.findAll().stream()
-				.sorted((x,y) -> (statsDB.findById(x.getStatsId()).get().getGWHider() + statsDB.findById(x.getStatsId()).get().getGWSeeker()) / (statsDB.findById(x.getStatsId()).get().getGPHider() + statsDB.findById(x.getStatsId()).get().getGPSeeker()) - (statsDB.findById(y.getStatsId()).get().getGWHider() + statsDB.findById(y.getStatsId()).get().getGWSeeker()) / (statsDB.findById(y.getStatsId()).get().getGPHider() + statsDB.findById(y.getStatsId()).get().getGPSeeker()))
-				.map(x -> new HashMap<String, Object>() {{
-					u = userDB.findById(x.getUserId());
-					s = statsDB.findById(x.getStatsId());
-					put("username", u.get().getUsername());
-					put("gwhider", s.get().getGWHider());
-					put("gwseeker", s.get().getGWSeeker());
-					put("gphider", s.get().getGPHider());
-					put("gpseeker", s.get().getGPSeeker());
-					put("totdistance", s.get().getTotDistance());
-					put("tottime", s.get().getTotTime());
-				}})
+				.sorted((x,y) -> {
+					final Stats statsX = userStats.get(x.getStatsId());
+					final Stats statsY = userStats.get(y.getStatsId());
+					final Integer totalGamesX = statsX.getGPHider() + statsX.getGPSeeker();
+					final Integer totalGamesY = statsY.getGPHider() + statsY.getGPSeeker();
+					return (statsX.getGWHider() + statsX.getGWSeeker()) / (totalGamesX.equals(0) ? 1 : totalGamesX) - (statsY.getGWHider() + statsY.getGWSeeker()) / (totalGamesY.equals(0) ? 1 : totalGamesY);
+				})
+				.map(x -> {
+					Stats stats = userStats.get(x.getStatsId());
+					return new HashMap<String, Object>() {{
+						put("username", users.get(x.getUserId()));
+						put("gwhider", stats.getGWHider());
+						put("gwseeker", stats.getGWSeeker());
+						put("gphider", stats.getGPHider());
+						put("gpseeker", stats.getGPSeeker());
+						put("totdistance", stats.getTotDistance());
+						put("tottime", stats.getTotTime());
+					}};
+				})
 				.collect(Collectors.toList()));
 		}}, HttpStatus.OK);
 	}

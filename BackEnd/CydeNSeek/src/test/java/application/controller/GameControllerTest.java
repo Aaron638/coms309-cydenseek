@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,7 +38,8 @@ import application.model.User;
 @SpringBootTest
 public class GameControllerTest {
 
-	private static final String GAMESESSION = "game-session";
+	private static final UUID GAMESESSION = UUID.randomUUID();
+
 	private static final String USERSESSION = "user-session";
 
 	@Mock
@@ -186,7 +188,7 @@ public class GameControllerTest {
 	@Test
 	public void updateGame_failsWhenGameSessionInvalid() throws Exception {
 		Game game = new Game();
-		game.setSession("not-the-game");
+		game.setSession(UUID.randomUUID());
 		when(gameDB.findAll()).thenReturn(Stream.of(game).collect(Collectors.toList()));
 		this.mockMvc.perform(put("/game/" + GAMESESSION)
 			.contentType(APPLICATION_JSON_VALUE)
@@ -247,7 +249,7 @@ public class GameControllerTest {
 	@Test
 	public void leaderboard_failsWhenGameSessionInvalid() throws Exception {
 		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
-		this.mockMvc.perform(get("/game/not-the-game/leaderboard"))
+		this.mockMvc.perform(get("/game/" + UUID.randomUUID() + "/leaderboard"))
 			.andExpect(status().isNotFound())
 			.andExpect(content().string(containsString("not found")));
 	}
@@ -267,7 +269,7 @@ public class GameControllerTest {
 	@Test
 	public void users_failsWhenGameSessionInvalid() throws Exception {
 		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
-		this.mockMvc.perform(get("/game/not-the-game/users"))
+		this.mockMvc.perform(get("/game/" + UUID.randomUUID() + "/users"))
 			.andExpect(status().isNotFound())
 			.andExpect(content().string(containsString("not found")));
 	}
@@ -287,7 +289,6 @@ public class GameControllerTest {
 		general.setSession(USERSESSION);
 		general.setUserId(1);
 		general.setStatsId(1);
-		general.setGameUserId(1);
 		return general;
 	}
 
