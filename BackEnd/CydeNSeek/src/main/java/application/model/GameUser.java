@@ -60,6 +60,7 @@ public class GameUser {
 		this.userSession = userSession;
 	}
 
+
 	public UUID getGameSession() {
 		return gameSession;
 	}
