@@ -5,10 +5,7 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-<<<<<<< BackEnd/CydeNSeek/src/main/java/application/model/Game.java
-=======
 import javax.persistence.GeneratedValue;
->>>>>>> BackEnd/CydeNSeek/src/main/java/application/model/Game.java
 import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -17,7 +14,6 @@ import org.hibernate.annotations.GenericGenerator;
 public class Game {
 
 	@Id
-
 	@GeneratedValue(generator = "UUID")
 	@GenericGenerator(
 		name = "UUID",
@@ -33,10 +29,10 @@ public class Game {
 	private LocalTime startTime;
 
 	@Column
-	private final Integer duration = 10;
+	private Integer duration;
 
 	@Column
-	private final Integer gperiod = 5;
+	private Integer gperiod;
 
 	@Column
 	private String creator;
@@ -45,17 +41,17 @@ public class Game {
 		return duration;
 	}
 
-	/*public void setDuration(int duration) {
+	public void setDuration(int duration) {
 		this.duration = duration;
-	}*/
+	}
 
 	public int getGperiod() {
 		return gperiod;
 	}
 
-	/*public void setGperiod(int gperiod) {
+	public void setGperiod(int gperiod) {
 		this.gperiod = gperiod;
-	}*/
+	}
 
 	public LocalTime getStartTime() {
 		return startTime;
@@ -80,7 +76,6 @@ public class Game {
 	public void setCreator(String creator) {
 		this.creator = creator;
 	}
-
 
 	public UUID getSession() {
 		return session;

@@ -43,7 +43,6 @@ public class ServerWebSocketHandler {
 	public static Map<Session, GameUser> gameusers = new HashMap<>();
 
 	@OnOpen
-
 	public void onOpen(final Session session, @PathParam("gameSession") final String gSession, @PathParam("username") final String username) {
 		final UUID gameSession = UUID.fromString(gSession);
 		if(!userDB.findUserByUsername(username).isPresent()) {
@@ -119,9 +118,7 @@ public class ServerWebSocketHandler {
 		}
 		gu.setLatitude(msg.getDouble("latitude"));
 		gu.setLongitude(msg.getDouble("longitude"));
-
 		final UUID gameSession = gu.getGameSession();
-
 		final Map<Session, GameUser> gameUsers = gameusers.entrySet().stream().filter(x -> gameSession.equals(x.getValue().getGameSession())).collect(Collectors.toMap(e->e.getKey(),e->e.getValue()));;
 		gameUsers.entrySet().stream().forEach(x -> {
 			final GameUser other = x.getValue();
@@ -171,7 +168,6 @@ public class ServerWebSocketHandler {
 			LOG.error(e);
 		}
 	}
-
 
 	private static void broadcast(final String message, final UUID gameSession) {
 		gameusers.forEach((session, gameuser) -> {

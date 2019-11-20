@@ -39,7 +39,6 @@ import application.model.User;
 public class GameControllerTest {
 
 	private static final UUID GAMESESSION = UUID.randomUUID();
-
 	private static final String USERSESSION = "user-session";
 
 	@Mock

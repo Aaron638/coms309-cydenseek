@@ -41,16 +41,6 @@ public class MiscController {
 
 	@Autowired
 	private GameDB gameDB;
-<<<<<<< BackEnd/CydeNSeek/src/main/java/application/controller/MiscController.java
-	
-	@Autowired
-	private Optional<User> u;
-	
-	@Autowired
-	private Optional<General> g;
-	
-	@Autowired
-	private Optional<Stats> s;
 
 	/*
 	 * GET /

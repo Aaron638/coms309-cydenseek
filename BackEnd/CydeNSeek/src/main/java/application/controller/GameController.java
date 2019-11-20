@@ -129,13 +129,12 @@ public class GameController {
 		/* Creates and builds game */
 		Game newGame = new Game();
 		final UUID session = UUID.randomUUID();
-		
 		newGame.setSession(session);
 		newGame.setCreator(user.getUsername());
 		newGame.setMaxplayers(game.getMaxplayers());
 		newGame.setStartTime(LocalTime.now());
-		//newGame.setDuration(game.getDuration());
-		//newGame.setGperiod(game.getGperiod());
+		newGame.setDuration(game.getDuration());
+		newGame.setGperiod(game.getGperiod());
 		gameDB.saveAndFlush(newGame);
 		generalDB.saveAndFlush(row);
 		LOG.info(user.getUsername() + " created a new game.");
@@ -167,7 +166,6 @@ public class GameController {
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-
 	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameSession") final String session, @RequestBody GameBody game) {
 		final UUID gameSession = UUID.fromString(session);
 		/* Checks if session not present */
@@ -195,10 +193,10 @@ public class GameController {
 		}
 		/* Updates game with specified properties */
 		if(game.getMaxplayers() != null) foundGame.setMaxplayers(game.getMaxplayers());
-		/*if(game.getDuration() != null) {
+		if(game.getDuration() != null) {
 			foundGame.setDuration(game.getDuration());
-		}*/
-		//if(game.getGperiod() != null) foundGame.setGperiod(game.getGperiod());
+		}
+		if(game.getGperiod() != null) foundGame.setGperiod(game.getGperiod());
 		gameDB.saveAndFlush(foundGame);
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
@@ -223,7 +221,6 @@ public class GameController {
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-
 		List<GameUser> gameusers = ServerWebSocketHandler.gameusers.entrySet().stream().filter(x -> gameSession.compareTo(x.getValue().getGameSession()) == 0).map(x -> x.getValue()).collect(Collectors.toList());
 		final Map<Integer, General> rows = generalDB.findAll().stream().collect(Collectors.toMap(x->x.getId(), x->x));
 		final Map<Integer, String> users = userDB.findAll().stream().collect(Collectors.toMap(x->rows.get(x.getGeneralId()).getStatsId(), x->x.getUsername()));
@@ -260,7 +257,6 @@ public class GameController {
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-
 	public ResponseEntity<Map<String, Object>> users(@PathVariable("gameSession") final String session) {
 		final UUID gameSession = UUID.fromString(session);
 		Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
@@ -271,7 +267,6 @@ public class GameController {
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-
 		List<GameUser> gameusers = ServerWebSocketHandler.gameusers.entrySet().stream().filter(x -> gameSession.compareTo(x.getValue().getGameSession()) == 0).map(x -> x.getValue()).collect(Collectors.toList());
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("users", gameusers.stream().sorted((x,y) -> x.getUsername().compareTo(y.getUsername())).map(x -> {
