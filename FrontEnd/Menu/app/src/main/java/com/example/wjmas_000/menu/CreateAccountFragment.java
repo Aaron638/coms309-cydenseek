@@ -61,16 +61,7 @@ public class CreateAccountFragment extends Fragment {
                 createAccount(usernameTxt, passwordTxt, passwordConfirmTxt);
 
                 String hold;
-                if(session != null){
-                    hold = "Account Created";
-                    result.setText(session);
-                    //((MenuActivity)getActivity()).setSession(session);
-                }
-                //2.2: If user did not give correct information, then display "Failed Login".  Do not move from this fragment
-                else{
-                    hold = "Username already in use";
-                    result.setText(hold);
-                }
+
 
 
 
@@ -97,6 +88,18 @@ public class CreateAccountFragment extends Fragment {
             }
             jsonSend(url, json);
             //jsonSend(url, json);
+
+
+            if(session != null){
+                hold = "Account Created";
+                result.setText(session);
+                //((MenuActivity)getActivity()).setSession(session);
+            }
+            //2.2: If user did not give correct information, then display "Failed Login".  Do not move from this fragment
+            else{
+                hold = "Username already in use";
+                result.setText(hold);
+            }
 
 
 
