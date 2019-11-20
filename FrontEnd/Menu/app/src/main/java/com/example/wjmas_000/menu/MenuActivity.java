@@ -32,7 +32,7 @@ import java.net.URISyntaxException;
 
 public class MenuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout drawer;
-    private int LoginCode;      //Reference for login session?
+    private String session;      //Reference for login session
 
     //TODO this location stuff needs to be moved to backend
 
@@ -144,4 +144,21 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
+
+    public void setSession(String s){
+        session.equals(s);
+    }
+
+    public String getSession(){
+        return session;
+    }
+
+    public void setUsername(String s){
+        session.equals(s);
+    }
+
+    public String getUsername(){
+        return session;
+    }
+
 }

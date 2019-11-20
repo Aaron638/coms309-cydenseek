@@ -38,6 +38,8 @@ public class LogoutFragment extends Fragment {
     }
 
     public void logout(){
+        String url = "http://coms-309-vb-1.misc.iastate.edu:8080/user/";
+        //url = url + user;
         //1: Send notification to backend
 
 
@@ -48,6 +50,10 @@ public class LogoutFragment extends Fragment {
         String hold;
         hold = "Bye Bye";
         result.setText(hold);
+
+
+        //Remove the session token
+        ((MenuActivity)getActivity()).setSession(null);
 
     }
 }

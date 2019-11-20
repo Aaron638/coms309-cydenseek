@@ -71,7 +71,7 @@ public class LeaderboardFragment extends Fragment {
     //Returns 0 if successful, -1 if error occurs in connection
 
     public int jsonParse1(){
-        String url = "https://api.myjson.com/bins/14tcp8";
+        String url = "http://coms-309-vb-1.misc.iastate.edu:8080/leaderboard";
         //maybe pass json array in the future
 
 

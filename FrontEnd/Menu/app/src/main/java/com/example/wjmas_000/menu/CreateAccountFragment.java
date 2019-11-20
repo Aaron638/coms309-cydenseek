@@ -22,6 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Map;
+
 import static com.android.volley.VolleyLog.TAG;
 
 
@@ -57,6 +59,21 @@ public class CreateAccountFragment extends Fragment {
                 String passwordConfirmTxt;
                 passwordConfirmTxt = passwordConfirm.getText().toString();
                 createAccount(usernameTxt, passwordTxt, passwordConfirmTxt);
+
+                String hold;
+                if(session != null){
+                    hold = "Account Created";
+                    result.setText(session);
+                    //((MenuActivity)getActivity()).setSession(session);
+                }
+                //2.2: If user did not give correct information, then display "Failed Login".  Do not move from this fragment
+                else{
+                    hold = "Username already in use";
+                    result.setText(hold);
+                }
+
+
+
             }
         });
 
@@ -79,6 +96,8 @@ public class CreateAccountFragment extends Fragment {
                 e.printStackTrace();
             }
             jsonSend(url, json);
+            //jsonSend(url, json);
+
 
 
 
@@ -86,15 +105,8 @@ public class CreateAccountFragment extends Fragment {
 
             //2.0: get response from backend, Confirming that this combination is allowed
             //2.1: If user gave viable information, then display "Successful Login". Set activity variable 'LoginCode' to key given by backend
-            if(session != null){
-                hold = "Account Created";
-                result.setText(hold);
-            }
-            //2.2: If user did not give correct information, then display "Failed Login".  Do not move from this fragment
-            else{
-                hold = "Username already in use";
-                result.setText(hold);
-            }
+            //session = ((MenuActivity)getActivity()).getSession();
+
 
         }
 
@@ -102,6 +114,9 @@ public class CreateAccountFragment extends Fragment {
             hold = "Password does not match, please re-enter information";
             result.setText(hold);
         }
+
+        //Set the session token
+        //((MenuActivity)getActivity()).setSession(session);
 
 
 
@@ -111,17 +126,17 @@ public class CreateAccountFragment extends Fragment {
     public void jsonSend(String url, JSONObject json) {
 
 
-
-
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, json, new Response.Listener<JSONObject>(){
             @Override
             public void onResponse(JSONObject response) {
                 Log.d(TAG, response.toString());
                 try {
-                    JSONObject auth = response.getJSONObject("session");
-                    //iterates through all users in the json array
-                        String ses = auth.getString("session");
-                        session = ses;
+                    String s = response.getString("session");
+                    session = s;
+                    setThisSession(s);
+
+                    //((MenuActivity)getActivity()).setSession(s);
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -138,6 +153,14 @@ public class CreateAccountFragment extends Fragment {
 
         mQueue.add(request);
     }
+
+
+
+    public void setThisSession(String s){
+        session.equals(s);
+    }
+
+
 
 
 

@@ -18,6 +18,7 @@ public class LoginFragment extends Fragment {
     private EditText password;
     private Button loginBtn;
     private TextView result;
+    private String session;
 
     @Nullable
     @Override
@@ -67,6 +68,9 @@ public class LoginFragment extends Fragment {
             hold = "Failed Login";
             result.setText(hold);
         }
+
+        //Set the session token
+        ((MenuActivity)getActivity()).setSession(session);
 
     }
 }
