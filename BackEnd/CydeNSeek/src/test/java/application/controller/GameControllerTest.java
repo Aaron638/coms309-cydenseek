@@ -174,7 +174,7 @@ public class GameControllerTest {
 				+ "}")
 		)
 			.andExpect(status().isOk())
-			.andExpect(content().string(containsString("John")));
+			.andExpect(content().string(containsString("session")));
 	}
 
 	@Test
