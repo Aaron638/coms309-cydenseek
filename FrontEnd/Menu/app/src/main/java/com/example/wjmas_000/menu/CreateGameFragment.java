@@ -110,7 +110,7 @@ public class CreateGameFragment extends Fragment {
 
         JSONObject response = new JSONObject();
         try {
-            response.put("session", "0ac7e5b3-ab02-4b47-a1d3-c7eb642b047c");
+            response.put("session", "f509e669-011a-4f98-b636-f0af6dd2a009");
             response.put("maxplayers", "10");
             response.put("startTime", "20:00:00");
             response.put("mode", "1");
