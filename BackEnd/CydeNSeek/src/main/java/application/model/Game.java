@@ -2,13 +2,9 @@ package application.model;
 
 import java.time.LocalTime;
 import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-<<<<<<< BackEnd/CydeNSeek/src/main/java/application/model/Game.java
-=======
 import javax.persistence.GeneratedValue;
->>>>>>> BackEnd/CydeNSeek/src/main/java/application/model/Game.java
 import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
