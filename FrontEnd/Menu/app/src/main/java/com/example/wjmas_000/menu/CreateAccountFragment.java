@@ -36,7 +36,7 @@ public class CreateAccountFragment extends Fragment {
     private Button createBtn;
     private TextView result;
     private RequestQueue mQueue;
-    private String session = null;
+    private String session;
 
     @Nullable
     @Override
@@ -87,7 +87,6 @@ public class CreateAccountFragment extends Fragment {
                 e.printStackTrace();
             }
             jsonSend(url, json);
-            //jsonSend(url, json);
 
 
             if(session != null){
