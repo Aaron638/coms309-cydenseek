@@ -1,6 +1,7 @@
 package com.example.wjmas_000.menu;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import static android.support.v4.content.ContextCompat.startActivity;
 
 //SOURCE: https://abhiandroid.com/programming/json
 
@@ -47,8 +50,11 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
                 // display a toast with person name on item click
                 Toast.makeText(context, userNames.get(position), Toast.LENGTH_SHORT).show();
                 //TODO TAKE THE USER TO A CERTAIN GAME
-
-
+                if (userNames.get(0).equals("There are no games")){
+                    return;
+                } else {
+                    launchGame();
+                }
             }
         });
 
@@ -58,6 +64,12 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
     @Override
     public int getItemCount() {
         return userNames.size();
+    }
+
+    //launches the game activity
+    private void launchGame(){
+        Intent intent = new Intent(context, GameActivity.class);
+        context.startActivity(intent);
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

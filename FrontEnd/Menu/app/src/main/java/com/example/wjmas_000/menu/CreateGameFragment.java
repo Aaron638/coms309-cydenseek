@@ -82,6 +82,14 @@ public class CreateGameFragment extends Fragment {
             }
         });
 
+        Button buttonfakeGame = (Button) rootView.findViewById(R.id.button_dev_gameStart);
+        buttonfakeGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchGame();
+            }
+        });
+
 
         return rootView;
     }

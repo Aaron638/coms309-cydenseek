@@ -62,6 +62,6 @@
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="34dp"
         android:layout_marginBottom="43dp"
-        android:text="tempGameStart" />
+        android:text="fakeStart" />
 
 </RelativeLayout>
