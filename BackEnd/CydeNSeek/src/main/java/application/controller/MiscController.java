@@ -95,9 +95,11 @@ public class MiscController {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("users", generalDB.findAll().stream()
 				.sorted((x,y) -> {
-					Stats statsX = userStats.get(x.getStatsId());
-					Stats statsY = userStats.get(y.getStatsId());
-					return (statsX.getGWHider() + statsX.getGWSeeker()) / (statsX.getGPHider() + statsX.getGPSeeker()) - (statsY.getGWHider() + statsY.getGWSeeker()) / (statsY.getGPHider() + statsY.getGPSeeker());
+					final Stats statsX = userStats.get(x.getStatsId());
+					final Stats statsY = userStats.get(y.getStatsId());
+					final Integer totalGamesX = statsX.getGPHider() + statsX.getGPSeeker();
+					final Integer totalGamesY = statsY.getGPHider() + statsY.getGPSeeker();
+					return (statsX.getGWHider() + statsX.getGWSeeker()) / (totalGamesX.equals(0) ? 1 : totalGamesX) - (statsY.getGWHider() + statsY.getGWSeeker()) / (totalGamesY.equals(0) ? 1 : totalGamesY);
 				})
 				.map(x -> {
 					Stats stats = userStats.get(x.getStatsId());
