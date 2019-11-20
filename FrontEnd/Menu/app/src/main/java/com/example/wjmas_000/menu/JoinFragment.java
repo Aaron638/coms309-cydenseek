@@ -15,6 +15,7 @@ import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -39,6 +40,8 @@ public class JoinFragment extends Fragment {
     JSONArray gamesJsonArray;
     ArrayList<String> gameUserNames;
     ArrayList<String> gameMaxPlayers;
+    RecyclerView recyclerView;
+    Boolean backendCalled = false;
     String gameID;
 
 
@@ -56,7 +59,7 @@ public class JoinFragment extends Fragment {
         gameUserNames = new ArrayList<>();
         gameMaxPlayers = new ArrayList();
 
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -67,32 +70,42 @@ public class JoinFragment extends Fragment {
         buttonRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                callBackend();
+                backendCalled = callBackend();
+
+                if (backendCalled) {
+                    if (gamesJsonArray == null) {
+                        gameUserNames.add("There are no games");
+                        gameMaxPlayers.add("Go to Create Game");
+                        CustomAdapter adapter = new CustomAdapter(getActivity(), gameUserNames, gameMaxPlayers);
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        try {
+                            for (int i = 0; i < gamesJsonArray.length(); i++) {
+                                JSONObject gameI = gamesJsonArray.getJSONObject(i);
+                                gameUserNames.add(gameI.getString("creator"));
+                                gameMaxPlayers.add(gameI.getString("maxplayers"));
+                                //ADD MORE for duration, period and start time
+                                //gameMaxPlayers.add(gamesJsonArray.getString("maxplayers"));
+                                //gameMaxPlayers.add(gamesJsonArray.getString("maxplayers"));
+                                //gameMaxPlayers.add(gamesJsonArray.getString("maxplayers"));
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        CustomAdapter adapter = new CustomAdapter(getActivity(), gameUserNames, gameMaxPlayers);
+                        recyclerView.setAdapter(adapter);
+                    }
+                }
+
             }
         });
 
-        try {
-            for (int i =0; i < gamesJsonArray.length(); i++){
-                JSONObject gameI = gamesJsonArray.getJSONObject(i);
-                gameUserNames.add(gameI.getString("creator"));
-                gameMaxPlayers.add(gameI.getString("maxplayers"));
-                //ADD MORE for duration, period and start time
-                //gameMaxPlayers.add(gamesJsonArray.getString("maxplayers"));
-                //gameMaxPlayers.add(gamesJsonArray.getString("maxplayers"));
-                //gameMaxPlayers.add(gamesJsonArray.getString("maxplayers"));
-            }
-
-        } catch (JSONException e){
-            e.printStackTrace();
-        }
-
-        CustomAdapter adapter = new CustomAdapter(getActivity(), gameUserNames, gameMaxPlayers);
-        recyclerView.setAdapter(adapter);
 
         return rootView;
     }
 
-    private void callBackend(){
+    private boolean callBackend(){
 
         String urlGames = "http://coms-309-vb-1.misc.iastate.edu:8080/games/";
 
@@ -116,6 +129,7 @@ public class JoinFragment extends Fragment {
             }
         });
         mQueue.add(request);
+        return true;
     }
 
 

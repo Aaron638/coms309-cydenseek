@@ -45,8 +45,10 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHold
             @Override
             public void onClick(View view) {
                 // display a toast with person name on item click
-                //Toast.makeText(context, personNames.get(position), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, userNames.get(position), Toast.LENGTH_SHORT).show();
                 //TODO TAKE THE USER TO A CERTAIN GAME
+
+
             }
         });
 
