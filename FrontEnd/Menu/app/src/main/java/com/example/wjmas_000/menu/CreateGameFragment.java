@@ -122,13 +122,13 @@ public class CreateGameFragment extends Fragment {
             @Override
             protected Map<String, String> getParams(){
                 Map<String, String>  params = new HashMap<String, String>();
-                params.put("session", userSession);
+                params.put("session", "fa2adf23-8ba7-49c3-9214-83dd44810cfa");
                 params.put("radius", "10");     //hard coded for now
                 params.put("maxplayers", editMaxPlayers.getText().toString());
                 params.put("startTime", "20:00:00"/*getCurrentTime().toString()*/);       //TODO this is probably incorrect, maybe should just be hard coded on backend
-                params.put("duration", editDuration.getText().toString());
+                //params.put("duration", editDuration.getText().toString());
                 params.put("mode", "0");
-                params.put("gperiod", editGPeriod.getText().toString());
+                //params.put("gperiod", editGPeriod.getText().toString());
                 params.put("creator", username);
                 params.put("hider", "true");
 
