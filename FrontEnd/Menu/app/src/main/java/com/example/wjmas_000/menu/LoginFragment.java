@@ -74,21 +74,9 @@ public class LoginFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        ((MenuActivity)getActivity()).setUsername(user);
         jsonSend(url, json);
-
-
-
-
-        //2.0: get response from backend
-
-
-        //2.1: If user gave the correct information, then display "Successful Login". Set activity variable 'LoginCode' to key given by backend
-
-
-        //2.2: If user did not give correct information, then display "Failed Login".  Do not move from this fragment
-
-
-        //Set the session token
 
 
     }
@@ -107,7 +95,7 @@ public class LoginFragment extends Fragment {
                     //Display
                     String hold;
                     if(session != null){
-                        hold = "Account Created";
+                        hold = "Successful Login";
                         result.setText(hold);
                         ((MenuActivity)getActivity()).setSession(session);
                     }
@@ -134,11 +122,6 @@ public class LoginFragment extends Fragment {
 
         mQueue.add(request);}
 
-    public void setThisSession(String s){
-        session = s;
-
-
-    }
 
 
 

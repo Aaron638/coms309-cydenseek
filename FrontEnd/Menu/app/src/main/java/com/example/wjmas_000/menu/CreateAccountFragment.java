@@ -29,7 +29,7 @@ import static com.android.volley.VolleyLog.TAG;
 
 public class CreateAccountFragment extends Fragment {
 
-    //Testing for basic log in function
+
     private EditText username;
     private EditText password;
     private EditText passwordConfirm;
@@ -58,13 +58,9 @@ public class CreateAccountFragment extends Fragment {
                 passwordTxt = password.getText().toString();
                 String passwordConfirmTxt;
                 passwordConfirmTxt = passwordConfirm.getText().toString();
+
+
                 createAccount(usernameTxt, passwordTxt, passwordConfirmTxt);
-
-                String hold;
-
-
-
-
             }
         });
 
@@ -86,40 +82,19 @@ public class CreateAccountFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            ((MenuActivity)getActivity()).setUsername(user);
             jsonSend(url, json);
-
-
-
-
-
-
-
-
-
-            //2.0: get response from backend, Confirming that this combination is allowed
-            //2.1: If user gave viable information, then display "Successful Login". Set activity variable 'LoginCode' to key given by backend
-            //session = ((MenuActivity)getActivity()).getSession();
-
-
         }
-
         else{
             hold = "Password does not match, please re-enter information";
             result.setText(hold);
+            ((MenuActivity)getActivity()).setUsername(null);
         }
-
-        //Set the session token
-        //((MenuActivity)getActivity()).setSession(session);
-
-
-
-
     }
 
     public void jsonSend(String url, JSONObject json) {
-
-
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, json, new Response.Listener<JSONObject>(){
+
             @Override
             public void onResponse(JSONObject response) {
                 Log.d(TAG, response.toString());
@@ -132,14 +107,14 @@ public class CreateAccountFragment extends Fragment {
                         hold = "Account Created";
                         result.setText(hold);
                         ((MenuActivity)getActivity()).setSession(session);
+
+
                     }
                     //2.2: If user did not give correct information, then display "Failed Login".  Do not move from this fragment
                     else{
                         hold = "Username already in use";
                         result.setText(hold);
                     }
-
-                    //((MenuActivity)getActivity()).setSession(s);
 
 
                 } catch (JSONException e) {
@@ -157,10 +132,6 @@ public class CreateAccountFragment extends Fragment {
 
         mQueue.add(request);
     }
-
-
-
-
 
 
 }
