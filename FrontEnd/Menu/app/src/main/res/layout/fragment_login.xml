@@ -36,8 +36,7 @@
         android:layout_marginTop="120dp"
         android:ems="10"
         android:hint="Username"
-        android:inputType="textPersonName"
-        android:text="Username" />
+        android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/etPassword"
@@ -49,8 +48,7 @@
         android:ems="10"
         android:hint="Password"
         android:inputType="textPersonName"
-        android:singleLine="false"
-        android:text="Password" />
+        android:singleLine="false" />
 
     <TextView
         android:id="@+id/tvResult"
