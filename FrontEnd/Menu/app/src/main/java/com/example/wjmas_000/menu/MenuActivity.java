@@ -62,7 +62,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ChatFragment()).commit();
 
         //What do if rotation of device
         /*
@@ -105,7 +105,9 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new CreateAccountFragment()).commit();
                 break;
-
+            default:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ChatFragment()).commit();
+                break;
 
             //case R.id.nav_map:
                 //FragmentManager manager = getSupportFragmentManager();/*.beginTransaction().replace(R.id.fragment_container,
@@ -123,10 +125,10 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                         new ChatFragment()).commit();
                 break;
                 */
-            case R.id.nav_settings:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new SettingsFragment()).commit();
-                break;
+            //case R.id.nav_settings:
+            //    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+            //           new SettingsFragment()).commit();
+            //   break;
 /*
             case R.id.nav_share:
                 Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show();
