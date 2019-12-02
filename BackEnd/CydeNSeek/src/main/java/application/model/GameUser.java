@@ -28,7 +28,7 @@ public class GameUser {
 		this.found = found;
 	}
 
-	public Boolean getHider() {
+	public Boolean isHider() {
 		return hider;
 	}
 

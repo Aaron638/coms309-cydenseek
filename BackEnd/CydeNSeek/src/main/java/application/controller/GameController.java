@@ -256,7 +256,7 @@ public class GameController {
 				Stats stats = userStats.get(x.getUsername());
 				return new HashMap<String, Object>() {{
 					put("username", x);
-					put("hider", x.getHider());
+					put("hider", x.isHider());
 					put("found", x.getFound());
 					put("gwhider", stats.getGWHider());
 					put("gwseeker", stats.getGWSeeker());
@@ -303,7 +303,7 @@ public class GameController {
 			put("users", gameusers.stream().sorted((x,y) -> x.getUsername().compareTo(y.getUsername())).map(x -> {
 				return new HashMap<String, Object>() {{
 					put("username", x.getUsername());
-					put("hider", x.getHider());
+					put("hider", x.isHider());
 					put("found", x.getFound());
 				}};
 			}).collect(Collectors.toList()));

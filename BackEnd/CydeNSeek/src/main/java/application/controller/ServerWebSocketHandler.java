@@ -3,6 +3,7 @@ package application.controller;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.websocket.OnClose;
@@ -15,6 +16,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -87,6 +89,8 @@ public class ServerWebSocketHandler {
 			LOG.error(e);
 			return;
 		}
+		final UUID gameSession = gu.getGameSession();
+		final Map<Session, GameUser> gameUsers = gameusers.entrySet().stream().filter(x -> gameSession.equals(x.getValue().getGameSession())).collect(Collectors.toMap(e->e.getKey(),e->e.getValue()));;
 		if(!gu.getVerified().booleanValue()) {
 			if(!msg.has("session")) {
 				send(session, "{\"error\":true,\"message\":\"Session token not present.\"}");
@@ -96,15 +100,8 @@ public class ServerWebSocketHandler {
 				send(session, "{\"error\":true,\"message\":\"Invalid session token.\"}");
 				return;
 			}
-			if(!msg.has("hider")) {
-				send(session, "{\"error\":true,\"message\":\"Must specify if hider or not.\"}");
-				return;
-			}
-			if(!(msg.get("hider") instanceof Boolean)) {
-				send(session, "{\"error\":true,\"message\":\"Hider must be boolean.\"}");
-				return;
-			}
-			gu.setHider(msg.getBoolean("hider"));
+			gu.setHider(gameUsers.values().stream().filter(x -> x.isHider().booleanValue()).count() <= gameUsers.values().stream().filter(x -> !x.isHider().booleanValue()).count());
+			send(session, "{\"hider\":" + gu.isHider() + "}");
 			gu.setVerified(true);
 		}
 		if(!msg.has("latitude")) {
@@ -125,8 +122,22 @@ public class ServerWebSocketHandler {
 		}
 		gu.setLatitude(msg.getDouble("latitude"));
 		gu.setLongitude(msg.getDouble("longitude"));
-		final UUID gameSession = gu.getGameSession();
-		final Map<Session, GameUser> gameUsers = gameusers.entrySet().stream().filter(x -> gameSession.equals(x.getValue().getGameSession())).collect(Collectors.toMap(e->e.getKey(),e->e.getValue()));;
+		if(!gu.isHider().booleanValue()) {
+			if(msg.has("userSession")) gameUsers.entrySet().stream().forEach(x -> {
+				if(x.getValue().getUserSession().equals(msg.getString("userSession"))) {
+					x.getValue().setFound(true);
+					send(x.getKey(), "{\"found\":true}");
+				}
+			});
+			send(session, "{\"seekers\":" + gameUsers.values().stream().filter(x -> !x.isHider().booleanValue()).map(x -> {
+				final JSONObject obj = new JSONObject();
+				obj.put("username", x.getUsername());
+				obj.put("latitude", x.getLatitude());
+				obj.put("longitude", x.getLongitude());
+				return obj.toString();
+			}).collect(Collector.of(JSONArray::new,JSONArray::put,JSONArray::put)).toString() + "}");
+		}
+		/*
 		gameUsers.entrySet().stream().forEach(x -> {
 			final GameUser other = x.getValue();
 			if(gu.getHider().booleanValue() == other.getHider().booleanValue()) return;
@@ -140,7 +151,8 @@ public class ServerWebSocketHandler {
 				}
 			}
 		});
-		final Map<Session, GameUser> usersLeft = gameUsers.entrySet().stream().filter(x -> x.getValue().getHider().booleanValue() && !x.getValue().getFound().booleanValue()).collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
+		*/
+		final Map<Session, GameUser> usersLeft = gameUsers.entrySet().stream().filter(x -> x.getValue().isHider().booleanValue() && !x.getValue().getFound().booleanValue()).collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
 		final long playersleft = usersLeft.size();
 		if(playersleft <= 1) {
 			if(playersleft == 0) broadcast("{\"winner\":false}", gu.getGameSession());
