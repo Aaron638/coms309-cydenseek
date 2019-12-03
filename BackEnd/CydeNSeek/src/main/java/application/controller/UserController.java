@@ -140,7 +140,7 @@ public class UserController {
 		stats.setGPSeeker(0);
 		stats.setGWHider(0);
 		stats.setGWSeeker(0);
-		stats.setTotDistance(0);
+		stats.setTotDistance(0.0);
 		stats.setTotTime(0);
 		generalDB.saveAndFlush(row);
 		General foundRow = generalDB.findAll().stream().filter(x -> x.getSession().equals(session)).findFirst().get();

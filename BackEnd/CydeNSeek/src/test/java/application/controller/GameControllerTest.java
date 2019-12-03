@@ -308,7 +308,7 @@ public class GameControllerTest {
 		stats.setGPSeeker(10);
 		stats.setGWHider(2);
 		stats.setGWSeeker(3);
-		stats.setTotDistance(45);
+		stats.setTotDistance(45.0);
 		stats.setTotTime(39);
 		stats.setGeneralId(1);
 		return stats;

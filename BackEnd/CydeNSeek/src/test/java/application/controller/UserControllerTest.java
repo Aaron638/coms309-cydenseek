@@ -74,7 +74,7 @@ public class UserControllerTest {
 		stats.setGPSeeker(6);
 		stats.setGWHider(1);
 		stats.setGWSeeker(3);
-		stats.setTotDistance(5);
+		stats.setTotDistance(5.0);
 		stats.setTotTime(6);
 		when(statsDB.findById(any(Integer.class))).thenReturn(Optional.of(stats));
 		this.mockMvc.perform(get("/user/" + USERNAME))
