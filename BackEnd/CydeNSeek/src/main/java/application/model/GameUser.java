@@ -20,7 +20,7 @@ public class GameUser {
 
 	private Double longitude;
 
-	public Boolean getFound() {
+	public Boolean isFound() {
 		return found;
 	}
 
@@ -68,7 +68,7 @@ public class GameUser {
 		this.gameSession = gameSession;
 	}
 
-	public Boolean getVerified() {
+	public Boolean isVerified() {
 		return verified;
 	}
 
