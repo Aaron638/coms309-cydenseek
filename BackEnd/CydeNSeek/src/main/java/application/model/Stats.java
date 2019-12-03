@@ -30,7 +30,7 @@ public class Stats {
 	private Integer gwseeker;
 
 	@Column
-	private Integer totdistance;
+	private Double totdistance;
 
 	@Column
 	private Integer tottime;
@@ -67,11 +67,11 @@ public class Stats {
 		this.gwseeker = gwseeker;
 	}
 
-	public Integer getTotDistance() {
+	public Double getTotDistance() {
 		return totdistance;
 	}
 
-	public void setTotDistance(Integer totdistance) {
+	public void setTotDistance(Double totdistance) {
 		this.totdistance = totdistance;
 	}
 

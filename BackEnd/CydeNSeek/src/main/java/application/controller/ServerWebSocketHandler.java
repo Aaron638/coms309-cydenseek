@@ -24,8 +24,10 @@ import org.springframework.stereotype.Component;
 import application.config.CustomConfigurator;
 import application.db.GameDB;
 import application.db.GeneralDB;
+import application.db.StatsDB;
 import application.db.UserDB;
 import application.model.GameUser;
+import application.model.Stats;
 
 @ServerEndpoint(value = "/{gameSession}/{username}", configurator = CustomConfigurator.class)
 @Component
@@ -38,6 +40,9 @@ public class ServerWebSocketHandler {
 
 	@Autowired
 	private UserDB userDB;
+
+	@Autowired
+	private StatsDB statsDB;
 
 	@Autowired
 	private GameDB gameDB;
@@ -120,8 +125,13 @@ public class ServerWebSocketHandler {
 			send(session, "{\"error\":true,\"message\":\"Longitude must be double.\"}");
 			return;
 		}
-		gu.setLatitude(msg.getDouble("latitude"));
-		gu.setLongitude(msg.getDouble("longitude"));
+		final Stats stats = statsDB.findById(generalDB.findById(userDB.findUserByUsername(username).get().getGeneralId()).get().getStatsId()).get();
+		final Double latitude = msg.getDouble("latitude");
+		final Double longitude = msg.getDouble("longitude");
+		stats.setTotDistance(stats.getTotDistance() + Math.sqrt(Math.pow(latitude - gu.getLatitude(), 2) + Math.pow(longitude - gu.getLongitude(), 2)));
+		statsDB.saveAndFlush(stats);
+		gu.setLatitude(latitude);
+		gu.setLongitude(longitude);
 		if(!gu.isHider().booleanValue()) {
 			if(msg.has("userSession")) gameUsers.entrySet().stream().forEach(x -> {
 				if(x.getValue().getUserSession().equals(msg.getString("userSession"))) {
@@ -155,8 +165,27 @@ public class ServerWebSocketHandler {
 		final Map<Session, GameUser> usersLeft = gameUsers.entrySet().stream().filter(x -> x.getValue().isHider().booleanValue() && !x.getValue().getFound().booleanValue()).collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
 		final long playersleft = usersLeft.size();
 		if(playersleft <= 1) {
-			if(playersleft == 0) broadcast("{\"winner\":false}", gu.getGameSession());
-			else broadcast("{\"winner\":\"" + usersLeft.entrySet().stream().findFirst().get().getKey() + "\"}", gu.getGameSession());
+			if(playersleft == 0) {
+				gameUsers.values().stream().forEach(x -> {
+					if(x.isHider().booleanValue()) return;
+					final Stats s = statsDB.findById(generalDB.findById(userDB.findUserByUsername(x.getUsername()).get().getGeneralId()).get().getStatsId()).get();
+					s.setGWSeeker(s.getGWSeeker() + 1);
+					statsDB.saveAndFlush(s);
+				});
+				broadcast("{\"winner\":false}", gu.getGameSession());
+			} else {
+				final String winner = usersLeft.entrySet().stream().findFirst().get().getValue().getUsername();
+				final Stats s = statsDB.findById(generalDB.findById(userDB.findUserByUsername(winner).get().getGeneralId()).get().getStatsId()).get();
+				s.setGWHider(s.getGWHider() + 1);
+				statsDB.saveAndFlush(s);
+				broadcast("{\"winner\":\"" + winner + "\"}", gu.getGameSession());
+			}
+			gameUsers.values().stream().forEach(x -> {
+				final Stats s = statsDB.findById(generalDB.findById(userDB.findUserByUsername(x.getUsername()).get().getGeneralId()).get().getStatsId()).get();
+				if(x.isHider().booleanValue()) s.setGPHider(s.getGPHider() + 1);
+				else s.setGPSeeker(s.getGPSeeker() + 1);
+				statsDB.saveAndFlush(s);
+			});
 			return;
 		}
 		LOG.info(username + " has been updated.");
