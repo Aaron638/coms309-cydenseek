@@ -73,7 +73,7 @@ public class GameController {
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> newGame(@RequestBody GameBody game) {
+	public ResponseEntity<Map<String, Object>> newGame(@RequestBody final GameBody game) {
 		/* Checks if session not present */
 		if(game.getSession() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -98,12 +98,14 @@ public class GameController {
 		}
 		*/
 		/* Checks if mode not specified */
+		/*
 		if(game.getMode() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Mode is missing.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
+		*/
 		/* Checks if grace period not specified */
 		/*
 		if(game.getGperiod() == null) {
@@ -114,13 +116,15 @@ public class GameController {
 		}
 		*/
 		/* Checks if hider not specified */
+		/*
 		if(game.getHider() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Must specify if hider or not.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		Optional<General> foundUser = generalDB.findAll().stream().filter(x -> x.getSession().equals(game.getSession())).findFirst();
+		*/
+		final Optional<General> foundUser = generalDB.findAll().stream().filter(x -> x.getSession().equals(game.getSession())).findFirst();
 		/* Checks if user with token exists */
 		if(!foundUser.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -128,22 +132,20 @@ public class GameController {
 				put("message", "Invalid session token.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		User user = userDB.findById(foundUser.get().getUserId()).get();
-		General row = foundUser.get();
+		final User user = userDB.findById(foundUser.get().getUserId()).get();
+		final General row = foundUser.get();
 		/* Creates and builds game */
-		Game newGame = new Game();
-		final UUID session = UUID.randomUUID();
-		newGame.setSession(session);
+		final Game newGame = new Game();
 		newGame.setCreator(user.getUsername());
 		newGame.setMaxplayers(game.getMaxplayers());
-		newGame.setStartTime(LocalTime.now());
+		newGame.setStartTime(LocalTime.now().plusMinutes(5/*game.getGperiod()*/));
 		newGame.setDuration(10/*game.getDuration()*/);
 		newGame.setGperiod(5/*game.getGperiod()*/);
 		gameDB.saveAndFlush(newGame);
 		generalDB.saveAndFlush(row);
 		LOG.info(user.getUsername() + " created a new game.");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("session", session.toString());
+			put("session", gameDB.findAll().stream().filter(x -> user.getUsername().equals(x.getCreator())).findFirst().get().getSession().toString());
 		}}, HttpStatus.OK);
 	}
 
@@ -170,7 +172,7 @@ public class GameController {
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameSession") final String session, @RequestBody GameBody game) {
+	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameSession") final String session, @RequestBody final GameBody game) {
 		final UUID gameSession;
 		try {
 			gameSession = UUID.fromString(session);
@@ -188,7 +190,7 @@ public class GameController {
 				put("message", "Session token not present.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		Optional<Game> checkGame = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
+		final Optional<Game> checkGame = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
 		/* Checks if game exists */
 		if(!checkGame.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -196,7 +198,7 @@ public class GameController {
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-		Game foundGame = checkGame.get();
+		final Game foundGame = checkGame.get();
 		/* Checks if user created (and owns) game */
 		if(!generalDB.findById(userDB.findUserByUsername(foundGame.getCreator()).get().getGeneralId()).get().getSession().equals(game.getSession())) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -235,7 +237,7 @@ public class GameController {
 				put("message", "Invalid game session.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
+		final Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
 		/* Checks if game exists */
 		if(!game.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -243,21 +245,23 @@ public class GameController {
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-		List<GameUser> gameusers = ServerWebSocketHandler.gameusers.entrySet().stream().filter(x -> gameSession.compareTo(x.getValue().getGameSession()) == 0).map(x -> x.getValue()).collect(Collectors.toList());
+		final List<GameUser> gameusers = ServerWebSocketHandler.gameusers.values().stream().filter(x -> gameSession.compareTo(x.getGameSession()) == 0).collect(Collectors.toList());
 		final Map<Integer, General> rows = generalDB.findAll().stream().collect(Collectors.toMap(x->x.getId(), x->x));
 		final Map<Integer, String> users = userDB.findAll().stream().collect(Collectors.toMap(x->rows.get(x.getGeneralId()).getStatsId(), x->x.getUsername()));
 		final Map<String, Stats> userStats = statsDB.findAll().stream().collect(Collectors.toMap(x->users.get(x.getId()), x->x));
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
 			put("users", gameusers.stream().sorted((x,y) -> {
-				Stats statsX = userStats.get(x.getUsername());
-				Stats statsY = userStats.get(y.getUsername());
-				return (statsX.getGWHider() + statsX.getGWSeeker()) / (statsX.getGPHider() + statsX.getGPSeeker()) - (statsY.getGWHider() + statsY.getGWSeeker()) / (statsY.getGPHider() + statsY.getGPSeeker());
+				final Stats statsX = userStats.get(x.getUsername());
+				final Stats statsY = userStats.get(y.getUsername());
+				final Integer totalGamesX = statsX.getGPHider() + statsX.getGPSeeker();
+				final Integer totalGamesY = statsY.getGPHider() + statsY.getGPSeeker();
+				return (statsX.getGWHider() + statsX.getGWSeeker()) / (totalGamesX.equals(0) ? 1 : totalGamesX) - (statsY.getGWHider() + statsY.getGWSeeker()) / (totalGamesY.equals(0) ? 1 : totalGamesY);
 			}).map(x -> {
-				Stats stats = userStats.get(x.getUsername());
+				final Stats stats = userStats.get(x.getUsername());
 				return new HashMap<String, Object>() {{
-					put("username", x);
+					put("username", x.getUsername());
 					put("hider", x.isHider());
-					put("found", x.getFound());
+					put("found", x.isFound());
 					put("gwhider", stats.getGWHider());
 					put("gwseeker", stats.getGWSeeker());
 					put("gphider", stats.getGPHider());
@@ -290,7 +294,7 @@ public class GameController {
 				put("message", "Invalid game session.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
+		final Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
 		/* Checks if game exists */
 		if(!game.isPresent()) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -298,13 +302,12 @@ public class GameController {
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-		List<GameUser> gameusers = ServerWebSocketHandler.gameusers.entrySet().stream().filter(x -> gameSession.compareTo(x.getValue().getGameSession()) == 0).map(x -> x.getValue()).collect(Collectors.toList());
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", gameusers.stream().sorted((x,y) -> x.getUsername().compareTo(y.getUsername())).map(x -> {
+			put("users", ServerWebSocketHandler.gameusers.values().stream().filter(x -> gameSession.compareTo(x.getGameSession()) == 0).collect(Collectors.toList()).stream().sorted((x,y) -> x.getUsername().compareTo(y.getUsername())).map(x -> {
 				return new HashMap<String, Object>() {{
 					put("username", x.getUsername());
 					put("hider", x.isHider());
-					put("found", x.getFound());
+					put("found", x.isFound());
 				}};
 			}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
