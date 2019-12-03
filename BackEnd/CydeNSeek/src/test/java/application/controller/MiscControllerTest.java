@@ -101,7 +101,7 @@ public class MiscControllerTest {
 		s.setGPSeeker(10);
 		s.setGWHider(5);
 		s.setGWSeeker(8);
-		s.setTotDistance(500);
+		s.setTotDistance(500.0);
 		s.setTotTime(30);
 		s.setGeneralId(1);
 		s.setId(1);
