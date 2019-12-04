@@ -52,11 +52,11 @@ public class ServerWebSocketHandler {
 	@OnOpen
 	public void onOpen(final Session session, @PathParam("gameSession") final String gameSession, @PathParam("username") final String username) {
 		if(!userDB.findUserByUsername(username).isPresent()) {
-			send(session, "{\"error\":true,\"message\":\"User not found.\"}");
+			sendError(session, "User not found.");
 			return;
 		}
 		if(!games.containsKey(gameSession)) {
-			send(session, "{\"error\":true,\"message\":\"Game not found.\"}");
+			sendError(session, "Game not found.");
 			return;
 		}
 		LOG.info(username + " has connected.");
@@ -74,7 +74,7 @@ public class ServerWebSocketHandler {
 	public void onMessage(final Session session, final String message) {
 		final GameUser gu = gameusers.get(session);
 		if(gu == null) {
-			send(session, "{\"error\":true,\"message\":\"Socket connection failed.\"}");
+			sendError(session, "Socket connection failed.");
 			return;
 		}
 		final String username = gu.getUsername();
@@ -82,7 +82,7 @@ public class ServerWebSocketHandler {
 		try {
 			msg = new JSONObject(message);
 		} catch(Exception e) {
-			send(session, "{\"error\":true,\"message\":\"" + e.getMessage() + "\"}");
+			sendError(session, e.getMessage());
 			LOG.error(e);
 			return;
 		}
@@ -91,11 +91,11 @@ public class ServerWebSocketHandler {
 		final Map<Session, GameUser> gameUsers = gameusers.entrySet().stream().filter(x -> gameSession.equals(x.getValue().getGameSession())).collect(Collectors.toMap(e->e.getKey(),e->e.getValue()));;
 		if(!gu.isVerified().booleanValue()) {
 			if(!msg.has("session")) {
-				send(session, "{\"error\":true,\"message\":\"Session token not present.\"}");
+				sendError(session, "Session token not present.");
 				return;
 			}
 			if(!generalDB.findById(userDB.findUserByUsername(username).get().getGeneralId()).get().getSession().equals(msg.getString("session"))) {
-				send(session, "{\"error\":true,\"message\":\"Invalid session token.\"}");
+				sendError(session, "Invalid session token.");
 				return;
 			}
 			gu.setHider(gameUsers.values().stream().filter(x -> x.isHider() != null && x.isHider().booleanValue()).count() <= gameUsers.values().stream().filter(x -> x.isHider() != null && !x.isHider().booleanValue()).count());
@@ -104,19 +104,19 @@ public class ServerWebSocketHandler {
 		}
 		if(LocalTime.now().isBefore(game.getStartTime())) return;
 		if(!msg.has("latitude")) {
-			send(session, "{\"error\":true,\"message\":\"Latitude not present.\"}");
+			sendError(session, "Latitude not present.");
 			return;
 		}
 		if(!msg.has("longitude")) {
-			send(session, "{\"error\":true,\"message\":\"Longitude not present.\"}");
+			sendError(session, "Longitude not present.");
 			return;
 		}
 		if(!(msg.get("latitude") instanceof Double)) {
-			send(session, "{\"error\":true,\"message\":\"Latitude must be double.\"}");
+			sendError(session, "Latitude must be double.");
 			return;
 		}
 		if(!(msg.get("longitude") instanceof Double)) {
-			send(session, "{\"error\":true,\"message\":\"Longitude must be double.\"}");
+			sendError(session, "Longitude must be double.");
 			return;
 		}
 		final Stats stats = statsDB.findById(generalDB.findById(userDB.findUserByUsername(username).get().getGeneralId()).get().getStatsId()).get();
@@ -130,7 +130,7 @@ public class ServerWebSocketHandler {
 			if(msg.has("userSession")) {
 				final Optional<Map.Entry<Session, GameUser>> found = gameUsers.entrySet().stream().filter(x -> x.getValue().getUserSession().equals(msg.getString("userSession"))).findFirst();
 				if(!found.isPresent()) {
-					send(session, "{\"error\":true,\"message\":\"User not found.\"}");
+					sendError(session, "User not found.");
 					return;
 				}
 				final Map.Entry<Session, GameUser> foundUser = found.get();
@@ -214,6 +214,10 @@ public class ServerWebSocketHandler {
 		} catch(Exception e) {
 			LOG.error(e);
 		}
+	}
+
+	private static void sendError(final Session session, final String message) {
+		send(session, "{\"error\":true,\"message\":\"" + message + "\"");
 	}
 
 	private static void broadcast(final String message, final String gameSession) {
