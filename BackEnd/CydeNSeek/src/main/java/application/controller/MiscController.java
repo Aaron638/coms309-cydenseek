@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import application.db.GameDB;
 import application.db.GeneralDB;
 import application.db.StatsDB;
 import application.db.UserDB;
@@ -38,9 +37,6 @@ public class MiscController {
 
 	@Autowired
 	private StatsDB statsDB;
-
-	@Autowired
-	private GameDB gameDB;
 
 	/*
 	 * GET /
@@ -159,7 +155,7 @@ public class MiscController {
 	)
 	public ResponseEntity<Map<String, Object>> games() {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("games", gameDB.findAll());
+			put("games", ServerWebSocketHandler.games.values());
 		}}, HttpStatus.OK);
 	}
 }
