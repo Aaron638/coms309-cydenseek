@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import application.db.GameDB;
 import application.db.GeneralDB;
 import application.db.StatsDB;
 import application.db.UserDB;
@@ -40,9 +39,6 @@ public class GameController {
 
 	@Autowired
 	private GeneralDB generalDB;
-
-	@Autowired
-	private GameDB gameDB;
 
 	@Autowired
 	private UserDB userDB;
@@ -136,16 +132,17 @@ public class GameController {
 		final General row = foundUser.get();
 		/* Creates and builds game */
 		final Game newGame = new Game();
+		final String session = UUID.randomUUID().toString();
 		newGame.setCreator(user.getUsername());
 		newGame.setMaxplayers(game.getMaxplayers());
 		newGame.setStartTime(LocalTime.now().plusMinutes(5/*game.getGperiod()*/));
 		newGame.setDuration(10/*game.getDuration()*/);
 		newGame.setGperiod(5/*game.getGperiod()*/);
-		gameDB.saveAndFlush(newGame);
+		ServerWebSocketHandler.games.put(session, newGame);
 		generalDB.saveAndFlush(row);
 		LOG.info(user.getUsername() + " created a new game.");
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("session", gameDB.findAll().stream().filter(x -> user.getUsername().equals(x.getCreator())).findFirst().get().getSession().toString());
+			put("session", session);
 		}}, HttpStatus.OK);
 	}
 
@@ -172,17 +169,7 @@ public class GameController {
 		consumes = APPLICATION_JSON_VALUE,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameSession") final String session, @RequestBody final GameBody game) {
-		final UUID gameSession;
-		try {
-			gameSession = UUID.fromString(session);
-		} catch(IllegalArgumentException e) {
-			LOG.error(e);
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "Invalid game session.");
-			}}, HttpStatus.BAD_REQUEST);
-		}
+	public ResponseEntity<Map<String, Object>> updateGame(@PathVariable("gameSession") final String gameSession, @RequestBody final GameBody game) {
 		/* Checks if session not present */
 		if(game.getSession() == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -190,15 +177,14 @@ public class GameController {
 				put("message", "Session token not present.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		final Optional<Game> checkGame = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
+		final Game foundGame = ServerWebSocketHandler.games.get(gameSession);
 		/* Checks if game exists */
-		if(!checkGame.isPresent()) {
+		if(foundGame == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-		final Game foundGame = checkGame.get();
 		/* Checks if user created (and owns) game */
 		if(!generalDB.findById(userDB.findUserByUsername(foundGame.getCreator()).get().getGeneralId()).get().getSession().equals(game.getSession())) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
@@ -212,7 +198,7 @@ public class GameController {
 			foundGame.setDuration(game.getDuration());
 		}
 		if(game.getGperiod() != null) foundGame.setGperiod(game.getGperiod());
-		gameDB.saveAndFlush(foundGame);
+		ServerWebSocketHandler.games.put(gameSession, foundGame);
 		return new ResponseEntity<>(new HashMap<String, Object>() {{}}, HttpStatus.OK);
 	}
 
@@ -226,26 +212,16 @@ public class GameController {
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> leaderboard(@PathVariable("gameSession") final String session) {
-		final UUID gameSession;
-		try {
-			gameSession = UUID.fromString(session);
-		} catch(IllegalArgumentException e) {
-			LOG.error(e);
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "Invalid game session.");
-			}}, HttpStatus.BAD_REQUEST);
-		}
-		final Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
+	public ResponseEntity<Map<String, Object>> leaderboard(@PathVariable("gameSession") final String gameSession) {
+		final Game game = ServerWebSocketHandler.games.get(gameSession);
 		/* Checks if game exists */
-		if(!game.isPresent()) {
+		if(game == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Game not found.");
 			}}, HttpStatus.NOT_FOUND);
 		}
-		final List<GameUser> gameusers = ServerWebSocketHandler.gameusers.values().stream().filter(x -> gameSession.compareTo(x.getGameSession()) == 0).collect(Collectors.toList());
+		final List<GameUser> gameusers = ServerWebSocketHandler.gameusers.values().stream().filter(x -> gameSession.equals(x.getGameSession())).collect(Collectors.toList());
 		final Map<Integer, General> rows = generalDB.findAll().stream().collect(Collectors.toMap(x->x.getId(), x->x));
 		final Map<Integer, String> users = userDB.findAll().stream().collect(Collectors.toMap(x->rows.get(x.getGeneralId()).getStatsId(), x->x.getUsername()));
 		final Map<String, Stats> userStats = statsDB.findAll().stream().collect(Collectors.toMap(x->users.get(x.getId()), x->x));
@@ -283,20 +259,10 @@ public class GameController {
 		method = RequestMethod.GET,
 		produces = APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<Map<String, Object>> users(@PathVariable("gameSession") final String session) {
-		final UUID gameSession;
-		try {
-			gameSession = UUID.fromString(session);
-		} catch(IllegalArgumentException e) {
-			LOG.error(e);
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "Invalid game session.");
-			}}, HttpStatus.BAD_REQUEST);
-		}
-		final Optional<Game> game = gameDB.findAll().stream().filter(x -> x.getSession().compareTo(gameSession) == 0).findFirst();
+	public ResponseEntity<Map<String, Object>> users(@PathVariable("gameSession") final String gameSession) {
+		final Game game = ServerWebSocketHandler.games.get(gameSession);
 		/* Checks if game exists */
-		if(!game.isPresent()) {
+		if(game == null) {
 			return new ResponseEntity<>(new HashMap<String, Object>() {{
 				put("error", true);
 				put("message", "Game not found.");

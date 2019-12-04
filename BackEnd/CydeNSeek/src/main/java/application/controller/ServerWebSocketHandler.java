@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import application.config.CustomConfigurator;
-import application.db.GameDB;
 import application.db.GeneralDB;
 import application.db.StatsDB;
 import application.db.UserDB;
@@ -47,26 +46,16 @@ public class ServerWebSocketHandler {
 	@Autowired
 	private StatsDB statsDB;
 
-	@Autowired
-	private GameDB gameDB;
-
-	public static Map<Session, GameUser> gameusers = new HashMap<>();
+	public static final Map<Session, GameUser> gameusers = new HashMap<>();
+	public static final Map<String, Game> games = new HashMap<>();
 
 	@OnOpen
-	public void onOpen(final Session session, @PathParam("gameSession") final String gSession, @PathParam("username") final String username) {
-		final UUID gameSession;
-		try {
-			gameSession = UUID.fromString(gSession);
-		} catch(IllegalArgumentException e) {
-			LOG.error(e);
-			send(session, "{\"error\":true,\"message\":\"\"}");
-			return;
-		}
+	public void onOpen(final Session session, @PathParam("gameSession") final String gameSession, @PathParam("username") final String username) {
 		if(!userDB.findUserByUsername(username).isPresent()) {
 			send(session, "{\"error\":true,\"message\":\"User not found.\"}");
 			return;
 		}
-		if(!gameDB.findGameBySession(gameSession).isPresent()) {
+		if(!games.containsKey(gameSession)) {
 			send(session, "{\"error\":true,\"message\":\"Game not found.\"}");
 			return;
 		}
@@ -88,7 +77,6 @@ public class ServerWebSocketHandler {
 			send(session, "{\"error\":true,\"message\":\"Socket connection failed.\"}");
 			return;
 		}
-		final Game game = gameDB.findGameBySession(gu.getGameSession()).get();
 		final String username = gu.getUsername();
 		final JSONObject msg;
 		try {
@@ -98,7 +86,8 @@ public class ServerWebSocketHandler {
 			LOG.error(e);
 			return;
 		}
-		final UUID gameSession = gu.getGameSession();
+		final String gameSession = gu.getGameSession();
+		final Game game = games.get(gameSession);
 		final Map<Session, GameUser> gameUsers = gameusers.entrySet().stream().filter(x -> gameSession.equals(x.getValue().getGameSession())).collect(Collectors.toMap(e->e.getKey(),e->e.getValue()));;
 		if(!gu.isVerified().booleanValue()) {
 			if(!msg.has("session")) {
@@ -198,7 +187,7 @@ public class ServerWebSocketHandler {
 					statsDB.saveAndFlush(s);
 				});
 				for(Session s : gameUsers.keySet()) gameusers.remove(s);
-				gameDB.deleteById(gameSession);
+				games.remove(gameSession);
 				return;
 			}
 		}
@@ -227,9 +216,9 @@ public class ServerWebSocketHandler {
 		}
 	}
 
-	private static void broadcast(final String message, final UUID gameSession) {
+	private static void broadcast(final String message, final String gameSession) {
 		gameusers.forEach((session, gameuser) -> {
-			if(gameuser.getGameSession().compareTo(gameSession) == 0) synchronized(session) {
+			if(gameuser.getGameSession().equals(gameSession)) synchronized(session) {
 				send(session, message);
 			}
 		});

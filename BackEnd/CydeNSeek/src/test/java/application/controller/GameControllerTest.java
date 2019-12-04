@@ -25,7 +25,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import application.db.GameDB;
 import application.db.GeneralDB;
 import application.db.StatsDB;
 import application.db.UserDB;
@@ -39,7 +38,7 @@ import application.model.User;
 @SpringBootTest
 public class GameControllerTest {
 
-	private static final UUID GAMESESSION = UUID.randomUUID();
+	private static final String GAMESESSION = "game-session";
 	private static final String USERSESSION = "user-session";
 
 	@Mock
@@ -50,9 +49,6 @@ public class GameControllerTest {
 
 	@Mock
 	private StatsDB statsDB;
-
-	@Mock
-	private GameDB gameDB;
 
 	@InjectMocks
 	private GameController gameController = new GameController();
@@ -164,7 +160,6 @@ public class GameControllerTest {
 	public void newGame_succeeds() throws Exception {
 		when(userDB.findById(any(Integer.class))).thenReturn(Optional.of(buildUser()));
 		when(generalDB.findAll()).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
-		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
 		this.mockMvc.perform(post("/game/new")
 			.contentType(APPLICATION_JSON_VALUE)
 			.content("{"
@@ -192,9 +187,6 @@ public class GameControllerTest {
 
 	@Test
 	public void updateGame_failsWhenGameSessionInvalid() throws Exception {
-		Game game = new Game();
-		game.setSession(UUID.randomUUID());
-		when(gameDB.findAll()).thenReturn(Stream.of(game).collect(Collectors.toList()));
 		this.mockMvc.perform(put("/game/" + GAMESESSION)
 			.contentType(APPLICATION_JSON_VALUE)
 			.content("{"
@@ -207,14 +199,8 @@ public class GameControllerTest {
 
 	@Test
 	public void updateGame_failsWhenSessionTokenInvalid() throws Exception {
-		Game game = new Game();
-		game.setCreator("John");
-		game.setSession(GAMESESSION);
-		when(gameDB.findAll()).thenReturn(Stream.of(game).collect(Collectors.toList()));
-		User user = new User();
-		user.setUsername("John");
-		user.setGeneralId(1);
-		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.of(user));
+		ServerWebSocketHandler.games.put(GAMESESSION, buildGame());
+		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.of(buildUser()));
 		General row = new General();
 		row.setSession("not-John");
 		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(row));
@@ -230,14 +216,8 @@ public class GameControllerTest {
 
 	@Test
 	public void updateGame_succeeds() throws Exception {
-		Game game = new Game();
-		game.setCreator("John");
-		game.setSession(GAMESESSION);
-		when(gameDB.findAll()).thenReturn(Stream.of(game).collect(Collectors.toList()));
-		User user = new User();
-		user.setUsername("John");
-		user.setGeneralId(1);
-		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.of(user));
+		ServerWebSocketHandler.games.put(GAMESESSION, buildGame());
+		when(userDB.findUserByUsername(any(String.class))).thenReturn(Optional.of(buildUser()));
 		General row = new General();
 		row.setSession(USERSESSION);
 		when(generalDB.findById(any(Integer.class))).thenReturn(Optional.of(row));
@@ -253,7 +233,6 @@ public class GameControllerTest {
 
 	@Test
 	public void leaderboard_failsWhenGameSessionInvalid() throws Exception {
-		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/game/" + UUID.randomUUID() + "/leaderboard"))
 			.andExpect(status().isNotFound())
 			.andExpect(content().string(containsString("not found")));
@@ -261,7 +240,6 @@ public class GameControllerTest {
 
 	@Test
 	public void leaderboard_succeeds() throws Exception {
-		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
 		ServerWebSocketHandler.gameusers.put(null, buildGameUser());
 		when(generalDB.findAll()).thenReturn(Stream.of(buildGeneral()).collect(Collectors.toList()));
 		when(userDB.findAll()).thenReturn(Stream.of(buildUser()).collect(Collectors.toList()));
@@ -273,7 +251,6 @@ public class GameControllerTest {
 
 	@Test
 	public void users_failsWhenGameSessionInvalid() throws Exception {
-		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
 		this.mockMvc.perform(get("/game/" + UUID.randomUUID() + "/users"))
 			.andExpect(status().isNotFound())
 			.andExpect(content().string(containsString("not found")));
@@ -281,7 +258,6 @@ public class GameControllerTest {
 
 	@Test
 	public void users_succeeds() throws Exception {
-		when(gameDB.findAll()).thenReturn(Stream.of(buildGame()).collect(Collectors.toList()));
 		ServerWebSocketHandler.gameusers.put(null, buildGameUser());
 		this.mockMvc.perform(get("/game/" + GAMESESSION + "/users"))
 			.andExpect(status().isOk())
@@ -328,7 +304,6 @@ public class GameControllerTest {
 
 	private static Game buildGame() {
 		Game game = new Game();
-		game.setSession(GAMESESSION);
 		game.setCreator("John");
 		return game;
 	}
