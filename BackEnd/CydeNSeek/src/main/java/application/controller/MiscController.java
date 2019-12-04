@@ -155,7 +155,10 @@ public class MiscController {
 	)
 	public ResponseEntity<Map<String, Object>> games() {
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("games", ServerWebSocketHandler.games.values());
+			put("games", ServerWebSocketHandler.games.entrySet().stream().map(x -> new HashMap<String, Object>() {{
+				put("session", x.getKey());
+				put("creator", x.getValue().getCreator());
+			}}).collect(Collectors.toList()));
 		}}, HttpStatus.OK);
 	}
 }
