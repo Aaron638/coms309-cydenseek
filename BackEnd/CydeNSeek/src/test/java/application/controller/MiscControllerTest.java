@@ -23,7 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import application.db.GameDB;
 import application.db.GeneralDB;
 import application.db.StatsDB;
 import application.db.UserDB;
@@ -37,9 +36,6 @@ public class MiscControllerTest {
 
 	@Mock
 	private GeneralDB generalDB;
-
-	@Mock
-	private GameDB gameDB;
 
 	@Mock
 	private UserDB userDB;
