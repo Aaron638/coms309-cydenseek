@@ -161,35 +161,33 @@ public class ServerWebSocketHandler {
 			}
 		});
 		*/
-		if(LocalTime.now().isAfter(game.getStartTime().plusMinutes(game.getDuration()))) {
-			final Map<Session, GameUser> usersLeft = gameUsers.entrySet().stream().filter(x -> x.getValue().isHider().booleanValue() && !x.getValue().isFound().booleanValue()).collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
-			final long playersleft = usersLeft.size();
-			if(playersleft <= 1) {
-				if(playersleft == 0) {
-					gameUsers.values().stream().forEach(x -> {
-						if(x.isHider().booleanValue()) return;
-						final Stats s = statsDB.findById(generalDB.findById(userDB.findUserByUsername(x.getUsername()).get().getGeneralId()).get().getStatsId()).get();
-						s.setGWSeeker(s.getGWSeeker() + 1);
-						statsDB.saveAndFlush(s);
-					});
-					broadcast("{\"winner\":false}", gu.getGameSession());
-				} else {
-					final String winner = usersLeft.entrySet().stream().findFirst().get().getValue().getUsername();
-					final Stats s = statsDB.findById(generalDB.findById(userDB.findUserByUsername(winner).get().getGeneralId()).get().getStatsId()).get();
-					s.setGWHider(s.getGWHider() + 1);
-					statsDB.saveAndFlush(s);
-					broadcast("{\"winner\":\"" + winner + "\"}", gu.getGameSession());
-				}
+		final Map<Session, GameUser> usersLeft = gameUsers.entrySet().stream().filter(x -> x.getValue().isHider().booleanValue() && !x.getValue().isFound().booleanValue()).collect(Collectors.toMap(e->e.getKey(), e->e.getValue()));
+		final long playersleft = usersLeft.size();
+		if(playersleft == 0 || LocalTime.now().isAfter(game.getStartTime().plusMinutes(game.getDuration()))) {
+			if(playersleft == 0) {
 				gameUsers.values().stream().forEach(x -> {
+					if(x.isHider().booleanValue()) return;
 					final Stats s = statsDB.findById(generalDB.findById(userDB.findUserByUsername(x.getUsername()).get().getGeneralId()).get().getStatsId()).get();
-					if(x.isHider().booleanValue()) s.setGPHider(s.getGPHider() + 1);
-					else s.setGPSeeker(s.getGPSeeker() + 1);
+					s.setGWSeeker(s.getGWSeeker() + 1);
 					statsDB.saveAndFlush(s);
 				});
-				for(Session s : gameUsers.keySet()) gameusers.remove(s);
-				games.remove(gameSession);
-				return;
+				broadcast("{\"winner\":false}", gu.getGameSession());
+			} else {
+				final String winner = usersLeft.entrySet().stream().findFirst().get().getValue().getUsername();
+				final Stats s = statsDB.findById(generalDB.findById(userDB.findUserByUsername(winner).get().getGeneralId()).get().getStatsId()).get();
+				s.setGWHider(s.getGWHider() + 1);
+				statsDB.saveAndFlush(s);
+				broadcast("{\"winner\":\"" + winner + "\"}", gu.getGameSession());
 			}
+			gameUsers.values().stream().forEach(x -> {
+				final Stats s = statsDB.findById(generalDB.findById(userDB.findUserByUsername(x.getUsername()).get().getGeneralId()).get().getStatsId()).get();
+				if(x.isHider().booleanValue()) s.setGPHider(s.getGPHider() + 1);
+				else s.setGPSeeker(s.getGPSeeker() + 1);
+				statsDB.saveAndFlush(s);
+			});
+			for(final Session s : gameUsers.keySet()) gameusers.remove(s);
+			games.remove(gameSession);
+			return;
 		}
 		LOG.info(username + " has been updated.");
 	}
