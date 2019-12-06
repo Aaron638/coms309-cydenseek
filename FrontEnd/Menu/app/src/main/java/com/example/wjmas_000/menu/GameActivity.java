@@ -157,7 +157,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
 
-
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new ChatFragment()).commit();
 
 
     }
@@ -176,7 +176,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new FoundPlayerFragment()).commit();
                 break;
             default:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new MapFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new ChatFragment()).commit();
                 break;
         }
 
@@ -186,3 +186,4 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
 
 
 }
+

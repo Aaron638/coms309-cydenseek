@@ -8,11 +8,16 @@
     tools:context=".FoundPlayerFragment">
 
     <!-- TODO: Update blank fragment layout -->
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="insert map to show player proximity" />
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="436dp"
+        android:text="insert player code from backend"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/button_player_found"
@@ -28,11 +33,13 @@
         android:id="@+id/edit_player_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="96dp"
+        android:layout_marginEnd="108dp"
         android:ems="10"
+        android:hint="Enter Hider Code"
         android:inputType="textPersonName"
         android:text=""
-        android:hint="Enter Hider Code"
-        tools:layout_editor_absoluteX="111dp"
-        tools:layout_editor_absoluteY="582dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
 </android.support.constraint.ConstraintLayout>
