@@ -1,6 +1,7 @@
 package application.controller;
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -102,7 +103,6 @@ public class ServerWebSocketHandler {
 			send(session, "{\"hider\":" + gu.isHider() + ",\"session\":\"" + gu.getUserSession() + "\"}");
 			gu.setVerified(true);
 		}
-		if(LocalTime.now().isBefore(game.getStartTime())) return;
 		if(!msg.has("latitude")) {
 			sendError(session, "Latitude not present.");
 			return;
@@ -126,6 +126,14 @@ public class ServerWebSocketHandler {
 		statsDB.saveAndFlush(stats);
 		gu.setLatitude(latitude);
 		gu.setLongitude(longitude);
+		if(LocalTime.now().isBefore(game.getStartTime())) return;
+		send(session, "{\"hiders\":" + gameUsers.values().stream().map(x -> {
+			JSONObject j = new JSONObject();
+			j.put("username", x.getUsername());
+			j.put("latitude", x.getLatitude() + Math.random()*.001 -.0005);
+			j.put("longitude", x.getLongitude() + Math.random()*.001 - .0005);
+			return j;
+		}).collect(Collectors.toList()).toString() + "}");
 		if(!gu.isHider().booleanValue()) {
 			if(msg.has("userSession")) {
 				final Optional<Map.Entry<Session, GameUser>> found = gameUsers.entrySet().stream().filter(x -> x.getValue().getUserSession().equals(msg.getString("userSession"))).findFirst();
@@ -173,16 +181,18 @@ public class ServerWebSocketHandler {
 				});
 				broadcast("{\"winner\":false}", gu.getGameSession());
 			} else {
-				final String winner = usersLeft.entrySet().stream().findFirst().get().getValue().getUsername();
-				final Stats s = statsDB.findById(generalDB.findById(userDB.findUserByUsername(winner).get().getGeneralId()).get().getStatsId()).get();
-				s.setGWHider(s.getGWHider() + 1);
-				statsDB.saveAndFlush(s);
-				broadcast("{\"winner\":\"" + winner + "\"}", gu.getGameSession());
+				usersLeft.values().stream().forEach(x -> {
+					final Stats s = statsDB.findById(generalDB.findById(userDB.findUserByUsername(x.getUsername()).get().getGeneralId()).get().getStatsId()).get();
+					s.setGWHider(s.getGWHider() + 1);
+					statsDB.saveAndFlush(s);
+				});
+				broadcast("{\"winner\": true}", gu.getGameSession());
 			}
 			gameUsers.values().stream().forEach(x -> {
 				final Stats s = statsDB.findById(generalDB.findById(userDB.findUserByUsername(x.getUsername()).get().getGeneralId()).get().getStatsId()).get();
 				if(x.isHider().booleanValue()) s.setGPHider(s.getGPHider() + 1);
 				else s.setGPSeeker(s.getGPSeeker() + 1);
+				s.setTotTime(Integer.valueOf((int) (s.getTotTime() + game.getGperiod() + (LocalTime.now().until(game.getStartTime(), ChronoUnit.MINUTES)))));
 				statsDB.saveAndFlush(s);
 			});
 			for(final Session s : gameUsers.keySet()) gameusers.remove(s);
