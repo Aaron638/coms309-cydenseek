@@ -80,8 +80,6 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.nav_creategame:
                 Fragment fragment = new CreateGameFragment();
-                //Bundle bundle = new Bundle();
-                //bundle.putString("a", );
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         fragment).commit();
                 break;
@@ -93,17 +91,9 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new LeaderboardFragment()).commit();
                 break;
-            case R.id.nav_login:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new LoginFragment()).commit();
-                break;
             case R.id.nav_logout:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new LogoutFragment()).commit();
-                break;
-            case R.id.nav_CreateAccount:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new CreateAccountFragment()).commit();
                 break;
             default:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ChatFragment()).commit();
