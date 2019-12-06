@@ -1,5 +1,6 @@
 package com.example.wjmas_000.menu;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -82,13 +83,13 @@ public class CreateAccountFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            ((MenuActivity)getActivity()).setUsername(user);
+            ((LoginActivity)getActivity()).setUsername(user);
             jsonSend(url, json);
         }
         else{
             hold = "Password does not match, please re-enter information";
             result.setText(hold);
-            ((MenuActivity)getActivity()).setUsername(null);
+            ((LoginActivity)getActivity()).setUsername(null);
         }
     }
 
@@ -106,7 +107,13 @@ public class CreateAccountFragment extends Fragment {
                     if(session != null){
                         hold = "Account Created";
                         result.setText(hold);
-                        ((MenuActivity)getActivity()).setSession(session);
+                        ((LoginActivity)getActivity()).setSession(session);
+
+                        //Move to menu activity
+                        Intent intent = new Intent(getActivity(), MenuActivity.class);
+                        //Put in session token
+                        //Put in username
+                        startActivity(intent);
 
 
                     }

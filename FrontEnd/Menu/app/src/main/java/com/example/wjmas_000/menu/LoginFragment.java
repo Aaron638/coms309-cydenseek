@@ -1,5 +1,6 @@
 package com.example.wjmas_000.menu;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -75,7 +76,7 @@ public class LoginFragment extends Fragment {
             e.printStackTrace();
         }
 
-        ((MenuActivity)getActivity()).setUsername(user);
+        ((LoginActivity)getActivity()).setUsername(user);
         jsonSend(url, json);
 
 
@@ -97,7 +98,14 @@ public class LoginFragment extends Fragment {
                     if(session != null){
                         hold = "Successful Login";
                         result.setText(hold);
-                        ((MenuActivity)getActivity()).setSession(session);
+                        ((LoginActivity)getActivity()).setSession(session);
+
+                        //Move to menu activity
+                        Intent intent = new Intent(getActivity(), MenuActivity.class);
+                        //Put in session token
+                        //Put in username
+                        startActivity(intent);
+
                     }
                     //2.2: If user did not give correct information, then display "Failed Login".  Do not move from this fragment
                     else{
