@@ -72,7 +72,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         password = bundle.getString("password");
 
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new JoinFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new StatisticsFragment()).commit();
 
 
 

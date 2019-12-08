@@ -47,7 +47,7 @@
         android:layout_marginTop="199dp"
         android:ems="10"
         android:hint="Password"
-        android:inputType="textPersonName"
+        android:inputType="textPassword"
         android:singleLine="false" />
 
     <TextView
@@ -59,4 +59,5 @@
         android:layout_marginBottom="35dp"
         android:textAlignment="center"
         android:textSize="18sp" />
+
 </RelativeLayout>

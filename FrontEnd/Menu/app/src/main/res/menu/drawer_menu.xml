@@ -6,11 +6,11 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_creategame"
-            android:icon="@drawable/ic_leaderboard"
+            android:icon="@drawable/ic_create_game"
             android:title="Create Game" />
         <item
             android:id="@+id/nav_joingame"
-            android:icon="@drawable/ic_leaderboard"
+            android:icon="@drawable/ic_join_game"
             android:title="Join Game" />
         <item
             android:id="@+id/nav_leaderboard"
