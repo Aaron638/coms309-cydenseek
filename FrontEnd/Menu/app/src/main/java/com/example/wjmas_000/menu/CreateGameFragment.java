@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -37,9 +38,9 @@ public class CreateGameFragment extends Fragment {
     private RequestQueue rq;
     EditText editMaxPlayers, editGPeriod, editDuration;
     int maxPlayers, gperiod, duration = 0;
-    String username = "aaron";
-    String userSession = "abc-123-xyz" /*"52f0178f-c72d-45f7-854a-5eff850d1ab7"*/;//TODO HARD CODED VALUE FOR NOW
-    String gameSession = "abc-123-xyz";
+    String gameSession;
+    String username;
+    String userSession;
 
     public Date getCurrentTime() {
         return currentTime;
@@ -63,14 +64,17 @@ public class CreateGameFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_create_game, container, false);
 
+        username = ((MenuActivity)getActivity()).getUsername();
+        userSession = ((MenuActivity)getActivity()).getSession();
+
         rq = Volley.newRequestQueue(getActivity());
 
         editMaxPlayers = (EditText) rootView.findViewById(R.id.edit_maxPlayers);
-        //maxPlayers = Integer.parseInt(editMaxPlayers.getText().toString());
-        editGPeriod = (EditText) rootView.findViewById(R.id.edit_session);
+        maxPlayers = Integer.parseInt(editMaxPlayers.getText().toString());
+
+        //editGPeriod = (EditText) rootView.findViewById(R.id.edit_session);
         //gperiod = Integer.parseInt(editGPeriod.getText().toString());
-        editDuration = (EditText) rootView.findViewById(R.id.edit_username);
-        //duration = Integer.parseInt(editDuration.getText().toString());
+
 
         Button buttonCreateGame = (Button) rootView.findViewById(R.id.button_create_game);
         buttonCreateGame.setOnClickListener(new View.OnClickListener() {
@@ -79,25 +83,27 @@ public class CreateGameFragment extends Fragment {
 
                 setCurrentTime();
                 if (callBackend()){
-                    //launchGame();
+                    launchGame(gameSession);
                 }
+                //otherwise show an error in the log
+                Log.d(TAG, "error");
             }
         });
 
+        //This is a developer button that forces you to the game screen, it has an invalid session
         Button buttonfakeGame = (Button) rootView.findViewById(R.id.button_dev_gameStart);
         buttonfakeGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                launchGame();
+                launchGame("abc-123-xyz");
             }
         });
-
 
         return rootView;
     }
 
     //launches the game activity
-    private void launchGame(){
+    private void launchGame(String gameSession){
         Intent intent = new Intent(getActivity(), GameActivity.class);
         intent.putExtra("GAME_SESSION_ID", gameSession);
         startActivity(intent);
@@ -109,12 +115,15 @@ public class CreateGameFragment extends Fragment {
         String url = "http://coms-309-vb-1.misc.iastate.edu:8080/game/new";
 
         JSONObject response = new JSONObject();
+
+        if (userSession.equals("")) return false;
+        if (maxPlayers == 0) return false;
+
         try {
-            response.put("session", "f509e669-011a-4f98-b636-f0af6dd2a009");
-            response.put("maxplayers", "10");
-            response.put("startTime", "20:00:00");
-            response.put("mode", "1");
-            response.put("hider", "true");
+            response.put("session", userSession);
+            response.put("maxplayers", maxPlayers);
+            //response.put("mode", "1");
+            //response.put("hider", "true");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -134,6 +143,7 @@ public class CreateGameFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "onErrorResponse: error");
                 error.printStackTrace();
+
                 //mTextViewResult.setText("Error");
             }
         });

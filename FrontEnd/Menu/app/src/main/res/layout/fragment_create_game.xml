@@ -30,30 +30,6 @@
         android:hint="Max Player Count"
         android:inputType="number" />
 
-    <EditText
-        android:id="@+id/edit_session"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/button_create_game"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="101dp"
-        android:layout_marginBottom="122dp"
-        android:ems="10"
-        android:hint="User Session"
-        android:inputType="text" />
-
-    <EditText
-        android:id="@+id/edit_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/button_create_game"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="99dp"
-        android:layout_marginBottom="189dp"
-        android:ems="10"
-        android:hint="username"
-        android:inputType="text" />
-
     <Button
         android:id="@+id/button_dev_gameStart"
         android:layout_width="wrap_content"
