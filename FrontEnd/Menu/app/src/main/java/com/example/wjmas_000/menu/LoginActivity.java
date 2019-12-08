@@ -35,6 +35,7 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
     private WebSocketClient cc;
     private String session;
     private String user;
+    private String password;
 
 
 
@@ -97,6 +98,14 @@ public class LoginActivity extends AppCompatActivity implements NavigationView.O
 
     public String getUsername(){
         return user;
+    }
+
+    public void setPassword(String s){
+        password = s;
+    }
+
+    public String getPassword(){
+        return password;
     }
 
 

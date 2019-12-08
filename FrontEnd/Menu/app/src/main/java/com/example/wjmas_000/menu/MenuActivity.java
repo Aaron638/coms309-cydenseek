@@ -38,6 +38,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 //<<<<<<< HEAD
     private String session;      //Reference for login session
     private String user;
+    private String password;
 
     //TODO this location stuff needs to be moved to backend
 
@@ -68,6 +69,7 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         Bundle bundle = getIntent().getExtras();
         session = bundle.getString("token");
         user = bundle.getString("username");
+        password = bundle.getString("password");
 
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new JoinFragment()).commit();
@@ -100,6 +102,10 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_statistics:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new StatisticsFragment()).commit();
+                break;
+            case R.id.nav_change_password:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new ChangePasswordFragment()).commit();
                 break;
             default:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ChatFragment()).commit();
@@ -140,6 +146,14 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
 
     public String getUsername(){
         return user;
+    }
+
+    public void setPassword(String s){
+        password = s;
+    }
+
+    public String getPassword(){
+        return password;
     }
 
 }

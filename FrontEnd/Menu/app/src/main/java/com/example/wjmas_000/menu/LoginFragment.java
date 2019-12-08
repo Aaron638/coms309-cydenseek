@@ -83,12 +83,12 @@ public class LoginFragment extends Fragment {
         }
 
         ((LoginActivity)getActivity()).setUsername(user);
-        jsonSend(url, json, user);
+        jsonSend(url, json, user, pass);
 
 
     }
 
-    public void jsonSend(String url, JSONObject json, final String u) {
+    public void jsonSend(String url, JSONObject json, final String u, final String p) {
 
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, json, new Response.Listener<JSONObject>(){
@@ -105,11 +105,14 @@ public class LoginFragment extends Fragment {
                         hold = "Successful Login";
                         result.setText(hold);
                         ((LoginActivity)getActivity()).setSession(session);
+                        ((LoginActivity)getActivity()).setUsername(u);
+                        ((LoginActivity)getActivity()).setPassword(p);
 
                         //Move to menu activity
                         Intent intent = new Intent(getActivity(), MenuActivity.class);
                         intent.putExtra("username", u);
                         intent.putExtra("token", session);
+                        intent.putExtra("password", p);
                         startActivity(intent);
 
                     }
