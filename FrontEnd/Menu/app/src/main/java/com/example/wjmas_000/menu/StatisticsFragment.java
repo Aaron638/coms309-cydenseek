@@ -21,15 +21,25 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import static com.android.volley.VolleyLog.TAG;
 
 
 public class StatisticsFragment extends Fragment {
 
-    private TextView mTextViewResult;
+
     private RequestQueue mQueue;
     private int error = 0;      //Testing and error detection
+    private TextView tv1;
+    private TextView tv2;
+    private TextView tv3;
+    private TextView tv4;
+    private TextView tv5;
+    private TextView tv6;
+    private TextView tv7;
+    private TextView tv8;
+
 
     @Nullable
     @Override
@@ -37,25 +47,20 @@ public class StatisticsFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_statistics, container, false);
 
-        mTextViewResult = (TextView) rootView.findViewById(R.id.tvResult);
-        mTextViewResult.setText("Refresh");
-        mTextViewResult.setMovementMethod(new ScrollingMovementMethod());
+        tv1 = rootView.findViewById(R.id.tv_statistics_Username);
+        tv2 = rootView.findViewById(R.id.tv_statistics_TotalTimePlayed);
+        tv3 = rootView.findViewById(R.id.tv_statistics_TotalDistanceWalked);
+        tv4 = rootView.findViewById(R.id.tv_statistics_TotalGamesWon);
+        tv5 = rootView.findViewById(R.id.tv_statistics_GamesWonHider);
+        tv6 = rootView.findViewById(R.id.tv_statistics_GamesWonSeeker);
+        tv7 = rootView.findViewById(R.id.tv_statistics_GamesPlayedHider);
+        tv8 = rootView.findViewById(R.id.tv_statistics_GamesPlayedSeeker);
 
 
 
-
-
-        Button buttonParse = (Button) rootView.findViewById(R.id.btnLookup);
 
         mQueue = Volley.newRequestQueue(getActivity());
-
-        buttonParse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mTextViewResult.setText("");
-                jsonParse1();
-            }
-        });
+        jsonParse2();
 
 
         return rootView;
@@ -63,9 +68,9 @@ public class StatisticsFragment extends Fragment {
 
 
 
-    public int jsonParse1(){
-        String url = "http://coms-309-vb-1.misc.iastate.edu:8080/leaderboard";
-        //maybe pass json array in the future
+    public int jsonParse2(){
+        String url = "http://coms-309-vb-1.misc.iastate.edu:8080/user/";
+        url = url + ((MenuActivity)getActivity()).getUsername();
 
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -73,34 +78,36 @@ public class StatisticsFragment extends Fragment {
             public void onResponse(JSONObject response) {
                 Log.d(TAG, response.toString());
                 try {
-                    JSONArray jsonArray = response.getJSONArray("users");
                     //iterates through all users in the json array
-                    for (int i =0; i < jsonArray.length(); i++){
-                        JSONObject user = jsonArray.getJSONObject(i);
+                    JSONObject user = response;
 
-                        //we get all user attributes here
-                        int gpseeker = user.getInt("gpseeker");         //Games played as seeker
-                        int totdistance = user.getInt("totdistance");   //Total distance walked
-                        int tottime = user.getInt("tottime");           //Total time played
-                        int gphider = user.getInt("gphider");
-                        int gwhider = user.getInt("gwhider");
-                        String username = user.getString("username");   //Username
-                        int gwseeker = user.getInt("gwseeker");         //Games won as seeker
+                    //we get all user attributes here
+                    String gpseeker = user.getString("gpseeker");         //Games played as seeker
+                    String totdistance = user.getString("totdistance");   //Total distance walked
+                    String tottime = user.getString("tottime");           //Total time played
+                    String gphider = user.getString("gphider");
+                    String gwhider = user.getString("gwhider");
+                    String gwseeker = user.getString("gwseeker");         //Games won as seeker
+
+                    tv1.setText(((MenuActivity)getActivity()).getUsername());
+                    tv2.setText(tottime);
+                    tv3.setText(totdistance);
+
+                    int a = Integer.parseInt(gwhider);
+                    int b = Integer.parseInt(gwseeker);
+                    int c = a + b;
+                    String d = Integer.toString(c);
+                    tv4.setText(d);
+
+                    tv5.setText(gwhider);
+                    tv6.setText(gwseeker);
+                    tv7.setText(gphider);
+                    tv8.setText(gpseeker);
 
 
 
-                        String result = "User:"+ username +
-                                "\nTotal Time Played:"+ tottime +
-                                "\nTotal distance walked:"+ totdistance +
-                                "\nGames played as seeker:"+ gpseeker +
-                                "\nGames won as seeker:"+ gwseeker +
-                                "\nGames played as hider:"+ gphider +
-                                "\nGames won as hider:"+ gwhider +
-                                "\n\n";
-                        mTextViewResult.append(result);
-                        error = 0;
+                    error = 0;
 
-                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     error = -1;
@@ -112,64 +119,12 @@ public class StatisticsFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "onErrorResponse: error");
                 error.printStackTrace();
-                mTextViewResult.setText("Error");
             }
         });
 
         mQueue.add(request);
         return error;
     }
-
-
-
-
-        /*
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d(TAG, response.toString());
-                try {
-                    JSONArray jsonArray = response.getJSONArray("users");
-                    //iterates through all users in the json array
-                    for (int i =0; i < jsonArray.length(); i++){
-                        JSONObject user = jsonArray.getJSONObject(i);
-                        int gpseeker = user.getInt("gpseeker");         //Games played as seeker
-                        int totdistance = user.getInt("totdistance");   //Total distance walked
-                        int tottime = user.getInt("tottime");           //Total time played
-                        int gphider = user.getInt("gphider");
-                        int gwhider = user.getInt("gwhider");
-                        String username = user.getString("username");   //Username
-                        int gwseeker = user.getInt("gwseeker");         //Games won as seeker
-
-
-
-                        String result = "User:"+ username +
-                                "\nTotal Time Played:"+ tottime +
-                                "\nTotal distance walked:"+ totdistance +
-                                "\nGames played as seeker:"+ gpseeker +
-                                "\nGames won as seeker:"+ gwseeker +
-                                "\nGames played as hider:"+ gphider +
-                                "\nGames won as hider:"+ gwhider +
-                                "\n\n";
-                        mTextViewResult.append(result);
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d(TAG, "onErrorResponse: error");
-                error.printStackTrace();
-                mTextViewResult.setText("Error: No data found");
-            }
-
-        });
-        mQueue.add(request);
-    }
-    */
 
 
 }

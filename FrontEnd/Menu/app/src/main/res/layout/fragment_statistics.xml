@@ -1,45 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:stretchColumns="1"
     android:background="@android:color/white">
 
-    <TableLayout
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:text="Username"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_statistics_Username"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow
         android:layout_width="match_parent"
-        android:layout_height="482dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="0dp">
+        android:layout_height="match_parent">
 
-    </TableLayout>
+        <TextView
+            android:padding="3dip"
+            android:text="Total Time Played"
+            android:textSize="18sp" />
 
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="22dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="LeaderBoard" />
+        <TextView
+            android:id="@+id/tv_statistics_TotalTimePlayed"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
 
-    <TextView
-        android:id="@+id/tvResult"
-        android:layout_width="343dp"
-        android:layout_height="408dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="74dp" />
+    <TableRow>
 
-    <Button
-        android:id="@+id/btnLookup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="16dp"
-        android:text="Lookup" />
+        <TextView
+            android:padding="3dip"
+            android:text="Total Distance Walked"
+            android:textSize="18sp" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/tv_statistics_TotalDistanceWalked"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:text="Total of Games Won"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_statistics_TotalGamesWon"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:text="Games Won as Hider"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_statistics_GamesWonHider"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:text="Games Won as Seeker"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_statistics_GamesWonSeeker"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:text="Games Played As Hider"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_statistics_GamesPlayedHider"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:text="Games Played As Seeker"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_statistics_GamesPlayedSeeker"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+
+</TableLayout>
