@@ -225,7 +225,7 @@ public class ServerWebSocketHandler {
 	}
 
 	private static void sendError(final Session session, final String message) {
-		send(session, "{\"error\":true,\"message\":\"" + message + "\"");
+		send(session, "{\"error\":true,\"message\":\"" + message + "\"}");
 	}
 
 	private static void broadcast(final String message, final String gameSession) {
