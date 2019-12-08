@@ -20,6 +20,8 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.java_websocket.client.WebSocketClient;
@@ -62,16 +64,16 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ChatFragment()).commit();
+        //Get the username and session token
+        Bundle bundle = getIntent().getExtras();
+        session = bundle.getString("token");
+        user = bundle.getString("username");
 
-        //What do if rotation of device
-        /*
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new MessageFragment()).commit();
-            navigationView.setCheckedItem(R.id.nav_message);
-        }
-        */
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new JoinFragment()).commit();
+
+
+
     }
 
     @Override
@@ -95,39 +97,14 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new LogoutFragment()).commit();
                 break;
+            case R.id.nav_statistics:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new StatisticsFragment()).commit();
+                break;
             default:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ChatFragment()).commit();
                 break;
 
-            //case R.id.nav_map:
-                //FragmentManager manager = getSupportFragmentManager();/*.beginTransaction().replace(R.id.fragment_container,
-                //        new MapFragment()).commit();*/
-                //manager.beginTransaction().replace(R.id.fragment_container, new MapFragment()).commit();
-                //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        //new MapFragment()).commit();
-             //   launchMaps();
-
-             //   break;
-
-                /*
-            case R.id.nav_chat:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new ChatFragment()).commit();
-                break;
-                */
-            //case R.id.nav_settings:
-            //    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-            //           new SettingsFragment()).commit();
-            //   break;
-/*
-            case R.id.nav_share:
-                Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.nav_send:
-                Toast.makeText(this, "Send", Toast.LENGTH_SHORT).show();
-                break;
-
- */
         }
 
         drawer.closeDrawer(GravityCompat.START);

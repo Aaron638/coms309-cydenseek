@@ -84,7 +84,7 @@ public class CreateAccountFragment extends Fragment {
                 e.printStackTrace();
             }
             ((LoginActivity)getActivity()).setUsername(user);
-            jsonSend(url, json);
+            jsonSend(url, json, user);
         }
         else{
             hold = "Password does not match, please re-enter information";
@@ -93,7 +93,7 @@ public class CreateAccountFragment extends Fragment {
         }
     }
 
-    public void jsonSend(String url, JSONObject json) {
+    public void jsonSend(String url, JSONObject json, final String u) {
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, json, new Response.Listener<JSONObject>(){
 
             @Override
@@ -111,8 +111,8 @@ public class CreateAccountFragment extends Fragment {
 
                         //Move to menu activity
                         Intent intent = new Intent(getActivity(), MenuActivity.class);
-                        //Put in session token
-                        //Put in username
+                        intent.putExtra("username", u);
+                        intent.putExtra("token", session);
                         startActivity(intent);
 
 

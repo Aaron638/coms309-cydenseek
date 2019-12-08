@@ -40,6 +40,12 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_login, container, false);
 
+        //Change Header of navigation to Display "Please Login or Create an Account"
+        //View header = inflater.inflate(R.layout.nav_header, container, false);
+        //TextView user_header = header.findViewById(R.id.tv_Username_header);
+        //user_header.setText("Please Login or Create an Account");
+
+
         username = rootView.findViewById(R.id.etUsername);
         password = rootView.findViewById(R.id.etPassword);
         loginBtn = rootView.findViewById(R.id.btnLogin);
@@ -77,12 +83,12 @@ public class LoginFragment extends Fragment {
         }
 
         ((LoginActivity)getActivity()).setUsername(user);
-        jsonSend(url, json);
+        jsonSend(url, json, user);
 
 
     }
 
-    public void jsonSend(String url, JSONObject json) {
+    public void jsonSend(String url, JSONObject json, final String u) {
 
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url, json, new Response.Listener<JSONObject>(){
@@ -102,8 +108,8 @@ public class LoginFragment extends Fragment {
 
                         //Move to menu activity
                         Intent intent = new Intent(getActivity(), MenuActivity.class);
-                        //Put in session token
-                        //Put in username
+                        intent.putExtra("username", u);
+                        intent.putExtra("token", session);
                         startActivity(intent);
 
                     }
