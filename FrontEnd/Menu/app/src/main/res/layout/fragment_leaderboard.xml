@@ -1,16 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_red_light">
+    android:stretchColumns="1"
+    android:background="@android:color/white">
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:text="Username"
+            android:textSize="18sp" />
+
+        <TextView
+            android:gravity="right"
+            android:padding="3dip"
+            android:text="Games Won"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/et_Username_1"
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/et_NumGamesWon_1"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/et_Username_2"
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/et_NumGamesWon_2"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/et_Username_3"
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/et_NumGamesWon_3"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
 
 
-	helllo
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="This is the Leaderboard"
-        android:textSize="30sp" />
+    <TableRow>
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/et_Username_4"
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/et_NumGamesWon_4"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/et_Username_5"
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/et_NumGamesWon_5"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/et_Username_6"
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/et_NumGamesWon_6"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/et_Username_7"
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/et_NumGamesWon_7"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/et_Username_8"
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/et_NumGamesWon_8"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/et_Username_9"
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/et_NumGamesWon_9"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:id="@+id/et_Username_10"
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/et_NumGamesWon_10"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+
+
+
+
+</TableLayout>
