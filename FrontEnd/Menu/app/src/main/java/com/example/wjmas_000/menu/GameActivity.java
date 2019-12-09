@@ -283,6 +283,13 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                    } else if (response.has("timeLeft")) {
+                        try {
+                            int gperiodCountdown = response.getInt("timeLeft");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
 
                 }
