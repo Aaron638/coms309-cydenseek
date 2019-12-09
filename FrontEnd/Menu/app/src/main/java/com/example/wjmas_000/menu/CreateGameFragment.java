@@ -99,7 +99,6 @@ public class CreateGameFragment extends Fragment {
 
                 //setCurrentTime();
                 if (callBackend() && !hasGame){
-                    launchGame(gamesList.get(username));
                 }
                 //otherwise show an error in the log
                 Toast.makeText(getActivity(), "You have a game already", Toast.LENGTH_SHORT).show();
@@ -155,7 +154,8 @@ public class CreateGameFragment extends Fragment {
             public void onResponse(JSONObject response) {
                 Log.d(TAG, response.toString());
                 try {
-                    setGameSession(response.getString("session"));
+                    //setGameSession();
+                    launchGame(response.getString("session"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -202,6 +202,7 @@ public class CreateGameFragment extends Fragment {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
             }
 
         }, new Response.ErrorListener() {

@@ -99,6 +99,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
             lm.removeUpdates(this);
             longitude = location.getLongitude();
             latitude = location.getLatitude();
+            sendLatLong();
             Toast.makeText(GameActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
         }
 
@@ -198,7 +199,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                             JSONObject userIsHiderAndFindCode = new JSONObject(message);
                             setPlayerCode(userIsHiderAndFindCode.getString("session"));
                             setHider(userIsHiderAndFindCode.getBoolean("hider"));
-                            sendLatLong();
+                            //sendLatLong();
 
                         } catch (JSONException err) {
                             Log.d("Error", err.toString());
