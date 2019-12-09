@@ -9,19 +9,17 @@
         android:id="@+id/button_refresh"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="165dp"
-        android:layout_marginBottom="28dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="31dp"
         android:text="Refresh" />
 
     <Button
         android:id="@+id/button_join"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="158dp"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="88dp"
         android:text="Join Game" />
 
@@ -30,19 +28,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="22dp"
-        android:layout_marginEnd="52dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="28dp"
         android:text="Enter game creator's username to join the game" />
 
     <EditText
         android:id="@+id/edit_creator_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/text_staticText"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="361dp"
-        android:layout_marginEnd="99dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="145dp"
         android:ems="10"
         android:hint="Creator's username"
         android:inputType="textPersonName"
@@ -51,10 +47,9 @@
     <ScrollView
         android:layout_width="220dp"
         android:layout_height="273dp"
-        android:layout_below="@+id/text_staticText"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="52dp"
-        android:layout_marginEnd="97dp">
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="92dp">
 
         <LinearLayout
             android:layout_width="match_parent"
