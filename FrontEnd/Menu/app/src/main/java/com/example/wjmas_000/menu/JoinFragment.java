@@ -89,6 +89,11 @@ public class JoinFragment extends Fragment {
             }
         });
 
+        //Refresh on open
+        gameListTextView.setText("");
+        gamesList.clear();
+        backendCallGames();
+
         return rootView;
     }
 
@@ -98,6 +103,7 @@ public class JoinFragment extends Fragment {
         intent.putExtra("GAME_SESSION_ID", gameSession);
         intent.putExtra("username", username);
         intent.putExtra("userSession", userSession);
+        intent.putExtra("password", ((MenuActivity)getActivity()).getPassword());
         startActivity(intent);
     }
 

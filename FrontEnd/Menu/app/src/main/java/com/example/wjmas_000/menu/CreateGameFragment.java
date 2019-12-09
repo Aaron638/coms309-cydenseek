@@ -91,6 +91,7 @@ public class CreateGameFragment extends Fragment {
         });
 
         //This is a developer button that forces you to the game screen, it has an invalid session
+        /*
         Button buttonfakeGame = (Button) rootView.findViewById(R.id.button_dev_gameStart);
         buttonfakeGame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +99,7 @@ public class CreateGameFragment extends Fragment {
                 launchGame("abc-123-xyz");
             }
         });
+        */
 
         return rootView;
     }
@@ -108,6 +110,7 @@ public class CreateGameFragment extends Fragment {
         intent.putExtra("GAME_SESSION_ID", gameSession);
         intent.putExtra("username", username);
         intent.putExtra("userSession", userSession);
+        intent.putExtra("password", ((MenuActivity)getActivity()).getPassword());
         startActivity(intent);
     }
 
