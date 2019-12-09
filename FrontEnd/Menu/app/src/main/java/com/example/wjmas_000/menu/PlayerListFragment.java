@@ -100,7 +100,7 @@ public class PlayerListFragment extends Fragment {
                 try {
                     JSONArray jsonArray = response.getJSONArray("users");
                     //iterates through all users in the json array
-                    for (int i = 0; i < jsonArray.length(); i+=2) {
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject user = jsonArray.getJSONObject(i);
                         String username = user.getString("username");
                         boolean hider = user.getBoolean("hider");
