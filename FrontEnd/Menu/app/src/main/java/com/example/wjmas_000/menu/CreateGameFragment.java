@@ -22,6 +22,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,6 +40,16 @@ public class CreateGameFragment extends Fragment {
     private RequestQueue rq;
     EditText editMaxPlayers;
     int maxPlayers = 0;
+    HashMap<String, String> gamesList;
+
+    public String getGameSession() {
+        return gameSession;
+    }
+
+    public void setGameSession(String gameSession) {
+        this.gameSession = gameSession;
+    }
+
     String gameSession;
     String username;
     String userSession;
@@ -70,20 +81,20 @@ public class CreateGameFragment extends Fragment {
 
         rq = Volley.newRequestQueue(getActivity());
 
+        //usernames, sessions
+        gamesList = new HashMap<String, String>();
+
         editMaxPlayers = (EditText) rootView.findViewById(R.id.edit_maxPlayers);
         maxPlayers = Integer.parseInt(editMaxPlayers.getText().toString());
-
-        //editGPeriod = (EditText) rootView.findViewById(R.id.edit_session);
-        //gperiod = Integer.parseInt(editGPeriod.getText().toString());
 
         Button buttonCreateGame = (Button) rootView.findViewById(R.id.button_create_game);
         buttonCreateGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {//Press button, if callBackend returns true, launch the game
 
-                setCurrentTime();
+                //setCurrentTime();
                 if (callBackend()){
-                    launchGame(gameSession);
+                    launchGame(gamesList.get(username));
                 }
                 //otherwise show an error in the log
                 Log.d(TAG, "error");
@@ -96,7 +107,7 @@ public class CreateGameFragment extends Fragment {
         buttonfakeGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                launchGame("abc-123-xyz");
+                launchGame();
             }
         });
         */
@@ -138,7 +149,7 @@ public class CreateGameFragment extends Fragment {
             public void onResponse(JSONObject response) {
                 Log.d(TAG, response.toString());
                 try {
-                    gameSession = response.getString("session");
+                    setGameSession(response.getString("session"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -156,6 +167,44 @@ public class CreateGameFragment extends Fragment {
         rq.add(request);
 
         return true;
+    }
+
+    private void backendCallGames() {
+        String uri = "http://coms-309-vb-1.misc.iastate.edu:8080/games";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, uri, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(TAG, response.toString());
+                try {
+                    JSONArray jsonArray = response.getJSONArray("games");
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject game = jsonArray.getJSONObject(i);
+
+                        String creator = game.getString("creator");
+                        String session = game.getString("session");
+                        gamesList.put(creator, session);
+
+                        String result = "Creator: " + creator +
+                                "\nGame Session: " + gamesList.get(creator) +
+                                "\n\n";
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "onErrorResponse: error");
+                error.printStackTrace();
+            }
+        }
+                //end JsonObjectRequest
+        );
+        rq.add(request);
     }
 
 
