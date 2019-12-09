@@ -111,15 +111,6 @@ public class GameController {
 			}}, HttpStatus.BAD_REQUEST);
 		}
 		*/
-		/* Checks if hider not specified */
-		/*
-		if(game.getHider() == null) {
-			return new ResponseEntity<>(new HashMap<String, Object>() {{
-				put("error", true);
-				put("message", "Must specify if hider or not.");
-			}}, HttpStatus.BAD_REQUEST);
-		}
-		*/
 		final Optional<General> foundUser = generalDB.findAll().stream().filter(x -> x.getSession().equals(game.getSession())).findFirst();
 		/* Checks if user with token exists */
 		if(!foundUser.isPresent()) {
@@ -128,8 +119,14 @@ public class GameController {
 				put("message", "Invalid session token.");
 			}}, HttpStatus.BAD_REQUEST);
 		}
-		final User user = userDB.findById(foundUser.get().getUserId()).get();
 		final General row = foundUser.get();
+		final User user = userDB.findById(row.getUserId()).get();
+		if(ServerWebSocketHandler.games.values().stream().anyMatch(g -> g.getCreator().equals(user.getUsername()))) {
+			return new ResponseEntity<>(new HashMap<String, Object>() {{
+				put("error", true);
+				put("message", "Already created game.");
+			}}, HttpStatus.BAD_REQUEST);
+		}
 		/* Creates and builds game */
 		final Game newGame = new Game();
 		final String session = UUID.randomUUID().toString();

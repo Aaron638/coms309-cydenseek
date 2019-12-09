@@ -1,14 +1,10 @@
 package application.model;
 
-import java.time.LocalTime;
-
 public class GameBody {
 
 	private String session;
 
 	private Integer maxplayers;
-
-	private LocalTime startTime;
 
 	private Integer duration;
 
@@ -16,10 +12,6 @@ public class GameBody {
 
 	private Integer gperiod;
 
-	private String creator;
-
-	private Boolean hider;
-	
 	public String getSession() {
 		return session;
 	}
@@ -34,14 +26,6 @@ public class GameBody {
 
 	public void setMaxplayers(Integer maxplayers) {
 		this.maxplayers = maxplayers;
-	}
-
-	public LocalTime getStartTime() {
-		return startTime;
-	}
-
-	public void setStartTime(LocalTime startTime) {
-		this.startTime = startTime;
 	}
 
 	public Integer getDuration() {
@@ -66,21 +50,5 @@ public class GameBody {
 
 	public void setGperiod(Integer gperiod) {
 		this.gperiod = gperiod;
-	}
-
-	public String getCreator() {
-		return creator;
-	}
-
-	public void setCreator(String creator) {
-		this.creator = creator;
-	}
-
-	public Boolean getHider() {
-		return hider;
-	}
-
-	public void setHider(Boolean hider) {
-		this.hider = hider;
 	}
 }
