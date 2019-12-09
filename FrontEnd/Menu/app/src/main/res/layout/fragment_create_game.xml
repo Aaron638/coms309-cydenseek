@@ -17,18 +17,6 @@
         android:layout_marginBottom="47dp"
         android:text="Create Game" />
 
-    <EditText
-        android:id="@+id/edit_maxPlayers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="151dp"
-        android:ems="10"
-        android:hint="Max Player Count"
-        android:inputType="number"
-        android:text="10" />
-
     <TextView
         android:id="@+id/tv_createGame_result"
         android:layout_width="163dp"

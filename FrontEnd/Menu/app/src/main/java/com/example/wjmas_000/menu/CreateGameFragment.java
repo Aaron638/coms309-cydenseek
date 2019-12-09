@@ -86,8 +86,9 @@ public class CreateGameFragment extends Fragment {
         //usernames, sessions
         gamesList = new HashMap<String, String>();
 
-        editMaxPlayers = (EditText) rootView.findViewById(R.id.edit_maxPlayers);
-        maxPlayers = Integer.parseInt(editMaxPlayers.getText().toString());
+        //editMaxPlayers = (EditText) rootView.findViewById(R.id.edit_maxPlayers);
+        //maxPlayers = Integer.parseInt(editMaxPlayers.getText().toString());
+        maxPlayers = 10;    //Change Later, for the love of god
 
         backendCallGames();
 

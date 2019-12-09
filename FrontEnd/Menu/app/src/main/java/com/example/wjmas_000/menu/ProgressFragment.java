@@ -49,7 +49,7 @@ public class ProgressFragment extends Fragment {
         refresh = rootView.findViewById(R.id.btn_progress_refresh);
         mQueue = Volley.newRequestQueue(getActivity());
 
-        
+
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
