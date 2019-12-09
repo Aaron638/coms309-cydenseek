@@ -51,10 +51,8 @@ public class ProgressFragment extends Fragment {
         refresh = rootView.findViewById(R.id.btn_progress_refresh);
         mQueue = Volley.newRequestQueue(getActivity());
 
-<<<<<<< HEAD
-=======
+
         setShit();
->>>>>>> 39df392f646e65bc9ee644346c9435655f53e0b4
 
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
