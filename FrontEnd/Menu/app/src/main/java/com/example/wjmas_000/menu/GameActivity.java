@@ -158,6 +158,17 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                 @Override
                 public void onOpen(ServerHandshake handshake) {
                     Log.d("OPEN", "run() returned: " + "is connecting");
+                    //Once the websocket client is open, we will attempt to connect with the user session, the latitude, and the longitude
+                    try {
+                        JSONObject obj = new JSONObject();
+                        obj.put("session", userSession);
+                        obj.put("latitude", latitude);
+                        obj.put("longitude", longitude);
+                        cc.send(obj.toString());
+                    } catch (Exception e) {
+                        Log.d("ExceptionSendMessage:", e.toString());
+                        e.printStackTrace();
+                    }
                 }
 
                 //Set the player code
@@ -221,18 +232,6 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
         }
         cc.connect();
         while (!cc.isOpen()) ;
-
-        //Once the websocket client is open, we will attempt to connect with the user session, the latitude, and the longitude
-        try {
-            JSONObject obj = new JSONObject();
-            obj.put("session", userSession);
-            obj.put("latitude", latitude);
-            obj.put("longitude", longitude);
-            cc.send(obj.toString());
-        } catch (Exception e) {
-            Log.d("ExceptionSendMessage:", e.toString());
-            e.printStackTrace();
-        }
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new PlayerListFragment()).commit();
 

@@ -95,7 +95,7 @@ public class CreateGameFragment extends Fragment {
         buttonfakeGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                launchGame("abc-123-xyz");
+                launchGame();
             }
         });
 
