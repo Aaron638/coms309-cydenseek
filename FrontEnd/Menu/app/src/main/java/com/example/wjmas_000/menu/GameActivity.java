@@ -333,6 +333,9 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_leave_game:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new LeaveGameFragment()).commit();
                 break;
+            case R.id.nav_progress:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new ProgressFragment()).commit();
+                break;
             default:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new PlayerListFragment()).commit();
                 break;
