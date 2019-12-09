@@ -20,6 +20,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,19 +46,30 @@ public class ProgressFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_progress, container, false);
-        tv1 = rootView.findViewById(R.id.tv_progress_time_remaining);
+        tv1 = (TextView) rootView.findViewById(R.id.tv_progress_time_remaining);
+        tv1.setText("");
         refresh = rootView.findViewById(R.id.btn_progress_refresh);
         mQueue = Volley.newRequestQueue(getActivity());
 
+<<<<<<< HEAD
+=======
+        setShit();
+>>>>>>> 39df392f646e65bc9ee644346c9435655f53e0b4
 
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                setShit();
             }
         });
 
         return rootView;
+
+    }
+
+    private void setShit(){
+        ((GameActivity)getActivity()).sendLatLong();
+        tv1.setText(((GameActivity)getActivity()).getGperiodCountdown() + " minutes left");
 
     }
 
