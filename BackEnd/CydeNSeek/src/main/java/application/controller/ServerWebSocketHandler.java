@@ -66,7 +66,7 @@ public class ServerWebSocketHandler {
 		gu.setGameSession(gameSession);
 		gu.setFound(false);
 		gu.setUsername(username);
-		final String userSession = UUID.randomUUID().toString();
+		final String userSession = Integer.toString((int)Math.floor(Math.random()*9000) + 1000);
 		gu.setUserSession(userSession);
 		gameusers.put(session, gu);
 	}
@@ -126,6 +126,7 @@ public class ServerWebSocketHandler {
 		statsDB.saveAndFlush(stats);
 		gu.setLatitude(latitude);
 		gu.setLongitude(longitude);
+		send(session, "{\"timeLeft\":" + LocalTime.now().until(game.getStartTime(), ChronoUnit.MINUTES)+"}");
 		if(LocalTime.now().isBefore(game.getStartTime())) return;
 		send(session, "{\"hiders\":" + gameUsers.values().stream().map(x -> {
 			JSONObject j = new JSONObject();
