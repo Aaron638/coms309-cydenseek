@@ -192,7 +192,7 @@ public class ServerWebSocketHandler {
 				final Stats s = statsDB.findById(generalDB.findById(userDB.findUserByUsername(x.getUsername()).get().getGeneralId()).get().getStatsId()).get();
 				if(x.isHider().booleanValue()) s.setGPHider(s.getGPHider() + 1);
 				else s.setGPSeeker(s.getGPSeeker() + 1);
-				s.setTotTime((int)(s.getTotTime() + game.getGperiod() + (LocalTime.now().isBefore(game.getStartTime().plusMinutes(game.getDuration())) ? LocalTime.now().until(game.getStartTime().plusMinutes(game.getDuration()), ChronoUnit.MINUTES) : 0)));
+				s.setTotTime((int)(s.getTotTime() + game.getGperiod() + (LocalTime.now().isBefore(game.getStartTime().plusMinutes(game.getDuration())) ? LocalTime.now().until(game.getStartTime().plusMinutes(game.getDuration()), ChronoUnit.MINUTES) : game.getDuration())));
 				statsDB.saveAndFlush(s);
 			});
 			for(final Session s : gameUsers.keySet()) gameusers.remove(s);
