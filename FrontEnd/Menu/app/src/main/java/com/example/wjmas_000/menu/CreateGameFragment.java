@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -53,6 +54,7 @@ public class CreateGameFragment extends Fragment {
     String gameSession;
     String username;
     String userSession;
+    Boolean hasGame;
 
     public Date getCurrentTime() {
         return currentTime;
@@ -87,16 +89,20 @@ public class CreateGameFragment extends Fragment {
         editMaxPlayers = (EditText) rootView.findViewById(R.id.edit_maxPlayers);
         maxPlayers = Integer.parseInt(editMaxPlayers.getText().toString());
 
+        backendCallGames();
+
+
         Button buttonCreateGame = (Button) rootView.findViewById(R.id.button_create_game);
         buttonCreateGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {//Press button, if callBackend returns true, launch the game
 
                 //setCurrentTime();
-                if (callBackend()){
+                if (callBackend() && !hasGame){
                     launchGame(gamesList.get(username));
                 }
                 //otherwise show an error in the log
+                Toast.makeText(getActivity(), "You have a game already", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "error");
             }
         });
@@ -177,11 +183,14 @@ public class CreateGameFragment extends Fragment {
                 Log.d(TAG, response.toString());
                 try {
                     JSONArray jsonArray = response.getJSONArray("games");
-
+                    hasGame = false;
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject game = jsonArray.getJSONObject(i);
 
                         String creator = game.getString("creator");
+                        if (creator.equals(username)){
+                            hasGame = true;
+                        }
                         String session = game.getString("session");
                         gamesList.put(creator, session);
 

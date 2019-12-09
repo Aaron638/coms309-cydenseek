@@ -76,21 +76,6 @@ public class MapFragment extends Fragment {
                     Toast.makeText(getActivity(), "HEY YOU ARE OUT OF BOUNDS", Toast.LENGTH_SHORT).show();
                 }
 
-                //SEEKERS
-                ArrayList<String> seekerUsernames = new ArrayList<String>();
-                ArrayList<LatLng> seekerLocations = new ArrayList<LatLng>();
-
-                for (int i = 0; i < seekerUsernames.size(); i++) {
-                    ((GameActivity) getActivity()).map.addMarker(new MarkerOptions().position(seekerLocations.get(i)).title(seekerUsernames.get(i)));
-                }
-
-                //HIDERS
-                ArrayList<String> hiderUsernames = new ArrayList<String>(10);
-                ArrayList<LatLng> hiderLocations = new ArrayList<LatLng>(10);
-
-                for (int i = 0; i < hiderUsernames.size(); i++) {
-                    ((GameActivity) getActivity()).map.addMarker(new MarkerOptions().position(hiderLocations.get(i)).title(hiderUsernames.get(i)));
-                }
 
             }
         });

@@ -23,16 +23,20 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -67,6 +71,14 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
     String userSession;
     String playerCode;
     String password;
+
+    //SEEKERS
+    ArrayList<String> seekerUsernames = new ArrayList<String>();
+    ArrayList<LatLng> seekerLocations = new ArrayList<LatLng>();
+
+    //HIDERS
+    ArrayList<String> hiderUsernames = new ArrayList<String>();
+    ArrayList<LatLng> hiderLocations = new ArrayList<LatLng>();
 
 
     public boolean isHider() {
@@ -180,34 +192,46 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                     Log.d("", "run() returned: " + message);
                     //backend returns: {"hider":true,"session":"a5ac6634-a996-4a21-8ffc-a0a2bb17ab72"}
                     //recieve the player code and hider boolean
-                    //send the latt and long after 5 min
+                    //after 5 min get a new response
                     if (websocketResponseIdx == 1){
                         try {
                             JSONObject userIsHiderAndFindCode = new JSONObject(message);
                             setPlayerCode(userIsHiderAndFindCode.getString("session"));
                             setHider(userIsHiderAndFindCode.getBoolean("hider"));
-
-                            //sendLatLong();
-
-                            //waiting 5 min, then send my lattitude and longitude
-                            /*
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                public void run() {
-                                    sendLatLong();
-                                }
-                            }, 5000);
-                            */
+                            sendLatLong();
 
                         } catch (JSONException err) {
                             Log.d("Error", err.toString());
                             err.printStackTrace();
                         }
                         //On the second response after we send our location
-                        //we get the obfuscated locations of all players
+                        //we get the locations of seekers
+                        //and we get the obfuscated locations of all hiders
                     } else if (websocketResponseIdx == 2){
                         try {
-                            JSONObject userAppxLocations = new JSONObject(message);
+                            JSONArray mapStateArray = new JSONArray(message);
+                            JSONObject jsonPlayers = mapStateArray.getJSONObject(0);
+                            JSONArray jsonArrHiders = jsonPlayers.getJSONArray("hiders");
+                            JSONArray jsonArrSeekers = jsonPlayers.getJSONArray("seekers");
+
+                            for (int i=0; i<jsonArrHiders.length(); i++){
+                                JSONObject hider = jsonArrHiders.getJSONObject(i);
+                                hiderUsernames.add(hider.getString("username"));
+                                hiderLocations.add(new LatLng(hider.getDouble("latitude"), hider.getDouble("longitude")));
+                                map.addMarker(new MarkerOptions()
+                                        .position(hiderLocations.get(i))
+                                        .title(hiderUsernames.get(i)));
+
+                            }
+                            for (int i=0; i<jsonArrSeekers.length(); i++){
+                                JSONObject seeker = jsonArrHiders.getJSONObject(i);
+                                seekerUsernames.add(seeker.getString("username"));
+                                seekerLocations.add(new LatLng(seeker.getDouble("latitude"), seeker.getDouble("longitude")));
+                                map.addMarker(new MarkerOptions()
+                                        .position(seekerLocations.get(i))
+                                        .title(seekerUsernames.get(i)));
+                            }
+
                         } catch (JSONException e) {
                             Log.d("Error", e.toString());
                             e.printStackTrace();
