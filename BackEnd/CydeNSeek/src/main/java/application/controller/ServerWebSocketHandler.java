@@ -126,8 +126,10 @@ public class ServerWebSocketHandler {
 		statsDB.saveAndFlush(stats);
 		gu.setLatitude(latitude);
 		gu.setLongitude(longitude);
-		send(session, "{\"timeLeft\":" + LocalTime.now().until(game.getStartTime(), ChronoUnit.MINUTES)+"}");
-		if(LocalTime.now().isBefore(game.getStartTime())) return;
+		if(LocalTime.now().isBefore(game.getStartTime())) {
+			send(session, "{\"timeLeft\":" + LocalTime.now().until(game.getStartTime(), ChronoUnit.MINUTES)+"}");
+			return;
+		}
 		send(session, "{\"hiders\":" + gameUsers.values().stream().map(x -> {
 			JSONObject j = new JSONObject();
 			j.put("username", x.getUsername());
