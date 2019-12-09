@@ -77,6 +77,16 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
     String playerCode;
     String password;
 
+    public int getGperiodCountdown() {
+        return gperiodCountdown;
+    }
+
+    public void setGperiodCountdown(int gperiodCountdown) {
+        this.gperiodCountdown = gperiodCountdown;
+    }
+
+    int gperiodCountdown = 5;
+
     //SEEKERS
     ArrayList<String> seekerUsernames = new ArrayList<String>();
     ArrayList<LatLng> seekerLocations = new ArrayList<LatLng>();
@@ -285,7 +295,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                         }
                     } else if (response.has("timeLeft")) {
                         try {
-                            int gperiodCountdown = response.getInt("timeLeft");
+                            setGperiodCountdown(response.getInt("timeLeft"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
