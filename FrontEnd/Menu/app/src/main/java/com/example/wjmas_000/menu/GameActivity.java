@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.java_websocket.client.WebSocketClient;
@@ -105,6 +106,11 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
             latitude = location.getLatitude();
             sendLatLong();
             Toast.makeText(GameActivity.this, "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
+
+            LatLngBounds llb = new LatLngBounds(new LatLng(42.023051, -93.638737), new LatLng(42.029745, -93.638866));
+            if (!llb.contains(new LatLng(getLatitude(), getLongitude()))) {
+                Toast.makeText(GameActivity.this, "HEY YOU ARE OUT OF BOUNDS", Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
