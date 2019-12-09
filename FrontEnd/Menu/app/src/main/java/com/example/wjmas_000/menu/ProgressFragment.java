@@ -65,7 +65,9 @@ public class ProgressFragment extends Fragment {
     }
 
     private void setShit(){
+        ((GameActivity)getActivity()).sendLatLong();
         tv1.setText(((GameActivity)getActivity()).getGperiodCountdown() + " minutes left");
+
     }
 
 
