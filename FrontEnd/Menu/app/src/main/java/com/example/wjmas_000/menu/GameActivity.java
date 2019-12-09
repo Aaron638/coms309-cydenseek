@@ -40,6 +40,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
     String gamesession;
     String username;
     String userSession;
+    String playerCode;
 
     public LocationListener locListen = new LocationListener() {
         @Override
@@ -122,13 +123,15 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                     Log.d("OPEN", "run() returned: " + "is connecting");
                 }
 
+                //Set the player code
                 @Override
                 public void onMessage(String message) {
                     Log.d("", "run() returned: " + message);
                     //backend returns: {"hider":true,"session":"a5ac6634-a996-4a21-8ffc-a0a2bb17ab72"}
                     try {
                         JSONObject userIsHiderAndFindCode = new JSONObject(message);
-                    } catch (JSONException err){
+                        setPlayerCode(userIsHiderAndFindCode.getString("session"));
+                    } catch (JSONException err) {
                         Log.d("Error", err.toString());
                     }
                 }
@@ -191,6 +194,18 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
+    public void websocketSend(String string) {
+        try {
+            JSONObject obj = new JSONObject(string);
+            obj.put("latitude", latitude);
+            obj.put("longitude", longitude);
+            cc.send(obj.toString());
+        } catch (Exception e) {
+            Log.d("ExceptionSendMessage:", e.toString());
+            e.printStackTrace();
+        }
+    }
+
     public String getGamesession() {
         return gamesession;
     }
@@ -213,6 +228,14 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
 
     public void setUserSession(String userSession) {
         this.userSession = userSession;
+    }
+
+    public String getPlayerCode() {
+        return playerCode;
+    }
+
+    public void setPlayerCode(String playerCode) {
+        this.playerCode = playerCode;
     }
 
 

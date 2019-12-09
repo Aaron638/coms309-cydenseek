@@ -85,21 +85,18 @@ public class PlayerListFragment extends Fragment {
                 try {
                     JSONArray jsonArray = response.getJSONArray("users");
                     //iterates through all users in the json array
-                    for (int i = 0; i < jsonArray.length(); i++) {
+                    for (int i = 0; i < jsonArray.length(); i+=2) {
                         JSONObject user = jsonArray.getJSONObject(i);
                         String username = user.getString("username");
                         boolean hider = user.getBoolean("hider");
                         boolean found = user.getBoolean("found");
 
                         //if even, place the username, if odd, place found or hiding
-                        if (i%2 == 0){
-                            userTable[i].setText(username);
-                        } else if (hider){
-                            if (found){
-                                userTable[i].setText("found");
-                            } else {
-                                userTable[i].setText("hiding");
-                            }
+                        userTable[i].setText(username);
+                        if (found){
+                            userTable[i+1].setText("found");
+                        } else {
+                            userTable[i+1].setText("hiding");
                         }
 
                     }
