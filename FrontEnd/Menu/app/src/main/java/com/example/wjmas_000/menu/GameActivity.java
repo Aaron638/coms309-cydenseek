@@ -34,8 +34,17 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
 
     private DrawerLayout drawer;
     private WebSocketClient cc;
-    private double longitude;
-    private double latitude;
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    double longitude;
+    double latitude;
     private LocationManager lm;
     String gamesession;
     String username;

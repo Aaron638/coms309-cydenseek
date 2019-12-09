@@ -106,12 +106,6 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    //launches the maps activity
-    private void launchMaps() {
-        Intent intent = new Intent(this, MapsActivity.class);
-        startActivity(intent);
-    }
-
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
