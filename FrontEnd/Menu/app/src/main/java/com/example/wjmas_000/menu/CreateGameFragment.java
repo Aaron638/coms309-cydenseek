@@ -121,6 +121,7 @@ public class CreateGameFragment extends Fragment {
         intent.putExtra("GAME_SESSION_ID", gameSession);
         intent.putExtra("username", username);
         intent.putExtra("userSession", userSession);
+        intent.putExtra("password", ((MenuActivity)getActivity()).getPassword());
         startActivity(intent);
     }
 

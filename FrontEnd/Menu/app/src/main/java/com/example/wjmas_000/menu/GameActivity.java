@@ -66,6 +66,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
     String username;
     String userSession;
     String playerCode;
+    String password;
 
 
     public boolean isHider() {
@@ -127,6 +128,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
         gamesession = bundle.getString("GAME_SESSION_ID");
         username = bundle.getString("username");
         userSession = bundle.getString("userSession");
+        password = bundle.getString("password");
 
         setGamesession(gamesession);
         setUsername(username);
@@ -250,6 +252,9 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_found_player:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new FoundPlayerFragment()).commit();
                 break;
+            case R.id.nav_leave_game:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new LeaveGameFragment()).commit();
+                break;
             default:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new PlayerListFragment()).commit();
                 break;
@@ -312,6 +317,14 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
 
     public void setPlayerCode(String playerCode) {
         this.playerCode = playerCode;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String p) {
+        this.password = p;
     }
 
 

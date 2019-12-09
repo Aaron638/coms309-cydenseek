@@ -88,16 +88,12 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new LogoutFragment()).commit();
                 break;
-            case R.id.nav_statistics:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new StatisticsFragment()).commit();
-                break;
             case R.id.nav_change_password:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new ChangePasswordFragment()).commit();
                 break;
             default:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ChatFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new StatisticsFragment()).commit();
                 break;
 
         }

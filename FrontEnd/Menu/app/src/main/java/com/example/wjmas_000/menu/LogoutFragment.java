@@ -52,7 +52,7 @@ public class LogoutFragment extends Fragment {
         return rootView;
     }
 
-    public void logout(){
+    private void logout(){
         String url = "http://coms-309-vb-1.misc.iastate.edu:8080/user/";
         url = url + ((MenuActivity)getActivity()).getUsername();
         url = url + "/logout";

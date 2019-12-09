@@ -84,6 +84,9 @@ public class PlayerListFragment extends Fragment {
             }
         });
 
+        //Refresh on open
+        jsonParse();
+
         return rootView;
     }
 

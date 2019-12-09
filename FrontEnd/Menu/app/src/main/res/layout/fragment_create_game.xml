@@ -12,33 +12,42 @@
         android:id="@+id/button_create_game"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="145dp"
-        android:layout_marginBottom="44dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="47dp"
         android:text="Create Game" />
 
     <EditText
         android:id="@+id/edit_maxPlayers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/button_create_game"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="101dp"
-        android:layout_marginBottom="59dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="151dp"
         android:ems="10"
         android:hint="Max Player Count"
-        android:text="10"
-        android:inputType="number" />
+        android:inputType="number"
+        android:text="10" />
 
-    <Button
-        android:id="@+id/button_dev_gameStart"
+    <TextView
+        android:id="@+id/tv_createGame_result"
+        android:layout_width="163dp"
+        android:layout_height="88dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="131dp"
+        android:textAlignment="center" />
+
+    <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="34dp"
-        android:layout_marginBottom="43dp"
-        android:text="fakeStart" />
+        android:layout_height="47dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="37dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Game Creation"
+        android:textAlignment="center"
+        android:textSize="24sp" />
 
 </RelativeLayout>
