@@ -304,8 +304,8 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
     public void sendLatLong(){
         JSONObject userLatLong = new JSONObject();
         try {
-            userLatLong.put("latitude:", getLatitude());
-            userLatLong.put("longitude:", getLongitude());
+            userLatLong.put("latitude", getLatitude());
+            userLatLong.put("longitude", getLongitude());
         } catch (JSONException e) {
             e.printStackTrace();
         }
