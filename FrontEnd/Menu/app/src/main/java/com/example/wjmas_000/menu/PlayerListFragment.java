@@ -1,5 +1,6 @@
 package com.example.wjmas_000.menu;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -31,6 +32,7 @@ public class PlayerListFragment extends Fragment {
     private TextView s1,s2,s3,s4,s5,s6,s7,s8,s9,s10;
     private TextView[] userTable;
     private RequestQueue mQueue;
+    Activity acti;
 
     @Nullable
     @Override
@@ -63,6 +65,16 @@ public class PlayerListFragment extends Fragment {
         userTable = new TextView[]{u1, s1, u2, s2, u3, s3, u4, s4, u5, s5, u6, s6, u7, s7, u8, s8, u9, s9, u10, s10};
 
         mQueue = Volley.newRequestQueue(getActivity());
+
+        acti = getActivity();
+
+        Button buttonStart = (Button) rootView.findViewById(R.id.button_startGame);
+        buttonStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((GameActivity)acti).sendLatLong();
+            }
+        });
 
         Button buttonParse = (Button) rootView.findViewById(R.id.button_parse);
         buttonParse.setOnClickListener(new View.OnClickListener() {

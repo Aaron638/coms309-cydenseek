@@ -1,6 +1,7 @@
 package com.example.wjmas_000.menu;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -8,6 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -19,6 +21,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.GoogleMap;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
@@ -43,6 +47,18 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
         return latitude;
     }
 
+    public GoogleMap getMap() {
+        return map;
+    }
+
+    public void setMap(GoogleMap map) {
+        this.map = map;
+    }
+
+    Activity acti = this;
+
+    GoogleMap map;
+    int websocketResponseIdx = 0;
     double longitude;
     double latitude;
     private LocationManager lm;
@@ -50,6 +66,18 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
     String username;
     String userSession;
     String playerCode;
+
+
+    public boolean isHider() {
+        return hider;
+    }
+
+    public void setHider(boolean hider) {
+        this.hider = hider;
+    }
+
+    boolean hider;
+    boolean winner;
 
     public LocationListener locListen = new LocationListener() {
         @Override
@@ -135,14 +163,44 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                 //Set the player code
                 @Override
                 public void onMessage(String message) {
+                    websocketResponseIdx++;
                     Log.d("", "run() returned: " + message);
                     //backend returns: {"hider":true,"session":"a5ac6634-a996-4a21-8ffc-a0a2bb17ab72"}
-                    try {
-                        JSONObject userIsHiderAndFindCode = new JSONObject(message);
-                        setPlayerCode(userIsHiderAndFindCode.getString("session"));
-                    } catch (JSONException err) {
-                        Log.d("Error", err.toString());
+                    //recieve the player code and hider boolean
+                    //send the latt and long after 5 min
+                    if (websocketResponseIdx == 1){
+                        try {
+                            JSONObject userIsHiderAndFindCode = new JSONObject(message);
+                            setPlayerCode(userIsHiderAndFindCode.getString("session"));
+                            setHider(userIsHiderAndFindCode.getBoolean("hider"));
+
+                            //sendLatLong();
+
+                            //waiting 5 min, then send my lattitude and longitude
+                            /*
+                            Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+                                    sendLatLong();
+                                }
+                            }, 5000);
+                            */
+
+                        } catch (JSONException err) {
+                            Log.d("Error", err.toString());
+                            err.printStackTrace();
+                        }
+                        //On the second response after we send our location
+                        //we get the obfuscated locations of all players
+                    } else if (websocketResponseIdx == 2){
+                        try {
+                            JSONObject userAppxLocations = new JSONObject(message);
+                        } catch (JSONException e) {
+                            Log.d("Error", e.toString());
+                            e.printStackTrace();
+                        }
                     }
+
                 }
 
                 @Override
@@ -176,7 +234,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new ChatFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new PlayerListFragment()).commit();
 
 
     }
@@ -184,7 +242,6 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         switch (menuItem.getItemId()) {
-
             case R.id.nav_lobby:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new PlayerListFragment()).commit();
                 break;
@@ -195,7 +252,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new FoundPlayerFragment()).commit();
                 break;
             default:
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new ChatFragment()).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_game, new PlayerListFragment()).commit();
                 break;
         }
 
@@ -213,6 +270,17 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
             Log.d("ExceptionSendMessage:", e.toString());
             e.printStackTrace();
         }
+    }
+
+    public void sendLatLong(){
+        JSONObject userLatLong = new JSONObject();
+        try {
+            userLatLong.put("latitude:", getLatitude());
+            userLatLong.put("longitude:", getLongitude());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        cc.send(userLatLong.toString());
     }
 
     public String getGamesession() {
