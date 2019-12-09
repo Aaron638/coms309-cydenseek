@@ -7,15 +7,14 @@
     android:layout_height="match_parent"
     tools:context=".FoundPlayerFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <TextView
         android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="436dp"
-        android:text="insert player code from backend"
+        android:layout_width="110dp"
+        android:layout_height="104dp"
+        android:layout_marginStart="136dp"
+        android:layout_marginTop="424dp"
+        android:text=""
+        android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -23,8 +22,8 @@
         android:id="@+id/button_player_found"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="36dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="140dp"
+        android:layout_marginBottom="16dp"
         android:text="Found Player"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -33,8 +32,8 @@
         android:id="@+id/edit_player_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="96dp"
-        android:layout_marginEnd="108dp"
+        android:layout_marginTop="84dp"
+        android:layout_marginEnd="96dp"
         android:ems="10"
         android:hint="Enter Hider Code"
         android:inputType="textPersonName"

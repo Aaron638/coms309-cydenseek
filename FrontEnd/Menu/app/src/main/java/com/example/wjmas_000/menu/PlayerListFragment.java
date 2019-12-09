@@ -1,10 +1,8 @@
 package com.example.wjmas_000.menu;
 
-import android.app.DownloadManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,20 +14,22 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import static com.android.volley.VolleyLog.TAG;
 
 
 public class PlayerListFragment extends Fragment {
 
-    private TextView mTextViewResult;
+    private TextView u1,u2,u3,u4,u5,u6,u7,u8,u9,u10;
+    private TextView s1,s2,s3,s4,s5,s6,s7,s8,s9,s10;
+    private TextView[] userTable;
     private RequestQueue mQueue;
 
     @Nullable
@@ -38,32 +38,46 @@ public class PlayerListFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_player_list, container, false);
 
-        mTextViewResult = (TextView) rootView.findViewById(R.id.text_view_result);
-        mTextViewResult.setText("Refresh");
-        mTextViewResult.setMovementMethod(new ScrollingMovementMethod());
+        //Games won actually represents user status
+        u1 = rootView.findViewById(R.id.et_Username_1);
+        s1 = rootView.findViewById(R.id.et_NumGamesWon_1);
+        u2 = rootView.findViewById(R.id.et_Username_2);
+        s2 = rootView.findViewById(R.id.et_NumGamesWon_2);
+        u3 = rootView.findViewById(R.id.et_Username_3);
+        s3 = rootView.findViewById(R.id.et_NumGamesWon_3);
+        u4 = rootView.findViewById(R.id.et_Username_4);
+        s4 = rootView.findViewById(R.id.et_NumGamesWon_4);
+        u5 = rootView.findViewById(R.id.et_Username_5);
+        s5 = rootView.findViewById(R.id.et_NumGamesWon_5);
+        u6 = rootView.findViewById(R.id.et_Username_6);
+        s6 = rootView.findViewById(R.id.et_NumGamesWon_6);
+        u7 = rootView.findViewById(R.id.et_Username_7);
+        s7 = rootView.findViewById(R.id.et_NumGamesWon_7);
+        u8 = rootView.findViewById(R.id.et_Username_8);
+        s8 = rootView.findViewById(R.id.et_NumGamesWon_8);
+        u9 = rootView.findViewById(R.id.et_Username_9);
+        s9 = rootView.findViewById(R.id.et_NumGamesWon_9);
+        u10 = rootView.findViewById(R.id.et_Username_10);
+        s10 = rootView.findViewById(R.id.et_NumGamesWon_10);
 
-        Button buttonParse = (Button) rootView.findViewById(R.id.button_parse);
+        userTable = new TextView[]{u1, s1, u2, s2, u3, s3, u4, s4, u5, s5, u6, s6, u7, s7, u8, s8, u9, s9, u10, s10};
 
-        //usually use "this"
         mQueue = Volley.newRequestQueue(getActivity());
 
+        Button buttonParse = (Button) rootView.findViewById(R.id.button_parse);
         buttonParse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mTextViewResult.setText("");
                 jsonParse();
             }
         });
 
-
-        //return inflater.inflate(R.layout.fragment_player_list, container, false);
-        //trying this instead
         return rootView;
     }
 
-    private void jsonParse(){
-        String url = "http://coms-309-vb-1.misc.iastate.edu:8080/users";
-        //maybe pass json array in the future?
+    private void jsonParse() {
+        String url = "http://coms-309-vb-1.misc.iastate.edu:8080/game/" + ((GameActivity)getActivity()).getGamesession() + "/users";
+
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -71,34 +85,22 @@ public class PlayerListFragment extends Fragment {
                 try {
                     JSONArray jsonArray = response.getJSONArray("users");
                     //iterates through all users in the json array
-                    for (int i =0; i < jsonArray.length(); i++){
+                    for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject user = jsonArray.getJSONObject(i);
-
-                        //we get all user attributes here
-                        int id = user.getInt("id");
                         String username = user.getString("username");
-                        String password = user.getString("password");
-                        String session = user.getString("session");
-                        int gameid = user.getInt("gameId");
-                        //TODO switch to double eventually
-                        String latitude = user.getString("latitude");
-                        String longitude = user.getString("longitude");
-                        boolean dev = user.getBoolean("developer");
                         boolean hider = user.getBoolean("hider");
                         boolean found = user.getBoolean("found");
-                        int gwhider = user.getInt("gwhider");
-                        int gwseeker = user.getInt("gwseeker");
-                        int gphider = user.getInt("gphider");
-                        int gpseeker = user.getInt("gpseeker");
-                        int totdistance = user.getInt("totdistance");
-                        int tottime = user.getInt("tottime");
 
-
-                        String result = "ID:"+ id +
-                                        "\nUsername:"+ username +
-                                        "\nTime Played:"+ tottime +
-                                        "\n\n";
-                        mTextViewResult.append(result);
+                        //if even, place the username, if odd, place found or hiding
+                        if (i%2 == 0){
+                            userTable[i].setText(username);
+                        } else if (hider){
+                            if (found){
+                                userTable[i].setText("found");
+                            } else {
+                                userTable[i].setText("hiding");
+                            }
+                        }
 
                     }
                 } catch (JSONException e) {
@@ -110,7 +112,6 @@ public class PlayerListFragment extends Fragment {
             public void onErrorResponse(VolleyError error) {
                 Log.d(TAG, "onErrorResponse: error");
                 error.printStackTrace();
-                mTextViewResult.setText("Error");
             }
         });
         mQueue.add(request);

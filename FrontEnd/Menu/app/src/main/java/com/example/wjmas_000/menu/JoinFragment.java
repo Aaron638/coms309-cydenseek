@@ -96,6 +96,8 @@ public class JoinFragment extends Fragment {
     private void launchGame(String gameSession){
         Intent intent = new Intent(getActivity(), GameActivity.class);
         intent.putExtra("GAME_SESSION_ID", gameSession);
+        intent.putExtra("username", username);
+        intent.putExtra("userSession", userSession);
         startActivity(intent);
     }
 
