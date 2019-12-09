@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -36,8 +37,8 @@ import static com.android.volley.VolleyLog.TAG;
 public class CreateGameFragment extends Fragment {
 
     private RequestQueue rq;
-    EditText editMaxPlayers, editGPeriod, editDuration;
-    int maxPlayers, gperiod, duration = 0;
+    EditText editMaxPlayers;
+    int maxPlayers = 0;
     String gameSession;
     String username;
     String userSession;
@@ -74,7 +75,6 @@ public class CreateGameFragment extends Fragment {
 
         //editGPeriod = (EditText) rootView.findViewById(R.id.edit_session);
         //gperiod = Integer.parseInt(editGPeriod.getText().toString());
-
 
         Button buttonCreateGame = (Button) rootView.findViewById(R.id.button_create_game);
         buttonCreateGame.setOnClickListener(new View.OnClickListener() {

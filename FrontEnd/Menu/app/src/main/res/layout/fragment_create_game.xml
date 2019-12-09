@@ -28,6 +28,7 @@
         android:layout_marginBottom="59dp"
         android:ems="10"
         android:hint="Max Player Count"
+        android:text="10"
         android:inputType="number" />
 
     <Button

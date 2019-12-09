@@ -15,6 +15,7 @@ import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -41,9 +42,9 @@ public class JoinFragment extends Fragment {
     ArrayList<String> gameUserNames;
     ArrayList<String> gameMaxPlayers;
     RecyclerView recyclerView;
-    Boolean backendCalled = false;
-    String gameID;
-
+    String username;
+    String userSession;
+    TextView noGames;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,9 @@ public class JoinFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_join, container, false);
 
+        username = ((MenuActivity) getActivity()).getUsername();
+        userSession = ((MenuActivity) getActivity()).getSession();
+
         gameUserNames = new ArrayList<>();
         gameMaxPlayers = new ArrayList();
 
@@ -63,6 +67,8 @@ public class JoinFragment extends Fragment {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
 
+        noGames = (TextView) rootView.findViewById(R.id.text_noGames);
+        //areGames = noGames.getText().toString();
 
         Button buttonRefresh = (Button) rootView.findViewById(R.id.button_refresh);
         mQueue = Volley.newRequestQueue(getActivity());
@@ -70,42 +76,17 @@ public class JoinFragment extends Fragment {
         buttonRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                backendCalled = callBackend();
-
-                if (backendCalled) {
-                    if (gamesJsonArray == null) {
-                        gameUserNames.add("There are no games");
-                        gameMaxPlayers.add("Go to Create Game");
-                        CustomAdapter adapter = new CustomAdapter(getActivity(), gameUserNames, gameMaxPlayers);
-                        recyclerView.setAdapter(adapter);
-                    } else {
-                        try {
-                            for (int i = 0; i < gamesJsonArray.length(); i++) {
-                                JSONObject gameI = gamesJsonArray.getJSONObject(i);
-                                gameUserNames.add(gameI.getString("creator"));
-                                gameMaxPlayers.add(gameI.getString("maxplayers"));
-                                //ADD MORE for duration, period and start time
-                                //gameMaxPlayers.add(gamesJsonArray.getString("maxplayers"));
-                                //gameMaxPlayers.add(gamesJsonArray.getString("maxplayers"));
-                                //gameMaxPlayers.add(gamesJsonArray.getString("maxplayers"));
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        CustomAdapter adapter = new CustomAdapter(getActivity(), gameUserNames, gameMaxPlayers);
-                        recyclerView.setAdapter(adapter);
-                    }
-                }
-
+                callBackend();
             }
+
+
         });
 
 
         return rootView;
     }
 
-    private boolean callBackend(){
+    private void callBackend() {
 
         String urlGames = "http://coms-309-vb-1.misc.iastate.edu:8080/games/";
 
@@ -129,7 +110,8 @@ public class JoinFragment extends Fragment {
             }
         });
         mQueue.add(request);
-        return true;
+
+
     }
 
 

@@ -33,20 +33,12 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class MenuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MenuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawer;
-//<<<<<<< HEAD
+
     private String session;      //Reference for login session
     private String user;
     private String password;
-
-    //TODO this location stuff needs to be moved to backend
-
-
-//=======
-    //private int LoginCode;      //Reference for login session?
-    public User userperson;
-//>>>>>>> 5f61fea1b4a05c1f4c25cfaff49d9a484515a91f
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +64,6 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         password = bundle.getString("password");
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new StatisticsFragment()).commit();
-
-
 
     }
 
@@ -131,27 +121,27 @@ public class MenuActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void setSession(String s){
+    public void setSession(String s) {
         session = s;
     }
 
-    public String getSession(){
+    public String getSession() {
         return session;
     }
 
-    public void setUsername(String s){
+    public void setUsername(String s) {
         user = s;
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return user;
     }
 
-    public void setPassword(String s){
+    public void setPassword(String s) {
         password = s;
     }
 
-    public String getPassword(){
+    public String getPassword() {
         return password;
     }
 

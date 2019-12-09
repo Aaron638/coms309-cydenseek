@@ -19,4 +19,14 @@
         android:layout_marginEnd="48dp"
         android:layout_marginBottom="28dp"
         android:text="Refresh" />
+
+    <TextView
+        android:id="@+id/text_noGames"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="174dp"
+        android:layout_marginBottom="307dp"
+        android:text="Press Refresh" />
 </RelativeLayout>
