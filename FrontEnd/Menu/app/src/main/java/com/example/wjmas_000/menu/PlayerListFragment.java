@@ -28,8 +28,8 @@ import static com.android.volley.VolleyLog.TAG;
 
 public class PlayerListFragment extends Fragment {
 
-    private TextView u1,u2,u3,u4,u5,u6,u7,u8,u9,u10;
-    private TextView s1,s2,s3,s4,s5,s6,s7,s8,s9,s10;
+    private TextView u1, u2, u3, u4, u5, u6, u7, u8, u9, u10;
+    private TextView s1, s2, s3, s4, s5, s6, s7, s8, s9, s10;
     private TextView[] userTable;
     private RequestQueue mQueue;
     Activity acti;
@@ -72,7 +72,7 @@ public class PlayerListFragment extends Fragment {
         buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((GameActivity)acti).sendLatLong();
+                ((GameActivity) acti).sendLatLong();
             }
         });
 
@@ -91,7 +91,7 @@ public class PlayerListFragment extends Fragment {
     }
 
     private void jsonParse() {
-        String url = "http://coms-309-vb-1.misc.iastate.edu:8080/game/" + ((GameActivity)getActivity()).getGamesession() + "/users";
+        String url = "http://coms-309-vb-1.misc.iastate.edu:8080/game/" + ((GameActivity) getActivity()).getGamesession() + "/users";
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -100,7 +100,7 @@ public class PlayerListFragment extends Fragment {
                 try {
                     JSONArray jsonArray = response.getJSONArray("users");
                     //iterates through all users in the json array
-                    for (int i = 0; i < jsonArray.length(); i++) {
+                    for (int i = 0; i < jsonArray.length(); i += 2) {
                         JSONObject user = jsonArray.getJSONObject(i);
                         String username = user.getString("username");
                         boolean hider = user.getBoolean("hider");
@@ -108,10 +108,14 @@ public class PlayerListFragment extends Fragment {
 
                         //if even, place the username, if odd, place found or hiding
                         userTable[i].setText(username);
-                        if (found){
-                            userTable[i+1].setText("found");
+                        if (hider) {
+                            if (found) {
+                                userTable[i + 1].setText("found");
+                            } else {
+                                userTable[i + 1].setText("hiding");
+                            }
                         } else {
-                            userTable[i+1].setText("hiding");
+                            userTable[i + 1].setText("seeker");
                         }
 
                     }

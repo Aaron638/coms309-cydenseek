@@ -3,11 +3,13 @@ package com.example.wjmas_000.menu;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -19,6 +21,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -189,16 +193,22 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                 //Set the player code
                 @Override
                 public void onMessage(String message) {
-                    websocketResponseIdx++;
+                    //websocketResponseIdx++;
                     Log.d("", "run() returned: " + message);
                     //backend returns: {"hider":true,"session":"a5ac6634-a996-4a21-8ffc-a0a2bb17ab72"}
                     //recieve the player code and hider boolean
                     //after 5 min get a new response
-                    if (websocketResponseIdx == 1){
+                    JSONObject response = null;
+                    try {
+                        response = new JSONObject(message);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    if (response.has("hider")) {
                         try {
-                            JSONObject userIsHiderAndFindCode = new JSONObject(message);
-                            setPlayerCode(userIsHiderAndFindCode.getString("session"));
-                            setHider(userIsHiderAndFindCode.getBoolean("hider"));
+                            setPlayerCode(response.getString("session"));
+                            setHider(response.getBoolean("hider"));
                             //sendLatLong();
 
                         } catch (JSONException err) {
@@ -208,14 +218,11 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                         //On the second response after we send our location
                         //we get the locations of seekers
                         //and we get the obfuscated locations of all hiders
-                    } else if (websocketResponseIdx == 2){
+                    } else if (response.has("hiders")) {
                         try {
-                            JSONArray mapStateArray = new JSONArray(message);
-                            JSONObject jsonPlayers = mapStateArray.getJSONObject(0);
-                            JSONArray jsonArrHiders = jsonPlayers.getJSONArray("hiders");
-                            JSONArray jsonArrSeekers = jsonPlayers.getJSONArray("seekers");
+                            JSONArray jsonArrHiders = response.getJSONArray("hiders");
 
-                            for (int i=0; i<jsonArrHiders.length(); i++){
+                            for (int i = 0; i < jsonArrHiders.length(); i++) {
                                 JSONObject hider = jsonArrHiders.getJSONObject(i);
                                 hiderUsernames.add(hider.getString("username"));
                                 hiderLocations.add(new LatLng(hider.getDouble("latitude"), hider.getDouble("longitude")));
@@ -224,17 +231,50 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                                         .title(hiderUsernames.get(i)));
 
                             }
-                            for (int i=0; i<jsonArrSeekers.length(); i++){
-                                JSONObject seeker = jsonArrHiders.getJSONObject(i);
-                                seekerUsernames.add(seeker.getString("username"));
-                                seekerLocations.add(new LatLng(seeker.getDouble("latitude"), seeker.getDouble("longitude")));
+                        } catch (JSONException e) {
+                            Log.d("Error", e.toString());
+                            e.printStackTrace();
+                        }
+
+                    } else if (response.has("seekers")) {
+                        JSONArray jsonArrSeekers = null;
+                        try {
+                            jsonArrSeekers = response.getJSONArray("seekers");
+
+                            for (int i = 0; i < jsonArrSeekers.length(); i++) {
+                                JSONObject hider = jsonArrSeekers.getJSONObject(i);
+                                seekerUsernames.add(hider.getString("username"));
+                                seekerLocations.add(new LatLng(hider.getDouble("latitude"), hider.getDouble("longitude")));
                                 map.addMarker(new MarkerOptions()
                                         .position(seekerLocations.get(i))
                                         .title(seekerUsernames.get(i)));
                             }
-
                         } catch (JSONException e) {
                             Log.d("Error", e.toString());
+                            e.printStackTrace();
+                        }
+                    } else if (response.has("found")){
+                        //response.getBoolean("found");
+                        Toast.makeText(GameActivity.this, ("YOU GOT FOUND"), Toast.LENGTH_LONG).show();
+                    } else if (response.has("foundUser")){
+                        try {
+                            Toast.makeText(GameActivity.this, ("You found: " + response.getString("foundUser")), Toast.LENGTH_LONG).show();
+                        } catch (JSONException e){
+                            e.printStackTrace();
+                        }
+                    } else if (response.has("winner")){
+                        try {
+                            if (response.getBoolean("winner")){
+                                Toast.makeText(GameActivity.this, "CONGRATS YOU WIN", Toast.LENGTH_LONG).show();
+                            }
+
+                            Intent intent = new Intent(GameActivity.this, MenuActivity.class);
+                            intent.putExtra("username", GameActivity.this.getUsername());
+                            intent.putExtra("token", GameActivity.this.getUserSession());
+                            intent.putExtra("password", GameActivity.this.getPassword());
+                            startActivity(intent);
+
+                        } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
@@ -301,7 +341,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public void sendLatLong(){
+    public void sendLatLong() {
         JSONObject userLatLong = new JSONObject();
         try {
             userLatLong.put("latitude", getLatitude());
@@ -310,6 +350,7 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
         cc.send(userLatLong.toString());
+        Log.d("none", Double.toString(getLatitude()));
     }
 
     public String getGamesession() {
