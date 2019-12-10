@@ -5,7 +5,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -58,6 +57,14 @@ public class ServerWebSocketHandler {
 		}
 		if(!games.containsKey(gameSession)) {
 			sendError(session, "Game not found.");
+			return;
+		}
+		if(gameusers.values().stream().anyMatch(g -> g.getUsername().equals(username))) {
+			sendError(session, "User already in game.");
+			return;
+		}
+		if(gameusers.values().stream().filter(g -> g.getGameSession().equals(gameSession)).count() >= games.get(gameSession).getMaxplayers()) {
+			sendError(session, "Game is full.");
 			return;
 		}
 		LOG.info(username + " has connected.");
