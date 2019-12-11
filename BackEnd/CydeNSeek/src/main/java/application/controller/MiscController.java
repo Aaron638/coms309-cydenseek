@@ -87,20 +87,25 @@ public class MiscController {
 	)
 	public ResponseEntity<Map<String, Object>> leaderboard() {
 		final Map<Integer, String> users = userDB.findAll().stream().collect(Collectors.toMap(x->x.getId(), x->x.getUsername()));
-		final Map<Integer, Stats> userStats = statsDB.findAll().stream().collect(Collectors.toMap(x->x.getId(), x->x));
+		final Map<Integer, Stats> userStats = statsDB.findAll().stream().sorted((x,y) -> {
+			final Integer totalGamesX = x.getGPHider() + x.getGPSeeker();
+			final Integer totalGamesY = y.getGPHider() + y.getGPSeeker();
+			return (x.getGWHider() + x.getGWSeeker()) / (totalGamesX.equals(0) ? 1 : totalGamesX) - (y.getGWHider() + y.getGWSeeker()) / (totalGamesY.equals(0) ? 1 : totalGamesY);
+		}).limit(10).collect(Collectors.toMap(x->x.getId(), x->x));
+		final Map<String, Stats> topStats = generalDB.findAll().stream().filter(x -> userStats.containsKey(x.getStatsId())).collect(Collectors.toMap(x->users.get(x.getUserId()), x->userStats.get(x.getStatsId())));
 		return new ResponseEntity<>(new HashMap<String, Object>() {{
-			put("users", generalDB.findAll().stream()
+			put("users", topStats.entrySet().stream()
 				.sorted((x,y) -> {
-					final Stats statsX = userStats.get(x.getStatsId());
-					final Stats statsY = userStats.get(y.getStatsId());
+					final Stats statsX = x.getValue();
+					final Stats statsY = y.getValue();
 					final Integer totalGamesX = statsX.getGPHider() + statsX.getGPSeeker();
 					final Integer totalGamesY = statsY.getGPHider() + statsY.getGPSeeker();
 					return (statsX.getGWHider() + statsX.getGWSeeker()) / (totalGamesX.equals(0) ? 1 : totalGamesX) - (statsY.getGWHider() + statsY.getGWSeeker()) / (totalGamesY.equals(0) ? 1 : totalGamesY);
 				})
 				.map(x -> {
-					Stats stats = userStats.get(x.getStatsId());
+					final Stats stats = x.getValue();
 					return new HashMap<String, Object>() {{
-						put("username", users.get(x.getUserId()));
+						put("username", x.getKey());
 						put("gwhider", stats.getGWHider());
 						put("gwseeker", stats.getGWSeeker());
 						put("gphider", stats.getGPHider());
