@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:stretchColumns="1"
+    android:background="@android:color/white">
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:text="Time Remaining"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_progress_time_remaining"
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <TextView
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:padding="3dip"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btn_progress_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="75dp"
+            android:text="Refresh"
+            android:textSize="24sp" />
+
+        <TextView
+            android:gravity="right"
+            android:padding="3dip"
+            android:textSize="18sp" />
+    </TableRow>
+
+
+
+
+
+</TableLayout>

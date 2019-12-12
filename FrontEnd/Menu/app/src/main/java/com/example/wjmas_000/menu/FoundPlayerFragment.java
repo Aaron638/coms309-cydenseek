@@ -31,7 +31,7 @@ public class FoundPlayerFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 String inputCode = playerCode.getText().toString();
-                ((GameActivity)getActivity()).websocketSend("{session: \"" + inputCode + "\"}");
+                ((GameActivity)getActivity()).websocketSend("{userSession: \"" + inputCode + "\"}");
             }
         });
 

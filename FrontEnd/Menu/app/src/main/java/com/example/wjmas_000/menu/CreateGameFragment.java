@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,6 +23,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,9 +41,20 @@ public class CreateGameFragment extends Fragment {
     private RequestQueue rq;
     EditText editMaxPlayers;
     int maxPlayers = 0;
+    HashMap<String, String> gamesList;
+
+    public String getGameSession() {
+        return gameSession;
+    }
+
+    public void setGameSession(String gameSession) {
+        this.gameSession = gameSession;
+    }
+
     String gameSession;
     String username;
     String userSession;
+    Boolean hasGame;
 
     public Date getCurrentTime() {
         return currentTime;
@@ -70,34 +83,40 @@ public class CreateGameFragment extends Fragment {
 
         rq = Volley.newRequestQueue(getActivity());
 
-        editMaxPlayers = (EditText) rootView.findViewById(R.id.edit_maxPlayers);
-        maxPlayers = Integer.parseInt(editMaxPlayers.getText().toString());
+        //usernames, sessions
+        gamesList = new HashMap<String, String>();
 
-        //editGPeriod = (EditText) rootView.findViewById(R.id.edit_session);
-        //gperiod = Integer.parseInt(editGPeriod.getText().toString());
+        //editMaxPlayers = (EditText) rootView.findViewById(R.id.edit_maxPlayers);
+        //maxPlayers = Integer.parseInt(editMaxPlayers.getText().toString());
+        maxPlayers = 10;    //Change Later, for the love of god
+
+        backendCallGames();
+
 
         Button buttonCreateGame = (Button) rootView.findViewById(R.id.button_create_game);
         buttonCreateGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {//Press button, if callBackend returns true, launch the game
 
-                setCurrentTime();
-                if (callBackend()){
-                    launchGame(gameSession);
+                //setCurrentTime();
+                if (callBackend() && !hasGame){
                 }
                 //otherwise show an error in the log
+                Toast.makeText(getActivity(), "You have a game already", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "error");
             }
         });
 
         //This is a developer button that forces you to the game screen, it has an invalid session
+        /*
         Button buttonfakeGame = (Button) rootView.findViewById(R.id.button_dev_gameStart);
         buttonfakeGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                launchGame("abc-123-xyz");
+                launchGame();
             }
         });
+        */
 
         return rootView;
     }
@@ -108,6 +127,7 @@ public class CreateGameFragment extends Fragment {
         intent.putExtra("GAME_SESSION_ID", gameSession);
         intent.putExtra("username", username);
         intent.putExtra("userSession", userSession);
+        intent.putExtra("password", ((MenuActivity)getActivity()).getPassword());
         startActivity(intent);
     }
 
@@ -135,7 +155,8 @@ public class CreateGameFragment extends Fragment {
             public void onResponse(JSONObject response) {
                 Log.d(TAG, response.toString());
                 try {
-                    gameSession = response.getString("session");
+                    //setGameSession();
+                    launchGame(response.getString("session"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -153,6 +174,48 @@ public class CreateGameFragment extends Fragment {
         rq.add(request);
 
         return true;
+    }
+
+    private void backendCallGames() {
+        String uri = "http://coms-309-vb-1.misc.iastate.edu:8080/games";
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, uri, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d(TAG, response.toString());
+                try {
+                    JSONArray jsonArray = response.getJSONArray("games");
+                    hasGame = false;
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject game = jsonArray.getJSONObject(i);
+
+                        String creator = game.getString("creator");
+                        if (creator.equals(username)){
+                            hasGame = true;
+                        }
+                        String session = game.getString("session");
+                        gamesList.put(creator, session);
+
+                        String result = "Creator: " + creator +
+                                "\nGame Session: " + gamesList.get(creator) +
+                                "\n\n";
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "onErrorResponse: error");
+                error.printStackTrace();
+            }
+        }
+                //end JsonObjectRequest
+        );
+        rq.add(request);
     }
 
 

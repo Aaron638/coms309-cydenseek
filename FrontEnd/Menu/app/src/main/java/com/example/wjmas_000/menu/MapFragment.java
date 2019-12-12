@@ -24,7 +24,7 @@ import java.util.ArrayList;
 public class MapFragment extends Fragment {
 
     MapView mMapView;
-    GoogleMap map;
+
     static int MY_PERMISSIONS_ACCESS_FINE_LOCATION;
 
     @Nullable
@@ -46,16 +46,16 @@ public class MapFragment extends Fragment {
         mMapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
-                map = googleMap;
+                ((GameActivity) getActivity()).setMap(googleMap);
 
-                map.setMyLocationEnabled(true);
+                ((GameActivity) getActivity()).map.setMyLocationEnabled(true);
                 //map.setOnMyLocationButtonClickListener();
                 //map.setOnMyLocationClickListener(getActivity());
 
 
                 LatLng mylatlong = new LatLng(((GameActivity) getActivity()).getLatitude(), ((GameActivity) getActivity()).getLongitude());
-                map.moveCamera(CameraUpdateFactory.newLatLng(mylatlong));
-                map.moveCamera(CameraUpdateFactory.zoomIn());
+                ((GameActivity) getActivity()).map.moveCamera(CameraUpdateFactory.newLatLng(mylatlong));
+                ((GameActivity) getActivity()).map.moveCamera(CameraUpdateFactory.zoomIn());
 
                 // Instantiates a new Polygon object at points to define a rectangle
                 //top left, bottom left, bottom right, top right
@@ -68,7 +68,7 @@ public class MapFragment extends Fragment {
                         );
 
                 // Get back the mutable Polygon
-                Polygon polygon = map.addPolygon(rectOptions);
+                Polygon polygon = ((GameActivity) getActivity()).map.addPolygon(rectOptions);
                 //setting game bounds
                 LatLngBounds llb = new LatLngBounds(new LatLng(42.023051, -93.638737), new LatLng(42.029745, -93.638866));
 
@@ -76,24 +76,7 @@ public class MapFragment extends Fragment {
                     Toast.makeText(getActivity(), "HEY YOU ARE OUT OF BOUNDS", Toast.LENGTH_SHORT).show();
                 }
 
-                ///*
-                ArrayList<String> seekerUsernames = new ArrayList<String>(10);
-                ArrayList<LatLng> seekerLocations = new ArrayList<LatLng>(10);
 
-                //obtain this from backend, remember to dynamically remove the hiders and seekers from the map
-
-                for (int i = 0; i < seekerUsernames.size(); i++) {
-                    map.addMarker(new MarkerOptions().position(seekerLocations.get(i)).title(seekerUsernames.get(i)));
-                }
-
-                //HIDERS
-                ArrayList<String> hiderUsernames = new ArrayList<String>(10);
-                ArrayList<LatLng> hiderLocations = new ArrayList<LatLng>(10);
-
-                for (int i = 0; i < hiderUsernames.size(); i++) {
-                    map.addMarker(new MarkerOptions().position(hiderLocations.get(i)).title(hiderUsernames.get(i)));
-                }
-                //*/
             }
         });
 

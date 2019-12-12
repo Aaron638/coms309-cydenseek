@@ -16,6 +16,14 @@
             android:id="@+id/nav_found_player"
             android:icon="@drawable/ic_chat"
             android:title="Player Code" />
+        <item
+            android:id="@+id/nav_progress"
+            android:icon="@drawable/ic_progress"
+            android:title="Progress" />
+        <item
+            android:id="@+id/nav_leave_game"
+            android:icon="@drawable/ic_leave_game"
+            android:title="Leave Game" />
 
     </group>
 
