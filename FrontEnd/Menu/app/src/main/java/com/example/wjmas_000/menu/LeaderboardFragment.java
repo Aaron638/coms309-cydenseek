@@ -108,14 +108,14 @@ public class LeaderboardFragment extends Fragment {
 
 
         mQueue = Volley.newRequestQueue(getActivity());
-        jsonParse1();
+        jsonParseLeader();
 
         return rootView;
 
     }
 
 
-    private int jsonParse1(){
+    public int jsonParseLeader(){
         String url = "http://coms-309-vb-1.misc.iastate.edu:8080/leaderboard";
         //maybe pass json array in the future
 
