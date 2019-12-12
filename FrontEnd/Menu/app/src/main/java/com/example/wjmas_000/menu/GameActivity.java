@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -240,11 +241,9 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
 
                             for (int i = 0; i < jsonArrHiders.length(); i++) {
                                 JSONObject hider = jsonArrHiders.getJSONObject(i);
-                                hiderUsernames.add(hider.getString("username"));
-                                hiderLocations.add(new LatLng(hider.getDouble("latitude"), hider.getDouble("longitude")));
-                                map.addMarker(new MarkerOptions()
-                                        .position(hiderLocations.get(i))
-                                        .title(hiderUsernames.get(i)));
+                                //hiderUsernames.add(hider.getString("username"));
+                                //hiderLocations.add(new LatLng(hider.getDouble("latitude"), hider.getDouble("longitude")));
+                                placeMarker(hider.getString("username"), hider.getDouble("latitude"), hider.getDouble("longitude"));
 
                             }
                         } catch (JSONException e) {
@@ -258,12 +257,13 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
                             jsonArrSeekers = response.getJSONArray("seekers");
 
                             for (int i = 0; i < jsonArrSeekers.length(); i++) {
-                                JSONObject hider = jsonArrSeekers.getJSONObject(i);
-                                seekerUsernames.add(hider.getString("username"));
-                                seekerLocations.add(new LatLng(hider.getDouble("latitude"), hider.getDouble("longitude")));
-                                map.addMarker(new MarkerOptions()
-                                        .position(seekerLocations.get(i))
-                                        .title(seekerUsernames.get(i)));
+                                JSONObject seeker = jsonArrSeekers.getJSONObject(i);
+                                //seekerUsernames.add(hider.getString("username"));
+                                //seekerLocations.add(new LatLng(hider.getDouble("latitude"), hider.getDouble("longitude")));
+                                placeMarker(seeker.getString("username"), seeker.getDouble("latitude"), seeker.getDouble("longitude"));
+                                //map.addMarker(new MarkerOptions()
+                                //       .position(seekerLocations.get(i))
+                                //       .title(seekerUsernames.get(i)));
                             }
                         } catch (JSONException e) {
                             Log.d("Error", e.toString());
@@ -417,6 +417,14 @@ public class GameActivity extends AppCompatActivity implements NavigationView.On
 
     public void setPassword(String p) {
         this.password = p;
+    }
+
+    public void placeMarker(String title, double lat, double lon) {
+        if (map != null) {
+            LatLng marker = new LatLng(lat, lon);
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(marker, 15));
+            map.addMarker(new MarkerOptions().title(title).position(marker));
+        }
     }
 
 
